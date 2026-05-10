@@ -2,8 +2,41 @@
 <html>
 <head>
     <title>Vaiven</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Montserrat+Alternates:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
-    <h1>Hola equipo Vaiven</h1>
+    <header>
+        <a class="logo" href="#hero" aria-label="Vai Ven — inicio">
+            <img src="resources/logo_vaiven.png" alt="Vai Ven" decoding="async">
+        </a>
+    </header>
+    <main>
+        <section id="hero">
+            <h1 class="hero-headline">
+                <span class="erratic line line-1">Cuando vos</span>
+                <span class="erratic line line-2">fuiste</span>
+                <span class="erratic line line-3">Nosotros ya fuimos</span>
+                <span class="erratic line line-4">y volvimos</span>
+                <span class="erratic line mejores">MEJORES</span>
+            </h1>
+        </section>
+        <section id="portfolio">portfolio</section>
+        <section id="contacto">contacto</section>
+        <section id="nosotros">nosotros</section>
+        <section id="destacados">destacados</section>
+    </main>
+    <nav aria-label="Principal">
+        <ul>
+            <li><a href="#hero">home</a></li>
+            <li><a href="#portfolio">portfolio</a></li>
+            <li><a href="#contacto">contacto</a></li>
+            <li><a href="#nosotros">nosotros</a></li>
+            <li><a href="#destacados">destacados</a></li>
+        </ul>
+    </nav>
 </body>
 </html>
