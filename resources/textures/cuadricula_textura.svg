@@ -1,0 +1,34 @@
+<svg width="1753" height="1080" viewBox="0 0 1753 1080" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<rect width="1753" height="1080" fill="url(#pattern0_137_2)"/>
+<defs>
+<pattern id="pattern0_137_2" patternUnits="userSpaceOnUse" patternTransform="matrix(449.117 0 0 272.039 651.803 403.842)" preserveAspectRatio="none" viewBox="-0.125 -0.125 404.61 245.08" width="1" height="1">
+<use xlink:href="#pattern0_137_2_inner" transform="translate(-404.61 -245.08)"/>
+<use xlink:href="#pattern0_137_2_inner" transform="translate(0 -245.08)"/>
+<use xlink:href="#pattern0_137_2_inner" transform="translate(-404.61 0)"/>
+<g id="pattern0_137_2_inner">
+<g style="mix-blend-mode:overlay">
+<path d="M366.42 0V243.28" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M335.89 0V243.28" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M305.35 0V243.28" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M274.82 0V243.28" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M244.28 0V243.28" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M213.75 0V243.28" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M183.21 0V243.28" stroke="#FF5B23" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M152.68 0V243.28" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M122.14 0V243.28" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M91.61 0V243.28" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M61.07 0V243.28" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M30.54 0V243.28" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M0 30.26H404.61" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M0 60.52H404.61" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M0 90.79H404.61" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M0 121.64H404.61" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M0 152.5H404.61" stroke="#FFCC00" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M0 183.36H404.61" stroke="#B4B4ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M0 183.36H404.61" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M0 214.22H404.61" stroke="#ADE6ED" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+<path d="M0 245.08H404.61" stroke="#FF5B23" stroke-width="0.25" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0.1 1"/>
+</g>
+</g>
+</pattern></defs>
+</svg>
