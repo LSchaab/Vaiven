@@ -49,3 +49,46 @@ window.reshuffleErratic = () => {
         });
     });
 };
+
+// === Section switching ===
+// Page scroll is locked (styles.css). The side menu is the only way to
+// navigate. Click → swap which section has [data-active]. URL hash kept in
+// sync so deep links and the browser's back/forward buttons still work.
+
+const SECTIONS = ["hero", "portfolio", "contacto", "nosotros", "destacados"];
+
+function setActiveSection(id) {
+    if (!SECTIONS.includes(id)) id = "hero";
+    document.querySelectorAll("main > section").forEach((section) => {
+        if (section.id === id) section.setAttribute("data-active", "");
+        else section.removeAttribute("data-active");
+    });
+    document.querySelectorAll("nav a").forEach((link) => {
+        const href = link.getAttribute("href") || "";
+        if (href === `#${id}`) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
+    });
+}
+
+// Intercept any in-page anchor click (menu + logo). Stop the browser from
+// trying to scroll to the target, switch sections instead. Links whose hash
+// doesn't match a section (e.g. placeholder href="#" on the bento cards)
+// are short-circuited so they don't accidentally navigate away.
+document.querySelectorAll('a[href^="#"]').forEach((link) => {
+    link.addEventListener("click", (e) => {
+        const href = link.getAttribute("href") || "";
+        const id = href.slice(1);
+        e.preventDefault();
+        if (!SECTIONS.includes(id)) return;
+        history.replaceState(null, "", `#${id}`);
+        setActiveSection(id);
+    });
+});
+
+// Initial state — read from URL so deep links land on the right section.
+setActiveSection((location.hash || "#hero").slice(1));
+
+// Sync when the user uses browser back/forward.
+window.addEventListener("hashchange", () => {
+    setActiveSection((location.hash || "#hero").slice(1));
+});
