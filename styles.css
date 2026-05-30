@@ -12,33 +12,49 @@ html, body {
 }
 
 :root {
-    /* Mode 1 — Dark / Electric (per CLAUDE.md) */
-    --bg-primary:       #1a237e;
-    --bg-section-alt:   #511f99;
-    --bg-section-2:     #167a72;
-    --bg-contacto:      #b4b4ed;  /* Violeta Claro — locked across themes */
-    --accent-primary:   #ff5b23;
-    --accent-secondary: #ffcc00;
-    --accent-tertiary:  #3a39ff;
-    --text-primary:     #ffffff;
-    --text-muted:       #b4b4ed;
-    --highlight:        #ade6ed;
+    /* === Design tokens — exported from "Mode 1.tokens.json" (Figma) ===
+       SINGLE SOURCE OF TRUTH for color. Only these values may be used on the
+       site. Do not introduce any other color without Luly's explicit OK. */
+    --naranja:          #FF5B23;
+    --verde-agua-claro: #ADE6ED;
+    --azul:             #3A39FF;  /* electric blue — bg of Hero, Portfolio & Nosotros */
+    --lila:             #B4B4ED;
+    --amarillo:         #FFCC00;
+    --verde:            #167A72;
+    --azul-oscuro:      #1A237E;
+    --violeta-claro:    #511F99;
+    --gris-claro:       #D9D2CC;
+    --negro:            #000000;
+    --blanco:           #FFFFFF;
+
+    /* === Semantic roles — map UI meaning onto the tokens above ===
+       Components reference these (never a raw hex). */
+    --bg-primary:       var(--azul-oscuro);
+    --bg-section-alt:   var(--violeta-claro);
+    --bg-section-2:     var(--verde);
+    --bg-contacto:      var(--lila);
+    --accent-primary:   var(--naranja);
+    --accent-secondary: var(--amarillo);
+    --text-primary:     var(--blanco);
+    --text-muted:       var(--lila);
+    --highlight:        var(--verde-agua-claro);
 
     /* Cross-section blend zone */
     --fade-zone: 220px;
 }
 
+/* Mode switching is PAUSED for now (per Luly). Kept here, mapped to tokens,
+   so it stays palette-compliant if we revisit a second mode later. */
 [data-theme="light"] {
-    --bg-primary:       #d9d2cc;
-    --bg-section-alt:   #b4b4ed;
-    --bg-section-2:     #ade6ed;
-    --bg-contacto:      #b4b4ed;  /* Violeta Claro — same in both modes */
-    --accent-primary:   #ff5b23;
-    --accent-secondary: #ffcc00;
-    --accent-tertiary:  #3a39ff;
-    --text-primary:     #1a237e;
-    --text-muted:       #511f99;
-    --highlight:        #167a72;
+    --bg-primary:       var(--gris-claro);
+    --bg-section-alt:   var(--lila);
+    --bg-section-2:     var(--verde-agua-claro);
+    --bg-contacto:      var(--lila);
+    --accent-primary:   var(--naranja);
+    --accent-secondary: var(--amarillo);
+    --text-primary:     var(--azul-oscuro);
+    --text-muted:       var(--violeta-claro);
+    --highlight:        var(--verde);
 }
 
 body {
@@ -54,7 +70,7 @@ header {
     position: sticky;
     top: 0;
     z-index: 20;
-    background-color: #d0e8ff;
+    background-color: var(--blanco);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -80,7 +96,7 @@ header .logo img {
 main {
     grid-column: 1;
     grid-row: 2;
-    background-color: #ffffff;
+    background-color: var(--blanco);
     position: relative;  /* anchor for absolutely-positioned sections */
     overflow: hidden;
 }
@@ -97,7 +113,7 @@ section {
     justify-content: center;
     font-size: 2rem;
     font-family: sans-serif;
-    color: #aaa;
+    color: var(--gris-claro);  /* placeholder text for stub sections */
     visibility: hidden;
     opacity: 0;
     transform: translateY(24px);
@@ -158,15 +174,15 @@ nav a[aria-current] {
     -webkit-mask-image: linear-gradient(
         to bottom,
         transparent 0,
-        #000 var(--fade-zone),
-        #000 calc(100% - var(--fade-zone)),
+        var(--negro) var(--fade-zone),
+        var(--negro) calc(100% - var(--fade-zone)),
         transparent 100%
     );
     mask-image: linear-gradient(
         to bottom,
         transparent 0,
-        #000 var(--fade-zone),
-        #000 calc(100% - var(--fade-zone)),
+        var(--negro) var(--fade-zone),
+        var(--negro) calc(100% - var(--fade-zone)),
         transparent 100%
     );
 }
@@ -187,16 +203,16 @@ nav a[aria-current] {
 }
 
 #hero {
-    --section-bg: var(--bg-primary);
-    --next-section-bg: var(--bg-primary);
+    --section-bg: var(--azul);
+    --next-section-bg: var(--azul);
     --section-texture: url("resources/textures/grunge_texture.png");
     --texture-opacity: 0.3;
     --texture-blend: multiply;
 }
 
 #portfolio {
-    --section-bg: var(--bg-primary);
-    --prev-section-bg: var(--bg-primary);
+    --section-bg: var(--azul);
+    --prev-section-bg: var(--azul);
     --section-texture: url("resources/textures/cuadricula_textura.svg");
     /* TODO(human): tune the cuadricula visual — see Learn by Doing below */
 
@@ -237,7 +253,7 @@ nav a[aria-current] {
     overflow: hidden;
     /* Placeholder. Replace `background` with `background-image: url(...)` once
        you have the B&W photo for each category. Keep `background-size: cover`. */
-    background: linear-gradient(135deg, #3a3a3a, #1f1f1f);
+    background: linear-gradient(135deg, var(--violeta-claro), var(--negro));
     background-size: cover;
     background-position: center;
     color: var(--text-primary);
@@ -268,7 +284,7 @@ nav a[aria-current] {
     background-color: var(--text-primary);
     color: var(--bg-primary);
     padding: 0.9rem 2.5rem;
-    border-radius: 999px;
+    border-radius: 8px;
     font-family: "Montserrat Alternates", system-ui, sans-serif;
     font-weight: 600;
     font-size: 1rem;
@@ -288,11 +304,63 @@ nav a[aria-current] {
     --texture-opacity: 1;
     --texture-blend: screen;
     color: var(--bg-primary);  /* Azul Oscuro — readable on light violet */
+
+    /* Local color tokens for the contact titles. The contact background is the
+       same light violet in both themes, so these values work in dark + light. */
+    --contacto-title:    var(--violeta-claro);    /* big headline */
+    --contacto-subtitle: var(--azul-oscuro);      /* subtitle */
+
+    /* Override the centered flex layout (base section rule) so the two titles
+       can anchor to top-left and bottom-right. */
+    align-items: stretch;
+    justify-content: stretch;
 }
+
+/* Contact layout: title pinned top-left, subtitle bottom-right.
+   Column + space-between stacks gracefully on narrow screens. */
+.contacto-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: clamp(2rem, 6vw, 6rem);
+    padding-right: clamp(4rem, 10vw, 9rem);  /* breathing room for the right-side nav */
+    box-sizing: border-box;
+}
+
+/* Big headline — uppercase, left-aligned, violet, with one orange accent letter.
+   Uses the .erratic effect (applied per-span by script.js). */
+.contacto-title {
+    align-self: flex-start;
+    color: var(--contacto-title);
+    font-size: clamp(2.5rem, 9vw, 7rem);
+    line-height: 0.9;
+    text-transform: uppercase;
+}
+
+.contacto-title .line { display: block; }
+.contacto-title .line-2 { margin-left: 0.5em; }   /* slight indent, like the reference */
+.contacto-title .line-3 { margin-left: 0.25em; }
+
+/* Subtitle — blue, italic, bottom-right, with a thin/thick weight contrast. */
+.contacto-subtitle {
+    align-self: flex-end;
+    max-width: 100%;
+    color: var(--contacto-subtitle);
+    font-style: italic;
+    font-size: clamp(1.25rem, 3vw, 2.5rem);
+    line-height: 1.1;
+    text-align: right;
+}
+
+/* Stack the two lines; nowrap keeps each line whole so words never break
+   mid-letter (the erratic effect turns every character into its own box). */
+.contacto-subtitle .erratic { display: block; white-space: nowrap; }
 
 /* Placeholder backgrounds until these sections have real content + textures. */
 #nosotros {
-    background-color: var(--bg-section-2);  /* Verde */
+    background-color: var(--azul);  /* Azul eléctrico */
     color: var(--text-primary);
 }
 
@@ -337,8 +405,14 @@ nav a[aria-current] {
 }
 
 .hero-headline {
+    position: relative;
+    z-index: 2;  /* above the collage cutouts */
     width: min(1100px, 90%);
     margin: 0 auto;
+    /* Nudge toward center so it clears the megaphone on the left.
+       --px/--py are the pointer-parallax offsets set by script.js. */
+    transform: translateX(clamp(1rem, 6vw, 6rem)) translate(var(--px, 0px), var(--py, 0px));
+    transition: transform 0.2s ease-out;
     color: var(--accent-primary);
     font-size: clamp(40px, 7vw, 96px);
     line-height: 1.05;
@@ -373,6 +447,33 @@ nav a[aria-current] {
     margin-left: 4em;
 }
 
+/* === Hero collage cutouts ===
+   Megaphone (top-left) + brain (bottom-right), sitting above the texture
+   (z-index -2/-1) but behind the headline (z-index 2). Decorative only. */
+.hero-collage {
+    position: absolute;
+    z-index: 1;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+    /* Smooth the pointer-parallax movement (--px/--py set by script.js). */
+    transition: transform 0.2s ease-out;
+}
+
+.hero-megafono {
+    top: clamp(2rem, 9vh, 7rem);
+    left: clamp(-2rem, 1vw, 2rem);
+    width: clamp(170px, 30vw, 460px);
+    transform: translate(var(--px, 0px), var(--py, 0px)) rotate(-4deg);
+}
+
+.hero-cerebro {
+    right: clamp(-1rem, 2vw, 3rem);
+    bottom: clamp(2rem, 9vh, 7rem);
+    width: clamp(200px, 33vw, 540px);
+    transform: translate(var(--px, 0px), var(--py, 0px)) rotate(5deg);
+}
+
 nav {
     grid-column: 2;
     grid-row: 2;
@@ -383,7 +484,7 @@ nav {
     height: calc(100vh - 80px);
     width: 100%;
     box-sizing: border-box;
-    background-color: #ffe8d0;
+    background-color: var(--blanco);
     display: flex;
     flex-direction: column;
     justify-content: center;

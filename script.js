@@ -92,3 +92,45 @@ setActiveSection((location.hash || "#hero").slice(1));
 window.addEventListener("hashchange", () => {
     setActiveSection((location.hash || "#hero").slice(1));
 });
+
+// === Hero pointer parallax ===
+// The page doesn't scroll, so depth is driven by cursor position instead.
+// Each layer has a `depth` (px of travel); we write --px/--py custom properties
+// that the CSS transforms consume, so the elements' own rotation/offset are
+// preserved. Larger depth = "closer" = moves more. Movement is opposite to the
+// cursor for a "looking into the scene" feel. Skipped if the user prefers
+// reduced motion. Updates are throttled to one per animation frame.
+const hero = document.getElementById("hero");
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+if (hero && !reduceMotion) {
+    const layers = [
+        { el: hero.querySelector(".hero-megafono"), depth: 28 },
+        { el: hero.querySelector(".hero-cerebro"),  depth: 38 },
+        { el: hero.querySelector(".hero-headline"), depth: 10 },
+    ].filter((layer) => layer.el);
+
+    let pointerX = 0;
+    let pointerY = 0;
+    let frameQueued = false;
+
+    function applyParallax() {
+        frameQueued = false;
+        // Normalized -0.5..0.5 offset from the viewport center.
+        const nx = pointerX / window.innerWidth - 0.5;
+        const ny = pointerY / window.innerHeight - 0.5;
+        layers.forEach(({ el, depth }) => {
+            el.style.setProperty("--px", `${(-nx * depth).toFixed(1)}px`);
+            el.style.setProperty("--py", `${(-ny * depth).toFixed(1)}px`);
+        });
+    }
+
+    window.addEventListener("mousemove", (e) => {
+        pointerX = e.clientX;
+        pointerY = e.clientY;
+        if (!frameQueued) {
+            frameQueued = true;
+            requestAnimationFrame(applyParallax);
+        }
+    });
+}

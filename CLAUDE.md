@@ -64,7 +64,7 @@ Push to `main` → site updates automatically.
 | Markup | HTML5 | ✅ Confirmed |
 | Styling | CSS3 (custom properties, mobile-first) | ✅ Confirmed |
 | Interactivity | Vanilla JavaScript | ✅ Confirmed |
-| Theme switching | CSS custom properties + JS class toggle | ✅ Confirmed (two color modes) |
+| Theme switching | CSS custom properties (single mode) | ⏸ Paused — Mode 1 only |
 | Additional tools | TBD per feature | 🔄 As needed |
 
 **Rule**: Default to vanilla. Only add a library when there's a clear reason — document why.
@@ -83,59 +83,53 @@ coexisting with distortion, noise, and raw energy.
 
 ### Color Palette (exact values)
 
-| Name | HEX | RGB | Role |
-|---|---|---|---|
-| Naranja | `#ff5b23` | 255, 91, 35 | Primary accent — headlines, CTAs |
-| Cyan | `#ade6ed` | 173, 230, 237 | Secondary accent / highlight |
-| Azul | `#3a39ff` | 58, 57, 255 | Strong accent / interactive |
-| Violeta Claro | `#b4b4ed` | 180, 180, 237 | Backgrounds, subtle sections |
-| Amarillo | `#ffcc00` | 255, 204, 0 | Highlight / energy accent |
-| Verde | `#167a72` | 22, 122, 114 | Section background / contrast |
-| Azul Oscuro | `#1a237e` | 26, 35, 126 | Dark backgrounds / text on light |
-| Violeta | `#511f99` | 81, 31, 153 | Section backgrounds / dark mode |
-| Gris Claro | `#d9d2cc` | 217, 210, 204 | Light mode backgrounds / neutral |
+> **SINGLE SOURCE OF TRUTH:** `Mode 1.tokens.json` (Figma export). These are the **only**
+> colors allowed on the site. Do not introduce any other color without explicit approval.
+> In code they live as CSS custom properties named after each token (e.g. `var(--azul)`).
+
+| Token | CSS variable | HEX | RGB | Group |
+|---|---|---|---|---|
+| Naranja | `--naranja` | `#FF5B23` | 255, 91, 35 | Primary |
+| Verde agua claro | `--verde-agua-claro` | `#ADE6ED` | 173, 230, 237 | Primary |
+| Azul | `--azul` | `#3A39FF` | 58, 57, 255 | Primary |
+| Lila | `--lila` | `#B4B4ED` | 180, 180, 237 | Primary |
+| Amarillo | `--amarillo` | `#FFCC00` | 255, 204, 0 | Primary |
+| Verde | `--verde` | `#167A72` | 22, 122, 114 | Secondary |
+| Azul oscuro | `--azul-oscuro` | `#1A237E` | 26, 35, 126 | Secondary |
+| Violeta claro | `--violeta-claro` | `#511F99` | 81, 31, 153 | Secondary |
+| Gris claro | `--gris-claro` | `#D9D2CC` | 217, 210, 204 | Secondary |
+| Negro | `--negro` | `#000000` | 0, 0, 0 | Neutral |
+| Blanco | `--blanco` | `#FFFFFF` | 255, 255, 255 | Neutral |
 
 ---
 
-### Color Modes
+### Color usage
 
-The site has **two switchable color themes** triggered by a button.
-Both share the same typographic and layout system — only colors change.
-Always implement via CSS custom properties. Never hardcode hex values in components.
-Theme switching: toggle `data-theme="light"` on `<html>`.
+**Always reference a token.** Never hardcode a hex in a component. Semantic role variables
+(`--bg-primary`, `--accent-primary`, `--text-primary`, etc.) map UI meaning onto the tokens
+above — defined in `styles.css :root`.
 
-#### Mode 1 — Dark / Electric
 ```css
 :root {
-  --bg-primary:      #1a237e;  /* Azul Oscuro */
-  --bg-section-alt:  #511f99;  /* Violeta */
-  --bg-section-2:    #167a72;  /* Verde */
-  --accent-primary:  #ff5b23;  /* Naranja */
-  --accent-secondary:#ffcc00;  /* Amarillo */
-  --accent-tertiary: #3a39ff;  /* Azul */
-  --text-primary:    #ffffff;
-  --text-muted:      #b4b4ed;  /* Violeta Claro */
-  --highlight:       #ade6ed;  /* Cyan */
+  --bg-primary:       var(--azul-oscuro);
+  --bg-section-alt:   var(--violeta-claro);
+  --bg-section-2:     var(--verde);
+  --bg-contacto:      var(--lila);
+  --accent-primary:   var(--naranja);
+  --accent-secondary: var(--amarillo);
+  --text-primary:     var(--blanco);
+  --text-muted:       var(--lila);
+  --highlight:        var(--verde-agua-claro);
 }
 ```
 
-#### Mode 2 — Light / Washed
-```css
-[data-theme="light"] {
-  --bg-primary:      #d9d2cc;  /* Gris Claro */
-  --bg-section-alt:  #b4b4ed;  /* Violeta Claro */
-  --bg-section-2:    #ade6ed;  /* Cyan */
-  --accent-primary:  #ff5b23;  /* Naranja — stays the same */
-  --accent-secondary:#ffcc00;  /* Amarillo — stays the same */
-  --accent-tertiary: #3a39ff;  /* Azul — stays the same */
-  --text-primary:    #1a237e;  /* Azul Oscuro */
-  --text-muted:      #511f99;  /* Violeta */
-  --highlight:       #167a72;  /* Verde */
-}
-```
-
-> Naranja, Amarillo, and Azul are **consistent across both modes** — they're the brand's energy.
-> The warm/cool backgrounds and text values are what flip.
+> **Mode switching is PAUSED for now.** We're working in **Mode 1** only. The
+> `[data-theme="light"]` block still exists in `styles.css` (mapped to tokens) for a possible
+> future second mode, but don't invest in it unless asked.
+>
+> **Note on blues:** there are two — **Azul `#3A39FF`** (electric blue, Primary) is the
+> background of Hero, Portfolio & Nosotros. **Azul oscuro `#1A237E`** (Secondary) is the
+> Contacto subtitle (and the default `--bg-primary`).
 
 ---
 
@@ -177,11 +171,12 @@ Theme switching: toggle `data-theme="light"` on `<html>`.
 - **Navigation**: Vertical sidebar nav on the right side (persistent across scroll)
 - **Logo**: Top center, bold condensed wordmark "VAI VEN"
 - **Hero**: Full-bleed gradient background with large typographic headline + collage elements
-- **Sections**: Full-width, each with its own background from the palette
+- **Sections**: Full-width, each with its own palette background — Hero / Portfolio /
+  Nosotros = Azul `#3A39FF`, Contacto = Lila `#B4B4ED`, Destacados = Violeta claro `#511F99`
 - **Portfolio cards**: Overlapping / masonry-style with hover effects
-- **CTA buttons**: Rounded pill style, high contrast
+- **CTA buttons**: 8px border-radius (soft corners), high contrast
 - **Eye motif**: Recurring graphic element top-right — visual brand mark
-- **Theme toggle**: Single button switching Dark ↔ Light mode
+- **Theme toggle**: ⏸ Paused — working in Mode 1 only for now
 - **Tone of voice**: Bold, irreverent, direct — Argentine Spanish informal register
 
 ---
@@ -210,7 +205,7 @@ Theme switching: toggle `data-theme="light"` on `<html>`.
 
 ## How Claude Should Help on This Project
 
-1. **Code**: Clean, readable HTML/CSS/JS with brief inline comments. Always consider both color modes.
+1. **Code**: Clean, readable HTML/CSS/JS with brief inline comments. Work in Mode 1 only (mode switching is paused).
 2. **Design decisions**: Offer options with trade-offs. Reference the "order vs chaos" tension.
 3. **Team handoffs**: Add a short plain-English summary when producing something teammates will implement.
 4. **Tech choices**: Problem → options → simplest solution that works.
@@ -220,7 +215,7 @@ Theme switching: toggle `data-theme="light"` on `<html>`.
 
 ## Open Questions / Decisions Pending
 
-- [ ] Scroll / entrance animations? (parallax, fade-ins, etc.)
+- [x] Hero parallax → **pointer-driven** (page doesn't scroll); respects reduced-motion. Other entrance animations TBD.
 - [ ] Print/PDF export requirement for jury?
 - [ ] More pages beyond the 5 listed?
 
@@ -234,5 +229,7 @@ Theme switching: toggle `data-theme="light"` on `<html>`.
 | 2026-04-27 | Two color modes via CSS custom properties | Design requirement from brief |
 | 2026-04-27 | Visual direction: Cinético · Extremos · Intensidad · Movimiento · Tensión | Defined in moodboard |
 | 2026-04-27 | Full color palette locked (9 colors) | Defined in brand guidelines |
+| 2026-05-30 | Palette locked to `Mode 1.tokens.json` (Figma) — 11 tokens, single source of truth | Strict brand fidelity |
+| 2026-05-30 | Azul eléctrico `#3A39FF` = fondo de Hero / Portfolio / Nosotros; Azul oscuro `#1A237E` = subtítulo de Contacto + `--bg-primary` | Decisión de diseño de Luly |
 | 2026-04-27 | Font: Montserrat Alternates only | Single typeface — hierarchy via weight, size, case |
 | 2026-04-27 | Hosting: GitHub Pages | Simple, free, fits the stack |
