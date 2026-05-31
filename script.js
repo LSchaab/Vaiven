@@ -109,6 +109,8 @@ if (!reduceMotion) {
         { sel: ".hero-headline",       depth: 10 },
         { sel: ".contacto-hand-left",  depth: 22 },
         { sel: ".contacto-hand-right", depth: 28 },
+        { sel: ".portfolio-eye-tr",    depth: 26 },
+        { sel: ".portfolio-eye-bl",    depth: 32 },
     ]
         .map((layer) => ({ el: document.querySelector(layer.sel), depth: layer.depth }))
         .filter((layer) => layer.el);

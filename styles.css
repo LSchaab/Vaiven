@@ -235,20 +235,21 @@ nav a[aria-current] {
     /* Light areas (incl. the white paper edge) drop into the blue; only the
        dark halftone remains — the duotone look from the reference. */
     mix-blend-mode: multiply;
+    transition: transform 0.2s ease-out;  /* smooth the pointer parallax */
 }
 
 .portfolio-eye-tr {  /* top-right */
     top: clamp(-1rem, 1vh, 1.5rem);
     right: clamp(-2rem, -1vw, 0rem);
     width: clamp(150px, 17vw, 280px);
-    transform: rotate(-8deg);
+    transform: translate(var(--px, 0px), var(--py, 0px)) rotate(-8deg);
 }
 
 .portfolio-eye-bl {  /* bottom-left */
     bottom: clamp(-1rem, 0vh, 1.5rem);
     left: clamp(-2rem, -1vw, 0rem);
     width: clamp(150px, 17vw, 280px);
-    transform: rotate(8deg);
+    transform: translate(var(--px, 0px), var(--py, 0px)) rotate(8deg);
 }
 
 /* Keep the portfolio content above the eyes. */
