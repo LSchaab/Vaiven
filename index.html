@@ -84,7 +84,119 @@
                 </a>
             </div>
         </section>
-        <section id="nosotros">nosotros</section>
+        <section id="nosotros">
+
+            <!-- Background grid texture -->
+            <div class="nosotros-grid-bg" aria-hidden="true"></div>
+
+            <!-- Spotify badge — a green tab pinned top-right. It holds Spotify's
+                 "now playing" equalizer bars; on hover it expands outward to
+                 reveal them, and clicking opens our playlist.
+                 TODO: replace href="#" with the real Spotify playlist URL. -->
+            <a href="#" class="nosotros-spotify"
+               aria-label="Escuchá nuestra playlist en Spotify"
+               target="_blank" rel="noopener">
+                <span class="nosotros-eq" aria-hidden="true">
+                    <span class="nosotros-eq-bar"></span>
+                    <span class="nosotros-eq-bar"></span>
+                    <span class="nosotros-eq-bar"></span>
+                    <span class="nosotros-eq-bar"></span>
+                </span>
+            </a>
+
+            <!-- LAYER 1: Header -->
+            <div class="nosotros-header">
+
+                <h2 class="nosotros-title">
+
+                    <img src="resources/nosotros/mano_copa.png"
+                         class="nosotros-copa nosotros-copa--left"
+                         alt="" aria-hidden="true" decoding="async">
+
+                    <span class="nosotros-title-lines">
+                        <span class="nosotros-title-line1">
+                            <span class="erratic" data-text="DREAM">DREAM</span>
+                        </span>
+                        <span class="nosotros-title-line2">
+                            <span class="erratic" data-text="TEAM">TEAM</span>
+                        </span>
+                    </span>
+
+                    <img src="resources/nosotros/mano_copa.png"
+                         class="nosotros-copa nosotros-copa--right"
+                         alt="" aria-hidden="true" decoding="async">
+
+                </h2>
+
+                <p class="nosotros-tagline">"Esto somos, es lo que hay"</p>
+
+            </div>
+
+            <!-- LAYER 2: Team members -->
+            <div class="nosotros-team">
+
+                <div class="nosotros-member">
+                    <div class="nosotros-photo-wrap nosotros-photo-naranja">
+                        <img src="resources/nosotros/Vicky.png"
+                             alt="Victoria Bettaglio"
+                             class="nosotros-photo" decoding="async">
+                    </div>
+                    <span class="nosotros-name">Victoria Bettaglio</span>
+                    <span class="nosotros-role">Diseñadora gráfica</span>
+                </div>
+
+                <div class="nosotros-member">
+                    <div class="nosotros-photo-wrap">
+                        <img src="resources/nosotros/Luly.png"
+                             alt="Lourdes Schaab"
+                             class="nosotros-photo" decoding="async">
+                    </div>
+                    <span class="nosotros-name">Lourdes Schaab</span>
+                    <span class="nosotros-role">Project Manager</span>
+                </div>
+
+                <div class="nosotros-member">
+                    <div class="nosotros-photo-wrap nosotros-photo-naranja">
+                        <img src="resources/nosotros/Matias.png"
+                             alt="Matías Schifano"
+                             class="nosotros-photo" decoding="async">
+                    </div>
+                    <span class="nosotros-name">Matías Schifano</span>
+                    <span class="nosotros-role">Fotografía y vídeo</span>
+                </div>
+
+                <div class="nosotros-member">
+                    <div class="nosotros-photo-wrap">
+                        <img src="resources/nosotros/Agus.png"
+                             alt="Agustina Martínez"
+                             class="nosotros-photo" decoding="async">
+                    </div>
+                    <span class="nosotros-name">Agustina Martínez</span>
+                    <span class="nosotros-role">Directora creativa</span>
+                </div>
+
+                <div class="nosotros-member">
+                    <div class="nosotros-photo-wrap nosotros-photo-naranja">
+                        <img src="resources/nosotros/Bautista.png"
+                             alt="Bautista Goitia"
+                             class="nosotros-photo" decoding="async">
+                    </div>
+                    <span class="nosotros-name">Bautista Goitia</span>
+                    <span class="nosotros-role">Social Media Manager</span>
+                </div>
+
+            </div>
+
+            <!-- LAYER 3: CTA -->
+            <div class="nosotros-cta">
+                <div class="nosotros-diamond" aria-hidden="true"></div>
+                <button class="nosotros-btn">Play al manifesto</button>
+                <p class="nosotros-sublink">
+                    Si te da la <strong>manija</strong>
+                </p>
+            </div>
+
+        </section>
         <section id="destacados">destacados</section>
     </main>
     <nav aria-label="Principal">
