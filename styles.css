@@ -205,7 +205,7 @@ nav a[aria-current] {
 #hero {
     --section-bg: var(--azul);
     --next-section-bg: var(--azul);
-    --section-texture: url("resources/textures/grunge_texture.png");
+    --section-texture: url("resources/textures/grunge_texture.webp");
     --texture-opacity: 0.3;
     --texture-blend: multiply;
 }
@@ -340,7 +340,7 @@ nav a[aria-current] {
 
 #contacto {
     --section-bg: var(--bg-contacto);
-    --section-texture: url("resources/textures/grunge_texture_contacto.png");
+    --section-texture: url("resources/textures/grunge_texture_contacto.webp");
     --texture-opacity: 1;
     --texture-blend: screen;
     color: var(--bg-primary);  /* Azul Oscuro — readable on light violet */
