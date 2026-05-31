@@ -224,12 +224,51 @@ nav a[aria-current] {
     font-family: "Montserrat Alternates", system-ui, sans-serif;
 }
 
+/* === Eye motif === Two different cutouts at opposite corners, blended into
+   the blue background and sitting behind the cards. Decorative only. */
+.portfolio-eye {
+    position: absolute;
+    z-index: 0;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+    /* Light areas (incl. the white paper edge) drop into the blue; only the
+       dark halftone remains — the duotone look from the reference. */
+    mix-blend-mode: multiply;
+}
+
+.portfolio-eye-tr {  /* top-right */
+    top: clamp(-1rem, 1vh, 1.5rem);
+    right: clamp(-2rem, -1vw, 0rem);
+    width: clamp(150px, 17vw, 280px);
+    transform: rotate(-8deg);
+}
+
+.portfolio-eye-bl {  /* bottom-left */
+    bottom: clamp(-1rem, 0vh, 1.5rem);
+    left: clamp(-2rem, -1vw, 0rem);
+    width: clamp(150px, 17vw, 280px);
+    transform: rotate(8deg);
+}
+
+/* Keep the portfolio content above the eyes. */
+#portfolio .portfolio-title,
+#portfolio .bento-grid,
+#portfolio .cta-pill {
+    position: relative;
+    z-index: 1;
+}
+
 .portfolio-title {
     font-size: clamp(1.5rem, 3.5vw, 3rem);
     text-align: center;
     line-height: 1.1;
-    max-width: 18ch;
+    max-width: 100%;
 }
+
+/* Force the two-line split; nowrap keeps each line whole (the erratic effect
+   makes every letter its own box, so a narrow line would break mid-word). */
+.portfolio-title .erratic { display: block; white-space: nowrap; }
 
 /* Bento grid — 3 columns, 2 rows. Left column splits in two landscape cards;
    middle and right columns are tall portrait cards spanning both rows. */
@@ -308,7 +347,7 @@ nav a[aria-current] {
     /* Local color tokens for the contact titles. The contact background is the
        same light violet in both themes, so these values work in dark + light. */
     --contacto-title:    var(--violeta-claro);    /* big headline */
-    --contacto-subtitle: var(--azul-oscuro);      /* subtitle */
+    --contacto-subtitle: var(--azul);             /* subtitle — electric blue, per reference */
 
     /* Override the centered flex layout (base section rule) so the two titles
        can anchor to top-left and bottom-right. */
@@ -319,12 +358,15 @@ nav a[aria-current] {
 /* Contact layout: title pinned top-left, subtitle bottom-right.
    Column + space-between stacks gracefully on narrow screens. */
 .contacto-content {
+    position: relative;
+    z-index: 2;  /* title + subtitle above the hands and logos */
     width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     gap: 2rem;
     padding: clamp(2rem, 6vw, 6rem);
+    padding-top: clamp(1rem, 3vw, 2.5rem);   /* lift the title toward the top */
     padding-right: clamp(4rem, 10vw, 9rem);  /* breathing room for the right-side nav */
     box-sizing: border-box;
 }
@@ -333,8 +375,10 @@ nav a[aria-current] {
    Uses the .erratic effect (applied per-span by script.js). */
 .contacto-title {
     align-self: flex-start;
+    margin-top: clamp(1rem, 3vw, 3rem);    /* nudge down */
+    margin-left: clamp(1rem, 5vw, 5rem);   /* nudge right */
     color: var(--contacto-title);
-    font-size: clamp(2.5rem, 9vw, 7rem);
+    font-size: clamp(2rem, 7vw, 5.5rem);
     line-height: 0.9;
     text-transform: uppercase;
 }
@@ -357,6 +401,73 @@ nav a[aria-current] {
 /* Stack the two lines; nowrap keeps each line whole so words never break
    mid-letter (the erratic effect turns every character into its own box). */
 .contacto-subtitle .erratic { display: block; white-space: nowrap; }
+
+/* === Social logos === Instagram + TikTok grunge cutouts, centered, clickable.
+   Staggered vertically for the collage feel of the reference. */
+.contacto-social {
+    position: absolute;
+    z-index: 3;  /* above .contacto-content (z-index 2) so hover/clicks reach the logos */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: clamp(1.5rem, 6vw, 6rem);
+}
+
+.contacto-social-link {
+    display: block;
+    transition: transform 0.25s ease;
+    /* --stagger holds each logo's vertical offset so hover can preserve it. */
+    transform: translateY(var(--stagger, 0));
+}
+
+.contacto-social-link img {
+    display: block;
+    width: clamp(170px, 24vw, 360px);
+    height: auto;
+}
+
+.contacto-ig     { --stagger: 4.5rem;  --tilt: -7deg; }   /* lower, tilts left  */
+.contacto-tiktok { --stagger: -2.5rem; --tilt: 7deg; }    /* higher, tilts right */
+
+/* Hover: each logo keeps its height, grows a bit and twists (opposite ways). */
+.contacto-social-link:hover,
+.contacto-social-link:focus-visible {
+    transform: translateY(var(--stagger, 0)) scale(1.08) rotate(var(--tilt, -4deg));
+    outline: none;
+}
+
+/* === Pointing hands === Decorative, blended into the lila background so they
+   read as a faint purple watermark (like the reference). Behind everything. */
+.contacto-hand {
+    position: absolute;
+    z-index: 0;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.35;
+    mix-blend-mode: luminosity;
+    transition: transform 0.2s ease-out;  /* smooth the pointer parallax */
+}
+
+/* Top hand: tucked into the top-left corner, slightly tilted. Pushed off the
+   top/left edges so the wrist (bottom-left) is clipped by main's overflow: hidden. */
+.contacto-hand-left {
+    top: clamp(4rem, 10vh, 10rem);
+    left: clamp(-6rem, -5vw, -2rem);
+    width: clamp(220px, 30vw, 480px);
+    transform: translate(var(--px, 0px), var(--py, 0px)) rotate(24deg);
+}
+
+/* Bottom hand: same image mirrored → points up-left toward the center. Tucked
+   into the bottom-right corner, with the wrist clipped by the edge. */
+.contacto-hand-right {
+    right: clamp(-10rem, -8vw, -4rem);
+    bottom: clamp(-5rem, -4vw, -1rem);
+    width: clamp(240px, 32vw, 520px);
+    transform: translate(var(--px, 0px), var(--py, 0px)) scaleX(-1) rotate(-8deg);
+}
 
 /* Placeholder backgrounds until these sections have real content + textures. */
 #nosotros {

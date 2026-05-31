@@ -128,8 +128,8 @@ above — defined in `styles.css :root`.
 > future second mode, but don't invest in it unless asked.
 >
 > **Note on blues:** there are two — **Azul `#3A39FF`** (electric blue, Primary) is the
-> background of Hero, Portfolio & Nosotros. **Azul oscuro `#1A237E`** (Secondary) is the
-> Contacto subtitle (and the default `--bg-primary`).
+> background of Hero, Portfolio & Nosotros, and the Contacto subtitle. **Azul oscuro
+> `#1A237E`** (Secondary) is the default `--bg-primary`.
 
 ---
 
