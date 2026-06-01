@@ -589,6 +589,16 @@ nav a[aria-current] {
     flex-direction: column;
     align-items: center;
     gap: 0.5rem;
+
+    /* TODO(human): dial in the two title tweaks.
+       --title-rise : negative value lifts the whole title block up
+                      (e.g. -1.5rem, or a responsive clamp(...)).
+       --team-shift : how far TEAM slides right of center
+                      (e.g. 2rem, 8vw, clamp(1rem, 6vw, 5rem)). */
+    --title-rise: -4rem;                    /* lifts the whole title block up */
+    --team-shift: clamp(2rem, 7vw, 6rem);   /* TEAM slides right of center */
+
+    transform: translateY(var(--title-rise, 0));
 }
 
 /* Title — stacked DREAM / TEAM words, centered. Position context for the cups
@@ -611,7 +621,20 @@ nav a[aria-current] {
 .nosotros-title-line1,
 .nosotros-title-line2 {
     display: block;
+    width: max-content;       /* each word is its own box, sized to its text */
     font-size: clamp(3rem, 8vw, 7rem);
+}
+
+/* DREAM — the anchor word, stays centered. */
+.nosotros-title-line1 {
+    align-self: center;
+}
+
+/* TEAM — slides to the right, leaving open space on its left (where the
+   toasting cups sit). --team-shift controls how far past center it travels. */
+.nosotros-title-line2 {
+    align-self: center;
+    transform: translateX(var(--team-shift, 0));
 }
 
 /* Toasting cups — two hands meeting in the center of the title, clinking.
@@ -630,23 +653,23 @@ nav a[aria-current] {
 
 /* Left hand sits just left of center, leaning right toward the toast. */
 .nosotros-copa--left {
-    transform: translate(-94%, -32%) rotate(9deg);
+    transform: translate(-230%, 0%) rotate(-3deg);
 }
 
 /* Right hand is mirrored (scaleX(-1)) and sits just right of center. */
 .nosotros-copa--right {
-    transform: translate(-6%, -32%) scaleX(-1) rotate(9deg);
+    transform: translate(-150%, 10%) scaleX(-1) rotate(-5deg);
 }
 
 /* On hover the two cups clink — they swing toward each other and tilt up.
    Each transform must keep its own translate (and the right one its scaleX(-1))
    or the cup would jump back to origin / un-mirror mid-animation. */
 .nosotros-header:hover .nosotros-copa--left {
-    transform: translate(-88%, -36%) rotate(15deg);
+    transform: translate(-220%, 0%) rotate(15deg);
 }
 
 .nosotros-header:hover .nosotros-copa--right {
-    transform: translate(-12%, -36%) scaleX(-1) rotate(15deg);
+    transform: translate(-160%, 10%) scaleX(-1) rotate(15deg);
 }
 
 @media (prefers-reduced-motion: reduce) {
