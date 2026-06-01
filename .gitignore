@@ -1,0 +1,4 @@
+# macOS — Finder crea estos archivos solos en cada carpeta. No son parte
+# del sitio, así que git los ignora para no ensuciar el repo del equipo.
+.DS_Store
+**/.DS_Store
