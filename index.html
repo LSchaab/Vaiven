@@ -92,19 +92,18 @@
             <!-- Background grid texture -->
             <div class="nosotros-grid-bg" aria-hidden="true"></div>
 
-            <!-- Spotify badge — a green tab pinned top-right. It holds Spotify's
-                 "now playing" equalizer bars; on hover it expands outward to
-                 reveal them, and clicking opens our playlist.
-                 TODO: replace href="#" with the real Spotify playlist URL. -->
-            <a href="#" class="nosotros-spotify"
+            <!-- Spotify badge — a green tab pinned top-right. At rest only the
+                 Spotify logo shows; on hover it expands leftward to reveal the
+                 full scannable code (resources/qr_spotify 1.svg). Clicking opens
+                 our playlist. -->
+            <a href="https://open.spotify.com/playlist/6MfBqWD94YirQi7OtnOFrC"
+               class="nosotros-spotify"
                aria-label="Escuchá nuestra playlist en Spotify"
                target="_blank" rel="noopener">
-                <span class="nosotros-eq" aria-hidden="true">
-                    <span class="nosotros-eq-bar"></span>
-                    <span class="nosotros-eq-bar"></span>
-                    <span class="nosotros-eq-bar"></span>
-                    <span class="nosotros-eq-bar"></span>
-                </span>
+                <img src="resources/qr_spotify%201.svg"
+                     class="nosotros-spotify-img"
+                     alt="Código de Spotify de la playlist de VAI VEN"
+                     decoding="async">
             </a>
 
             <!-- LAYER 1: Header -->

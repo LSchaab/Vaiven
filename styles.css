@@ -507,80 +507,42 @@ nav a[aria-current] {
     z-index: 1;
 }
 
-/* Spotify badge — green tab pinned top-right, above every layer. Right edge is
-   fixed, so growing the width on hover makes it "salir para afuera" leftward. */
+/* Spotify code — green tab flush against the section's right edge, where the
+   white side-nav begins, so it reads as "emerging from behind the nav". At rest
+   only the Spotify logo shows; on hover it grows leftward to reveal the full
+   code. The right edge stays pinned (and squared) against the nav. */
 .nosotros-spotify {
     position: absolute;
     top: 1rem;
-    right: 1rem;
+    right: 0;                        /* flush to the nav edge — no floating gap */
     z-index: 2;
-    width: 44px;            /* compact square at rest */
-    height: 44px;
-    background-color: var(--verde);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;       /* clip the bars while the tab is compact */
-    transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    width: 52px;                     /* at rest: a square framing just the logo */
+    height: 52px;
+    background-color: var(--verde);  /* fills behind the SVG so corners stay seamless */
+    border-radius: 8px 0 0 8px;      /* rounded on the left only; right is flush */
+    overflow: hidden;                /* clip the rest of the code while compact */
+    transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Hover / keyboard focus — the tab expands outward to reveal the full drawing. */
+/* Hover / keyboard focus — the tab expands to reveal the full scannable code.
+   268px = the SVG's 335×65 ratio scaled to the 52px height. */
 .nosotros-spotify:hover,
 .nosotros-spotify:focus-visible {
-    width: 96px;
+    width: 268px;
     outline: none;
 }
 
-/* Equalizer — Spotify's "now playing" bars, built from plain spans. */
-.nosotros-eq {
-    display: flex;
-    align-items: flex-end;   /* bars grow up from a shared baseline */
-    justify-content: center;
-    gap: 3px;
-    height: 22px;
-}
-
-.nosotros-eq-bar {
-    width: 4px;
-    background-color: var(--blanco);
-    border-radius: 1px;
-}
-
-/* Resting heights — a static little skyline before the bars start "playing". */
-.nosotros-eq-bar:nth-child(1) { height: 8px; }
-.nosotros-eq-bar:nth-child(2) { height: 16px; }
-.nosotros-eq-bar:nth-child(3) { height: 11px; }
-.nosotros-eq-bar:nth-child(4) { height: 18px; }
-
-/* On hover/focus the bars "play" — heights bounce like Spotify's now-playing
-   indicator. Fast + irregular reads as energetic, on-brand for VAI VEN. */
-@keyframes nosotros-eq-dance {
-    0%, 100% { height: 5px; }
-    50%      { height: 22px; }
-}
-
-.nosotros-spotify:hover .nosotros-eq-bar,
-.nosotros-spotify:focus-visible .nosotros-eq-bar {
-    animation: nosotros-eq-dance 0.9s ease-in-out infinite;
-}
-
-/* Stagger each bar so they don't bounce in lockstep. */
-.nosotros-spotify:hover .nosotros-eq-bar:nth-child(1),
-.nosotros-spotify:focus-visible .nosotros-eq-bar:nth-child(1) { animation-delay: 0s; }
-.nosotros-spotify:hover .nosotros-eq-bar:nth-child(2),
-.nosotros-spotify:focus-visible .nosotros-eq-bar:nth-child(2) { animation-delay: 0.2s; }
-.nosotros-spotify:hover .nosotros-eq-bar:nth-child(3),
-.nosotros-spotify:focus-visible .nosotros-eq-bar:nth-child(3) { animation-delay: 0.45s; }
-.nosotros-spotify:hover .nosotros-eq-bar:nth-child(4),
-.nosotros-spotify:focus-visible .nosotros-eq-bar:nth-child(4) { animation-delay: 0.15s; }
-
-/* Respect users who opt out of motion — bars stay at their resting skyline. */
-@media (prefers-reduced-motion: reduce) {
-    .nosotros-spotify:hover .nosotros-eq-bar,
-    .nosotros-spotify:focus-visible .nosotros-eq-bar {
-        animation: none;
-    }
+/* The code SVG is pinned to the left edge and sized by height; the window's
+   overflow:hidden clips whatever doesn't fit. As the tab grows, the logo slides
+   left and the bars come into view. */
+.nosotros-spotify-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: auto;            /* keep the SVG's aspect ratio */
+    max-width: none;        /* never let the window squash it */
+    display: block;
 }
 
 /* Header — title + tagline, centered. */
