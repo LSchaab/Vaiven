@@ -702,28 +702,28 @@ nav a[aria-current] {
     color: var(--blanco);
 }
 
-/* CTA — button centered inside a rotated diamond outline. */
+/* CTA — button with a decorative "order" graphic behind it and the sublink
+   pushed to the lower-right (editorial, off-center composition). */
 .nosotros-cta {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.6rem;
     position: relative;
-    /* push the whole CTA block (button + diamond + sublink) down */
+    /* push the whole CTA block down */
     margin-top: clamp(2.5rem, 6vh, 5rem);
 }
 
-.nosotros-diamond {
+/* Crosshair + circle graphic — behind the button (z-index 0) and pulled to the
+   right. The SVG's blend modes / 0.3 opacity render it as faint light lines. */
+.nosotros-complemento {
     position: absolute;
-    width: 120px;
-    height: 120px;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    transform: rotate(45deg);
-    /* Anchor near the button's center (not the whole CTA block) so the button
-       sits in the diamond's upper half, with the sublink inside its lower point. */
-    top: 2.2rem;
-    left: 50%;
-    translate: -50% -50%;
+    width: 150px;
+    height: auto;
+    top: 50%;
+    left: 78%;              /* lean right of the button */
+    translate: -50% -50%;   /* center the graphic on this anchor point */
+    z-index: 0;             /* behind the button */
     pointer-events: none;
 }
 
@@ -744,13 +744,24 @@ nav a[aria-current] {
 
 .nosotros-btn:hover { background-color: var(--amarillo); }
 
+/* Sublink — pulled out of the centered column and pinned to the lower-right
+   of the button, so it reads as an off-center caption (not a centered label). */
 .nosotros-sublink {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 62%;                /* start in the button's right half, flow rightward */
+    white-space: nowrap;      /* keep it on one line */
     font-size: 0.8rem;
     color: var(--blanco);
     opacity: 0.75;
 }
 
-.nosotros-sublink strong { font-weight: 700; opacity: 1; }
+/* "manija" highlighted in aqua (the --highlight token), as in the reference. */
+.nosotros-sublink strong {
+    font-weight: 700;
+    opacity: 1;
+    color: var(--highlight);
+}
 
 /* Mobile — wrap the five members; the last one takes the full final row. */
 @media (max-width: 767px) {
