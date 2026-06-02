@@ -653,23 +653,23 @@ nav a[aria-current] {
 
 /* Left hand sits just left of center, leaning right toward the toast. */
 .nosotros-copa--left {
-    transform: translate(-230%, 0%) rotate(-3deg);
+    transform: translate(-240%, 0%) rotate(-3deg);
 }
 
 /* Right hand is mirrored (scaleX(-1)) and sits just right of center. */
 .nosotros-copa--right {
-    transform: translate(-150%, 10%) scaleX(-1) rotate(-5deg);
+    transform: translate(-160%, 10%) scaleX(-1) rotate(-5deg);
 }
 
 /* On hover the two cups clink — they swing toward each other and tilt up.
    Each transform must keep its own translate (and the right one its scaleX(-1))
    or the cup would jump back to origin / un-mirror mid-animation. */
 .nosotros-header:hover .nosotros-copa--left {
-    transform: translate(-220%, 0%) rotate(15deg);
+    transform: translate(-230%, 0%) rotate(15deg);
 }
 
 .nosotros-header:hover .nosotros-copa--right {
-    transform: translate(-160%, 10%) scaleX(-1) rotate(15deg);
+    transform: translate(-170%, 10%) scaleX(-1) rotate(15deg);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -679,12 +679,15 @@ nav a[aria-current] {
 /* Tagline — small italic line under the title. */
 .nosotros-tagline {
     font-size: clamp(0.75rem, 1.5vw, 1rem);
-    font-style: italic;
-    font-weight: 300;
+    /* weight & italic are left to the erratic effect (per-letter jitter) */
     color: var(--blanco);
     opacity: 0.85;
     text-align: center;
     margin-top: 0.25rem;
+
+    /* nudge the phrase to the right of center; raise the number to push further */
+    --tagline-shift: 3rem;
+    transform: translateX(var(--tagline-shift, 0));
 }
 
 /* Team row — five members in a single row on desktop. */
@@ -706,8 +709,8 @@ nav a[aria-current] {
 }
 
 .nosotros-photo-wrap {
-    width: clamp(80px, 10vw, 130px);
-    height: clamp(80px, 10vw, 130px);
+    width: clamp(100px, 12vw, 165px);
+    height: clamp(100px, 12vw, 165px);
     border-radius: 50%;
     overflow: hidden;
     background-color: transparent;
@@ -726,13 +729,13 @@ nav a[aria-current] {
 }
 
 .nosotros-name {
-    font-size: clamp(0.65rem, 1vw, 0.8rem);
+    font-size: clamp(0.8rem, 1.3vw, 1rem);
     font-weight: 400;
     color: var(--blanco);
 }
 
 .nosotros-role {
-    font-size: clamp(0.75rem, 1.2vw, 1rem);
+    font-size: clamp(0.95rem, 1.6vw, 1.3rem);
     font-weight: 700;
     color: var(--blanco);
 }
@@ -744,6 +747,8 @@ nav a[aria-current] {
     align-items: center;
     gap: 0.6rem;
     position: relative;
+    /* push the whole CTA block (button + diamond + sublink) down */
+    margin-top: clamp(2.5rem, 6vh, 5rem);
 }
 
 .nosotros-diamond {
