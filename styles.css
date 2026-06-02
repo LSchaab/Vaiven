@@ -950,3 +950,90 @@ nav a {
 nav a:hover {
     text-decoration: underline;
 }
+
+/* ===== Modal del manifiesto (video de YouTube) ===== */
+
+/* Cuando tiene [hidden] no se muestra. Esta regla explícita es necesaria
+   porque más abajo le damos display:flex, que si no pisaría al [hidden]. */
+.video-modal[hidden] { display: none; }
+
+.video-modal {
+    position: fixed;
+    inset: 0;                 /* arriba/derecha/abajo/izquierda en 0 — cubre toda la pantalla */
+    z-index: 1000;            /* por encima del menú lateral */
+    display: flex;
+    align-items: center;      /* centra el video vertical y horizontalmente */
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+/* Capa oscura detrás del video */
+.video-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(2px);
+    cursor: pointer;          /* indica que clickear afuera cierra */
+}
+
+/* Contenedor del video — se queda por encima del fondo oscuro */
+.video-modal__dialog {
+    position: relative;
+    z-index: 1;
+    width: min(90vw, 960px);  /* nunca más de 960px ni más del 90% del ancho */
+}
+
+/* Mantiene la proporción 16:9 a cualquier ancho */
+.video-modal__frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: 8px;       /* mismas esquinas que los CTA de la marca */
+    overflow: hidden;
+    background: var(--negro);
+    /* Marco de marca — borde fino azul eléctrico (motivo de "orden") + sombra */
+    box-shadow: 0 0 0 1px var(--azul), 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* El iframe inyectado llena el contenedor */
+.video-modal__frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* Botón de cerrar — naranja de marca, en la esquina superior del video */
+.video-modal__close {
+    position: absolute;
+    top: -1rem;
+    right: -1rem;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: none;
+    border-radius: 50%;
+    background: var(--naranja);
+    color: var(--blanco);
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 2;
+    transition: transform 0.15s ease, background-color 0.2s ease;
+}
+
+.video-modal__close:hover {
+    background: var(--amarillo);
+    color: var(--azul-oscuro);
+    transform: scale(1.08);
+}
+
+/* Animación de entrada — se omite si el usuario prefiere menos movimiento */
+@media (prefers-reduced-motion: no-preference) {
+    .video-modal:not([hidden]) .video-modal__dialog {
+        animation: modal-pop 0.25s ease-out;
+    }
+    @keyframes modal-pop {
+        from { opacity: 0; transform: scale(0.96); }
+        to   { opacity: 1; transform: scale(1); }
+    }
+}

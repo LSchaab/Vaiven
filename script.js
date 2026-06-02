@@ -139,3 +139,45 @@ if (!reduceMotion) {
         }
     });
 }
+
+// === Modal del manifiesto (video de YouTube) ===
+// Click en "Play al manifesto" → abre un lightbox con el reproductor de YouTube.
+// El iframe se crea recién al abrir (así el video no carga ni suena de fondo) y
+// se borra al cerrar (eso detiene la reproducción). Se cierra con: el botón ×,
+// un click en el fondo oscuro, o la tecla Escape.
+
+const manifiestoBtn = document.querySelector(".nosotros-btn");
+const videoModal = document.getElementById("manifiesto-modal");
+const videoPlayer = document.getElementById("manifiesto-player");
+
+function openVideoModal(videoId) {
+    // URL del embed: autoplay + ocultar videos relacionados al final (rel=0).
+    const src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+    videoPlayer.innerHTML =
+        `<iframe src="${src}" title="Manifiesto VAI VEN"
+                 allow="autoplay; encrypted-media; fullscreen"
+                 allowfullscreen></iframe>`;
+    videoModal.hidden = false;
+}
+
+function closeVideoModal() {
+    videoModal.hidden = true;
+    videoPlayer.innerHTML = ""; // quitar el iframe detiene el video
+}
+
+if (manifiestoBtn && videoModal) {
+    manifiestoBtn.addEventListener("click", () => {
+        const videoId = manifiestoBtn.dataset.video;
+        if (videoId) openVideoModal(videoId);
+    });
+
+    // Cualquier elemento con data-close (el botón × y el fondo) cierra el modal.
+    videoModal.querySelectorAll("[data-close]").forEach((el) => {
+        el.addEventListener("click", closeVideoModal);
+    });
+
+    // La tecla Escape también cierra.
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !videoModal.hidden) closeVideoModal();
+    });
+}

@@ -193,7 +193,9 @@
             <!-- LAYER 3: CTA -->
             <div class="nosotros-cta">
                 <div class="nosotros-diamond" aria-hidden="true"></div>
-                <button class="nosotros-btn">Play al manifesto</button>
+                <!-- data-video = el ID del video de YouTube (la parte después de
+                     "watch?v=" o "youtu.be/"). Cambialo por el real cuando lo tengas. -->
+                <button class="nosotros-btn" data-video="frULM6go0Tg">Play al manifesto</button>
                 <p class="nosotros-sublink">
                     Si te da la <strong>manija</strong>
                 </p>
@@ -211,5 +213,22 @@
             <li><a href="#destacados">destacados</a></li>
         </ul>
     </nav>
+
+    <!-- ===== Modal del manifiesto (video de YouTube) =====
+         Oculto por defecto con el atributo [hidden]. script.js lo abre al
+         clickear "Play al manifesto", inyecta el reproductor de YouTube, y lo
+         vuelve a quitar al cerrar (eso detiene el video). -->
+    <div class="video-modal" id="manifiesto-modal" hidden
+         role="dialog" aria-modal="true" aria-label="Manifiesto VAI VEN">
+        <!-- Capa oscura de fondo — clickearla cierra el modal -->
+        <div class="video-modal__backdrop" data-close></div>
+
+        <div class="video-modal__dialog">
+            <button class="video-modal__close" type="button"
+                    data-close aria-label="Cerrar video">&times;</button>
+            <!-- El <iframe> de YouTube se inyecta acá al abrir y se borra al cerrar -->
+            <div class="video-modal__frame" id="manifiesto-player"></div>
+        </div>
+    </div>
 </body>
 </html>
