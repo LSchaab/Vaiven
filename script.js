@@ -111,6 +111,8 @@ if (!reduceMotion) {
         { sel: ".contacto-hand-right", depth: 28 },
         { sel: ".portfolio-eye-tr",    depth: 26 },
         { sel: ".portfolio-eye-bl",    depth: 32 },
+        { sel: ".destacados-hand-left",  depth: 22 },
+        { sel: ".destacados-hand-right", depth: 28 },
     ]
         .map((layer) => ({ el: document.querySelector(layer.sel), depth: layer.depth }))
         .filter((layer) => layer.el);
@@ -180,4 +182,72 @@ if (manifiestoBtn && videoModal) {
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && !videoModal.hidden) closeVideoModal();
     });
+}
+
+// === Carrusel de Destacados ===
+// Tres cards apiladas en abanico. `activeIndex` dice cuál está en el centro.
+// render() recorre las cards y, para cada una, le pide a cardStateFor() qué
+// clase de estado debe llevar ("is-active" / "is-prev" / "is-next"). El CSS hace
+// el resto (posición, escala, desaturado). Click en una card lateral o las
+// flechas ←/→ cambian cuál está activa.
+
+const destacadosCarousel = document.querySelector(".destacados-carousel");
+
+if (destacadosCarousel) {
+    const cards = Array.from(destacadosCarousel.querySelectorAll(".destacados-card"));
+    const total = cards.length;
+    let activeIndex = 1; // arrancamos con la card del medio al centro
+
+    // Decide qué clase de estado recibe cada card según su posición respecto a
+    // la activa. Debe devolver una de: "is-active", "is-prev", "is-next".
+    // - "is-active": la card que está en el centro (cardIndex === activeIndex)
+    // - "is-prev":   la card inmediatamente anterior (con wrap-around)
+    // - "is-next":   la card inmediatamente siguiente (con wrap-around)
+    // "wrap-around" = si te pasás del final, volvés al principio (y al revés).
+    // Pista: el operador % (módulo) y sumar `total` antes del % evita negativos.
+    function cardStateFor(cardIndex, activeIndex, total) {
+        if (cardIndex === activeIndex) return "is-active";
+        if (cardIndex === (activeIndex - 1 + total) % total) return "is-prev";
+        if (cardIndex === (activeIndex + 1) % total) return "is-next";
+        return "";
+    }
+
+    function render() {
+        cards.forEach((card, i) => {
+            card.classList.remove("is-active", "is-prev", "is-next");
+            const state = cardStateFor(i, activeIndex, total);
+            if (state) card.classList.add(state);
+            // Solo la card activa es alcanzable por Tab; las laterales no.
+            card.tabIndex = i === activeIndex ? 0 : -1;
+        });
+    }
+
+    // Avanzar/retroceder rotando el abanico (con wrap-around).
+    function rotate(step) {
+        activeIndex = (activeIndex + step + total) % total;
+        render();
+    }
+
+    // Click en cualquier card → esa pasa a ser la activa (centro).
+    cards.forEach((card, i) => {
+        card.addEventListener("click", () => {
+            activeIndex = i;
+            render();
+        });
+    });
+
+    // Manos = controles: la izquierda retrocede, la derecha avanza.
+    document.querySelectorAll("#destacados .destacados-hand").forEach((hand) => {
+        hand.addEventListener("click", () => {
+            rotate(hand.dataset.dir === "next" ? 1 : -1);
+        });
+    });
+
+    // Flechas del teclado para rotar el abanico.
+    destacadosCarousel.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight") rotate(1);
+        else if (e.key === "ArrowLeft") rotate(-1);
+    });
+
+    render();
 }

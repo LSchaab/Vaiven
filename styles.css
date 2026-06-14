@@ -41,6 +41,11 @@ html, body {
 
     /* Cross-section blend zone */
     --fade-zone: 220px;
+
+    /* Side-nav column width. One variable feeds both the body grid and the
+       header crosshair alignment, and is shared by every page so the sidebar
+       is identical site-wide. */
+    --nav-w: 160px;
 }
 
 /* Mode switching is PAUSED for now (per Luly). Kept here, mapped to tokens,
@@ -60,7 +65,7 @@ html, body {
 body {
     display: grid;
     grid-template-rows: 80px 1fr;
-    grid-template-columns: 1fr 160px;
+    grid-template-columns: 1fr var(--nav-w);
     min-height: 100vh;
 }
 
@@ -91,6 +96,46 @@ header .logo img {
     width: auto;
     max-width: min(200px, 45vw);
     object-fit: contain;
+}
+
+/* Dashed gradient border under the header. CSS can't dash a gradient border
+   directly, so we draw the gradient as a thin strip and "cut" it into dashes
+   with a repeating mask: opaque (#fff) = a visible dash, transparent = a gap. */
+header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        var(--azul) 0%,
+        var(--violeta-claro) 34%,
+        var(--naranja) 70%,
+        var(--amarillo) 100%
+    );
+    /* dash 8px, gap 6px (repeats every 14px) */
+    -webkit-mask: repeating-linear-gradient(90deg, #fff 0 8px, transparent 8px 14px);
+            mask: repeating-linear-gradient(90deg, #fff 0 8px, transparent 8px 14px);
+    pointer-events: none;
+}
+
+/* Upper arm of the crosshair: continues the nav's left border up through the
+   header, so the two dashed lines CROSS (a "+") instead of meeting in an L.
+   Drawn on the header (which sits above the nav) and aligned to the nav's edge
+   (nav is 160px wide; offset by the 2px line width so it lines up exactly). */
+header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: calc(var(--nav-w) - 2px);
+    width: 2px;
+    background: var(--azul);   /* matches the top of the nav's vertical gradient */
+    -webkit-mask: repeating-linear-gradient(180deg, #fff 0 8px, transparent 8px 14px);
+            mask: repeating-linear-gradient(180deg, #fff 0 8px, transparent 8px 14px);
+    pointer-events: none;
 }
 
 main {
@@ -135,10 +180,22 @@ section[data-active] {
         visibility 0s linear 0s;
 }
 
-/* Active link in the side menu */
+/* Active link in the side menu — stays blue, marked by a hand-drawn orange
+   brush swipe underneath (inline SVG, tinted with --naranja). The stroke is
+   attached to [aria-current], so it follows whichever link is active. */
 nav a[aria-current] {
-    color: var(--accent-primary);
-    font-weight: 700;
+    color: var(--azul);
+}
+
+nav a[aria-current]::after {
+    content: "";
+    position: absolute;
+    right: 0;           /* sit under the right end of the link */
+    bottom: -0.85em;    /* a little gap between the text and the tilde */
+    width: 1.7em;       /* scales with the link's font-size */
+    height: 0.6em;
+    background: url("resources/tilde_vaiven.svg") no-repeat center / contain;
+    pointer-events: none;
 }
 
 /* Cross-section transition system.
@@ -147,7 +204,8 @@ nav a[aria-current] {
    fades out and the neighbor's color bleeds in. */
 #hero,
 #portfolio,
-#contacto {
+#contacto,
+#destacados {
     /* position: absolute + inset: 0 is inherited from the base `section` rule;
        isolation: isolate keeps the negative-z-index ::before/::after texture
        layers contained within each section's stacking context. */
@@ -159,7 +217,8 @@ nav a[aria-current] {
 /* Texture layer — masked so it fades at the top and bottom edges. */
 #hero::before,
 #portfolio::before,
-#contacto::before {
+#contacto::before,
+#destacados::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -191,7 +250,8 @@ nav a[aria-current] {
    Defaults to transparent, so unset neighbors produce no visible fade. */
 #hero::after,
 #portfolio::after,
-#contacto::after {
+#contacto::after,
+#destacados::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -774,10 +834,184 @@ nav a[aria-current] {
     .nosotros-member:last-child { width: 100%; align-items: center; }
 }
 
-/* Placeholder background until this section has real content + textures. */
+/* === Destacados — "Highlights para vagos" ===
+   Violeta-claro background (set via --section-bg → the shared texture system
+   above paints the faint cuadrícula). Column layout: title on top, rotating
+   card carousel in the middle, CTAs at the bottom. */
 #destacados {
-    background-color: var(--bg-section-alt);  /* Violeta */
+    --section-bg: var(--violeta-claro);
+    /* Neighbor colors for the cross-section blend (nosotros is azul). */
+    --prev-section-bg: var(--azul);
+    --section-texture: url("resources/textures/cuadricula_textura.svg");
     color: var(--text-primary);
+    flex-direction: column;
+    padding: clamp(2rem, 4vh, 4rem) clamp(2rem, 6vw, 6rem);
+    gap: clamp(1.5rem, 4vh, 3rem);
+    font-family: "Montserrat Alternates", system-ui, sans-serif;
+}
+
+.destacados-title {
+    color: var(--amarillo);
+    /* font weight/italic per-letter come from the .erratic effect (script.js) */
+    font-size: clamp(2rem, 6vw, 4.5rem);
+    line-height: 1;
+    text-align: center;
+    margin: clamp(1.5rem, 5vh, 3.5rem) 0 0;  /* nudge the title down */
+    /* Keep the title above the decorative hands. */
+    position: relative;
+    z-index: 2;
+}
+
+/* === Rotating carousel ===
+   The carousel is a positioning canvas; each card is absolutely centered and
+   then pushed/scaled/dimmed based on its state class (set by script.js). */
+.destacados-carousel {
+    position: relative;
+    width: 100%;
+    flex: 1 1 0;
+    min-height: 0;
+    /* Above the hands, below nothing else. */
+    z-index: 1;
+}
+
+.destacados-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: clamp(320px, 56vw, 880px);
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    padding: 0;
+    background: var(--card-fill, linear-gradient(135deg, var(--violeta-claro), var(--negro)));
+    background-size: cover;
+    background-position: center;
+    cursor: pointer;
+    /* Base position: dead center. State classes override the transform. */
+    transform: translate(-50%, -50%) scale(0.8);
+    transition:
+        transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+        filter 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Big label inside each placeholder card — remove once real images land. */
+.destacados-card-label {
+    display: block;
+    color: var(--blanco);
+    font-weight: 800;
+    font-size: clamp(1.25rem, 3vw, 2.5rem);
+    letter-spacing: 0.05em;
+}
+
+/* Center card: full size, full color, on top. */
+.destacados-card.is-active {
+    transform: translate(-50%, -50%) scale(1);
+    filter: none;
+    z-index: 3;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Side cards: pushed out, smaller, desaturated and darkened, behind. */
+.destacados-card.is-prev,
+.destacados-card.is-next {
+    z-index: 1;
+    filter: grayscale(1) brightness(0.45);
+    opacity: 0.9;
+}
+.destacados-card.is-prev {
+    transform: translate(calc(-50% - 58%), -50%) scale(0.78);
+}
+.destacados-card.is-next {
+    transform: translate(calc(-50% + 58%), -50%) scale(0.78);
+}
+
+/* Only the active card invites a click; the side ones still work but read as
+   background. Hover lifts the active card slightly. */
+.destacados-card.is-active:hover,
+.destacados-card.is-active:focus-visible {
+    transform: translate(-50%, -50%) scale(1.02);
+    outline: none;
+}
+.destacados-card.is-prev:hover,
+.destacados-card.is-next:hover {
+    filter: grayscale(0.5) brightness(0.6);
+}
+
+/* === Pointing hands = carousel controls === Crisp halftone stickers (no
+   blend, full opacity), pointing inward. Sit IN FRONT of the cards (z-index
+   above the active card's 3) so they're always clickable. */
+.destacados-hand {
+    position: absolute;
+    z-index: 5;
+    top: 50%;
+    width: clamp(120px, 14vw, 240px);
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s ease-out;  /* smooth the pointer parallax */
+}
+/* The image fills the button. */
+.destacados-hand img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+.destacados-hand:focus-visible {
+    outline: 2px solid var(--amarillo);
+    outline-offset: 4px;
+    border-radius: 8px;
+}
+/* Left hand points LEFT (mirrored) → retrocede; right hand points RIGHT
+   (natural orientation) → avanza. The direction matches where it rotates. */
+.destacados-hand-left {
+    left: clamp(-2rem, 1vw, 3rem);
+    /* --px/--py come from the pointer-parallax script. */
+    transform: translate(var(--px, 0px), calc(-50% + var(--py, 0px))) scaleX(-1);
+}
+.destacados-hand-right {
+    right: clamp(-2rem, 1vw, 3rem);
+    transform: translate(var(--px, 0px), calc(-50% + var(--py, 0px)));
+}
+
+/* === CTA row === "DM YA" reuses .cta-pill (white/blue). "Explorá todo" is a
+   translucent ghost button with a light border. */
+.destacados-cta-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    position: relative;
+    z-index: 2;
+    margin-bottom: clamp(1.5rem, 5vh, 3.5rem);  /* lift the CTAs up */
+}
+
+.destacados-cta-ghost {
+    background-color: rgba(180, 180, 237, 0.18);  /* lila, faint */
+    border: 1px solid var(--lila);
+    color: var(--blanco);
+    padding: 0.9rem 2.5rem;
+    border-radius: 8px;
+    font-family: "Montserrat Alternates", system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+.destacados-cta-ghost:hover,
+.destacados-cta-ghost:focus-visible {
+    transform: scale(1.05);
+    background-color: rgba(180, 180, 237, 0.3);
+    outline: none;
+}
+
+/* Respect reduced-motion: no carousel/parallax animation, active card snaps. */
+@media (prefers-reduced-motion: reduce) {
+    .destacados-card,
+    .destacados-hand { transition: none; }
 }
 
 /* === Erratic typography system ===
@@ -879,9 +1113,9 @@ nav a[aria-current] {
 }
 
 .hero-cerebro {
-    right: clamp(-1rem, 2vw, 3rem);
+    right: clamp(2rem, 8vw, 9rem);
     bottom: clamp(2rem, 9vh, 7rem);
-    width: clamp(200px, 33vw, 540px);
+    width: clamp(130px, 21vw, 340px);
     transform: translate(var(--px, 0px), var(--py, 0px)) rotate(5deg);
 }
 
@@ -899,25 +1133,50 @@ nav {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    padding: 1rem;
+    align-items: flex-start;
+    /* extra left padding pushes the links toward the right of the nav column */
+    padding: 1rem 1rem 1rem 2.75rem;
     font-family: "Montserrat Alternates", sans-serif;
+}
+
+/* Dashed gradient border on the nav's left edge — same technique as the header,
+   but vertical (gradient runs top→bottom, dashes stack down the side). */
+nav::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(
+        180deg,
+        var(--azul) 0%,
+        var(--violeta-claro) 34%,
+        var(--naranja) 70%,
+        var(--amarillo) 100%
+    );
+    /* dash 8px, gap 6px (repeats every 14px) */
+    -webkit-mask: repeating-linear-gradient(180deg, #fff 0 8px, transparent 8px 14px);
+            mask: repeating-linear-gradient(180deg, #fff 0 8px, transparent 8px 14px);
+    pointer-events: none;
 }
 
 nav ul {
     list-style: none;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.75rem;
 }
 
 nav a {
+    position: relative;
     text-decoration: none;
-    color: inherit;
+    color: var(--azul);
     text-transform: lowercase;
     font-size: 0.875rem;
     font-weight: 500;
+    line-height: 1;
 }
 
 nav a:hover {
@@ -1009,4 +1268,32 @@ nav a:hover {
         from { opacity: 0; transform: scale(0.96); }
         to   { opacity: 1; transform: scale(1); }
     }
+}
+
+/* ===== "Volver" — eye collage in the top-right corner ===== */
+/* Fixed over the header/nav crosshair: above the dashed lines (header z-index
+   20, nav z-index 10) but below the video modal (z-index 1000). */
+.volver {
+    position: fixed;
+    top: -10px;
+    right: -10px;
+    z-index: 25;
+    width: clamp(140px, 16vw, 220px);
+    line-height: 0;                 /* kill the inline gap under the image */
+    clip-path: circle(45%);         /* only the round center is clickable — kills transparent-corner clicks */
+    transition: transform 0.2s ease;
+}
+
+.volver img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Playful tilt on hover — leans into the "movimiento" of the brand. */
+.volver:hover { transform: rotate(-3deg) scale(1.04); }
+
+@media (prefers-reduced-motion: reduce) {
+    .volver { transition: none; }
+    .volver:hover { transform: none; }
 }

@@ -1,0 +1,140 @@
+/* ===================================================================
+   PORTFOLIO CATEGORY PAGE  (portfolio.html)
+   -------------------------------------------------------------------
+   Scroll is LOCKED here, exactly like the home page: the global rules
+   in styles.css (html, body { overflow: hidden } + the absolute-stacked
+   <section> system) are left in place, so only the section with
+   [data-active] shows. The sidebar swaps which one (see portfolio.js).
+   Everything below is scoped to .portfolio-page so it only affects this
+   page — the home page is untouched.
+   =================================================================== */
+
+/* NOTE: the sidebar (width, big blue links, orange active brush) now lives in
+   styles.css so it's identical on every page — nothing about the nav is styled
+   here anymore. This file only handles the page background + the 3 sections. */
+
+/* ===================================================================
+   The three switchable sections. They inherit position/visibility from
+   the global `section` + `section[data-active]` rules — we only set
+   their look (background, layout, colour) here, never their stacking.
+   =================================================================== */
+
+/* ---- SECTION "home" — category hero ----  electric blue. */
+.portfolio-page .cat-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    overflow: hidden;
+    background-color: var(--azul);
+    color: var(--text-primary);
+    font-family: "Montserrat Alternates", system-ui, sans-serif;
+    padding: clamp(2rem, 6vh, 5rem) clamp(2rem, 6vw, 6rem);
+}
+
+.cat-hero-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 60rem;
+}
+
+.cat-title {
+    font-size: clamp(2.5rem, 9vw, 7rem);
+    line-height: 0.95;
+    text-transform: uppercase;
+    color: var(--text-primary);
+}
+
+.cat-hero-desc {
+    margin-top: clamp(1rem, 2vh, 1.5rem);
+    max-width: 40rem;
+    font-size: clamp(1rem, 1.8vw, 1.4rem);
+    line-height: 1.5;
+    color: var(--highlight);
+}
+
+/* Decorative eye motif — blended into the blue, behind the text. */
+.cat-hero-decor {
+    position: absolute;
+    z-index: 0;
+    top: 50%;
+    right: clamp(-3rem, -2vw, 0rem);
+    width: clamp(200px, 28vw, 460px);
+    height: auto;
+    transform: translateY(-50%) rotate(-8deg);
+    pointer-events: none;
+    user-select: none;
+    mix-blend-mode: multiply;
+}
+
+/* SECTION "contacto" is a copy of the home page's #contacto — it reuses that
+   id, so all its styling comes from styles.css. Nothing needed here. */
+
+/* ---- SECTION "portfolio" — bento grid of projects ----  violeta claro. */
+.portfolio-page .cat-projects {
+    flex-direction: column;
+    gap: clamp(1.5rem, 4vh, 3rem);
+    background-color: var(--violeta-claro);
+    color: var(--text-primary);
+    font-family: "Montserrat Alternates", system-ui, sans-serif;
+    padding: clamp(2rem, 6vh, 5rem) clamp(2rem, 6vw, 6rem);
+}
+
+.cat-projects-title {
+    font-size: clamp(2rem, 6vw, 4.5rem);
+    line-height: 1;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--amarillo);
+}
+
+/* Editorial bento: 3 columns, one big feature card + four smaller ones. */
+.project-bento {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: minmax(140px, 1fr);
+    gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    width: 100%;
+    max-width: 70rem;
+    margin: 0 auto;
+}
+
+/* Each card reuses the home page's .bento-card look (gradient placeholder,
+   rounded corners, hover lift). Real thumbnails replace the gradient later. */
+.bento-item {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    padding: 1rem;
+    border-radius: 16px;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--azul), var(--negro));
+    background-size: cover;
+    background-position: center;
+    color: var(--text-primary);
+    transition:
+        transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bento-item:hover {
+    transform: translateY(-6px) scale(1.01);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+.bento-item-label {
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 800;
+    opacity: 0.85;
+}
+
+/* The first card is the big feature (2×2); the last spans 2 wide — gives the
+   grid an editorial, non-uniform rhythm instead of a plain 5-up row. */
+.bento-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+.bento-item:nth-child(5) { grid-column: span 2; }
+
+/* Mobile: drop to 2 columns and relax the spans. */
+@media (max-width: 767px) {
+    .project-bento { grid-template-columns: 1fr 1fr; }
+    .bento-item:nth-child(1) { grid-column: span 2; grid-row: span 1; }
+    .bento-item:nth-child(5) { grid-column: span 2; }
+}

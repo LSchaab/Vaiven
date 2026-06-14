@@ -11,7 +11,13 @@
          silently drops the whole request and the site falls back to system-ui. -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Montserrat+Alternates:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <!-- GSAP — animation library, loaded from a CDN (no install / build step).
+         Must load before hero-motion.js, which uses it. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="script.js" defer></script>
+    <!-- Hero entrance animation. Loads after script.js so the per-letter
+         "erratic" spans already exist for GSAP to animate. -->
+    <script src="hero-motion.js" defer></script>
 </head>
 <body>
     <header>
@@ -42,19 +48,19 @@
             </h2>
             <div class="bento-grid">
                 <a class="bento-card bento-3d" href="#">
-                    <span class="erratic">3D</span>
+                    <span>3D</span>
                 </a>
                 <a class="bento-card bento-web" href="#">
-                    <span class="erratic">Diseño Web</span>
+                    <span>Diseño Web</span>
                 </a>
                 <a class="bento-card bento-grafico" href="#">
-                    <span class="erratic">Diseño Gráfico</span>
+                    <span>Diseño Gráfico</span>
                 </a>
                 <a class="bento-card bento-motion" href="#">
-                    <span class="erratic">Motion Graphics</span>
+                    <span>Motion Graphics</span>
                 </a>
                 <a class="bento-card bento-campanas" href="#">
-                    <span class="erratic">Campañas publicitarias</span>
+                    <span>Campañas publicitarias</span>
                 </a>
             </div>
             <a class="cta-pill" href="#">Explorá todo</a>
@@ -154,7 +160,7 @@
                              class="nosotros-photo" decoding="async">
                     </div>
                     <span class="nosotros-name">Lourdes Schaab</span>
-                    <span class="nosotros-role">Project Manager</span>
+                    <span class="nosotros-role">Programadora</span>
                 </div>
 
                 <div class="nosotros-member">
@@ -205,7 +211,61 @@
             </div>
 
         </section>
-        <section id="destacados">destacados</section>
+        <!-- ===== Destacados — "Highlights para vagos" =====
+             Fondo violeta claro con grilla tenue. Título amarillo arriba, un
+             carrusel rotativo de 3 cards en abanico al centro (la activa a
+             color, las laterales desaturadas y atrás), manos halftone
+             apuntando hacia adentro, y dos CTAs abajo. -->
+        <section id="destacados">
+
+            <!-- Manos = controles del carrusel. La izquierda retrocede, la
+                 derecha (misma imagen espejada) avanza. Son <button> para que
+                 funcionen con click, teclado y lectores de pantalla. Se mueven
+                 levemente con el cursor (parallax en script.js). -->
+            <button class="destacados-hand destacados-hand-left" type="button"
+                    data-dir="prev" aria-label="Highlight anterior">
+                <img src="resources/mano.webp" alt="" aria-hidden="true" decoding="async">
+            </button>
+            <button class="destacados-hand destacados-hand-right" type="button"
+                    data-dir="next" aria-label="Highlight siguiente">
+                <img src="resources/mano.webp" alt="" aria-hidden="true" decoding="async">
+            </button>
+
+            <h2 class="destacados-title">
+                <span class="erratic">Highlights para vagos</span>
+            </h2>
+
+            <!-- Carrusel rotativo. Cada card es un <button> (clickeable y
+                 accesible por teclado). Las clases is-active/is-prev/is-next
+                 las asigna script.js según cuál esté en el centro.
+                 PLACEHOLDER: el fondo es un degradado por ahora. Para poner la
+                 imagen real, reemplazá el `style` por:
+                 style="background-image:url('resources/TU_IMAGEN.webp')" -->
+            <div class="destacados-carousel" role="group" aria-label="Highlights destacados">
+                <button class="destacados-card destacados-card--a" type="button"
+                        data-index="0" style="--card-fill: linear-gradient(135deg, var(--violeta-claro), var(--negro));">
+                    <span class="destacados-card-label">MOODBOARD</span>
+                </button>
+                <button class="destacados-card destacados-card--b" type="button"
+                        data-index="1" style="--card-fill: linear-gradient(135deg, var(--naranja), var(--violeta-claro));">
+                    <span class="destacados-card-label">HP</span>
+                </button>
+                <button class="destacados-card destacados-card--c" type="button"
+                        data-index="2" style="--card-fill: linear-gradient(135deg, var(--verde), var(--negro));">
+                    <span class="destacados-card-label">SELVA</span>
+                </button>
+            </div>
+
+            <div class="destacados-cta-row">
+                <!-- TODO(Luly): pegá acá el usuario real de Instagram de VAI VEN
+                     (reemplazá la URL). Se abre en una pestaña nueva. -->
+                <a class="cta-pill" href="https://instagram.com/"
+                   target="_blank" rel="noopener">DM YA</a>
+                <!-- "Explorá todo" usa el navegador de secciones que ya existe -->
+                <a class="destacados-cta-ghost" href="#portfolio">Explorá todo</a>
+            </div>
+
+        </section>
     </main>
     <nav aria-label="Principal">
         <ul>
@@ -216,6 +276,13 @@
             <li><a href="#destacados">destacados</a></li>
         </ul>
     </nav>
+
+    <!-- "Volver al inicio" — collage del ojo anclado en la esquina superior
+         derecha, sobre el cruce de las líneas punteadas. Usa href="#hero" para
+         que el manejador de navegación que ya existe lo lleve al home. -->
+    <a href="#hero" class="volver" aria-label="Volver al inicio">
+        <img src="resources/Volver.png" alt="" decoding="async">
+    </a>
 
     <!-- ===== Modal del manifiesto (video de YouTube) =====
          Oculto por defecto con el atributo [hidden]. script.js lo abre al

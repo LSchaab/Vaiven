@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Categoría · Vaiven</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Montserrat+Alternates:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <!-- Shared site styles (tokens, header, nav, Volver, erratic, buttons). -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Page-specific styles: opts out of the no-scroll layout + lays out the
+         3 sections. Loaded AFTER styles.css so its overrides win. -->
+    <link rel="stylesheet" href="portfolio.css">
+    <!-- GSAP (CDN, no build step) must load before portfolio.js uses it. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+    <script src="portfolio.js" defer></script>
+</head>
+<!-- .portfolio-page = this page scrolls (see portfolio.css). -->
+<body class="portfolio-page">
+    <header>
+        <a class="logo" href="index.html#hero" aria-label="Vai Ven — inicio">
+            <img src="resources/logo_vaiven.webp" alt="Vai Ven" decoding="async">
+        </a>
+    </header>
+
+    <main>
+        <!-- ===== SECTION 1 — Category hero =====
+             Big category title + a short description. Same entrance animation
+             as the home hero (handled in portfolio.js).
+             PLACEHOLDER copy — swap per category. -->
+        <section class="cat-hero" id="cat-hero">
+            <img class="cat-hero-decor" src="resources/ojo_1.webp" alt="" aria-hidden="true" decoding="async">
+            <div class="cat-hero-inner">
+                <h1 class="cat-title erratic" data-text="Categoría">Categoría</h1>
+                <p class="cat-hero-desc">
+                    Descripción breve de la categoría: una o dos líneas que cuentan
+                    de qué va esta disciplina y qué van a encontrar abajo.
+                </p>
+            </div>
+        </section>
+
+        <!-- ===== SECTION 2 — Contacto =====
+             Copia de la sección #contacto de la home: reusa el mismo id, así
+             hereda todo su estilo (fondo lila, textura, manos, logos, títulos)
+             desde styles.css sin duplicar CSS. -->
+        <section id="contacto">
+            <!-- Decorative pointing hands, blended into the background. -->
+            <img class="contacto-hand contacto-hand-left" src="resources/mano.webp" alt="" aria-hidden="true" decoding="async">
+            <img class="contacto-hand contacto-hand-right" src="resources/mano.webp" alt="" aria-hidden="true" decoding="async">
+
+            <div class="contacto-content">
+                <h2 class="contacto-title">
+                    <span class="erratic line">NOS</span>
+                    <span class="erratic line line-2">ENCONTRÁS</span>
+                    <span class="erratic line line-3">ACÁ</span>
+                </h2>
+                <p class="contacto-subtitle">
+                    <span class="erratic">Contactános… si te</span>
+                    <span class="erratic">bancás la respuesta.</span>
+                </p>
+            </div>
+
+            <!-- Social links — grunge logos, center of the section.
+                 TODO: replace href="#" with the real Instagram / TikTok URLs. -->
+            <div class="contacto-social">
+                <a class="contacto-social-link contacto-ig" href="#" aria-label="Instagram">
+                    <img src="resources/instagam_logo_grunge.webp" alt="Instagram" decoding="async">
+                </a>
+                <a class="contacto-social-link contacto-tiktok" href="#" aria-label="TikTok">
+                    <img src="resources/tiktok_logo_grunge.webp" alt="TikTok" decoding="async">
+                </a>
+            </div>
+        </section>
+
+        <!-- ===== SECTION 3 — Bento grid de proyectos =====
+             5 placeholder cards for now (no real content yet). -->
+        <section class="cat-projects" id="cat-projects">
+            <h2 class="cat-projects-title erratic" data-text="Proyectos">Proyectos</h2>
+            <div class="project-bento">
+                <article class="bento-item"><span class="bento-item-label">01</span></article>
+                <article class="bento-item"><span class="bento-item-label">02</span></article>
+                <article class="bento-item"><span class="bento-item-label">03</span></article>
+                <article class="bento-item"><span class="bento-item-label">04</span></article>
+                <article class="bento-item"><span class="bento-item-label">05</span></article>
+            </div>
+        </section>
+    </main>
+
+    <!-- Side nav — scroll is locked, so these links SWITCH between the page's
+         three sections (handled in portfolio.js). The active one gets the
+         orange brush underline. -->
+    <nav aria-label="Secciones">
+        <ul>
+            <li><a href="#cat-hero">home</a></li>
+            <li><a href="#contacto">contacto</a></li>
+            <li><a href="#cat-projects">portfolio</a></li>
+        </ul>
+    </nav>
+
+    <!-- "Volver" eye — returns to the portfolio overview on the home page. -->
+    <a href="index.html#portfolio" class="volver" aria-label="Volver al portfolio">
+        <img src="resources/Volver.png" alt="" decoding="async">
+    </a>
+</body>
+</html>
