@@ -35,6 +35,106 @@ function erraticize(el) {
     });
 }
 
+// --- Category config: ONE template, five variants --------------------------
+// Which category to render comes from the URL (?cat=3d). Each entry owns its
+// copy, its collage cutouts and which entrance "signature" to play. To add a
+// real category you only fill in an entry here — never copy this whole page.
+//
+//   title    — the big erratic wordmark
+//   desc     — the line under it
+//   anim     — "orbit" (the 3D signature: parallax + tilt + extrude) or
+//              "default" (the simple opacity cascade, until that category
+//              gets its own signature built)
+//   cutouts  — collage images, listed FRONT → BACK. `depth` = how far each one
+//              travels/tilts with the pointer (bigger = feels closer). `pos`
+//              is a CSS class that places it (see .cutout-left / -right).
+const CATEGORIES = {
+    "3d": {
+        title: "3D",
+        // Copy lifted straight from the approved 3D mock.
+        desc: "No es magia, es Cinema 4D, Blender, ZBrush y Substance, pero queda como magia. El realismo es nuestro extremo, y también el delirio de crear cosas que todavía no existen.",
+        anim: "orbit",
+        cutouts: [
+            // TEMP stand-ins so the motion is visible NOW. Export the real
+            // cutouts from the collage and drop them in as resources/3d-laptop.webp
+            // and resources/3d-donut.webp, then swap the two src values below.
+            { src: "resources/cerebro.webp", depth: 42, pos: "cutout-left" },
+            { src: "resources/ojo_1.webp",   depth: 26, pos: "cutout-right" },
+        ],
+    },
+
+    // The other four reuse the exact shape above. Placeholder copy keeps the
+    // page working; "default" plays the simple cascade until we build each
+    // discipline's own signature.
+    "web": {
+        title: "Web",
+        desc: "Placeholder — reemplazar con la copy de Desarrollo web.",
+        anim: "default",
+        cutouts: [],
+    },
+    "grafico": {
+        title: "Gráfico",
+        desc: "Placeholder — reemplazar con la copy de Ilustración y Diseño Gráfico.",
+        anim: "default",
+        cutouts: [],
+    },
+    "campanas": {
+        title: "Campañas",
+        desc: "Placeholder — reemplazar con la copy de Campañas publicitarias.",
+        anim: "default",
+        cutouts: [],
+    },
+
+    // Motion Graphics. `default` cascade for now — its kinetic signature
+    // (letters with distinct eases, looping) comes in a later pass.
+    "motion": {
+        title: "Motion",
+        desc: "Acá nada se queda quieto. After Effects, Cinema 4D y litros de café para que todo se mueva como tiene que moverse… o como nunca te lo imaginaste. El movimiento es el mensaje.",
+        anim: "default",
+        cutouts: [
+            // TEMP stand-ins — swap for the real Motion cutouts when you have them.
+            { src: "resources/megafono.webp", depth: 40, pos: "cutout-right" },
+            { src: "resources/cerebro.webp",  depth: 24, pos: "cutout-left" },
+        ],
+    },
+};
+
+// Pick the category from ?cat=, falling back to 3D (our gold prototype).
+const slug = new URLSearchParams(location.search).get("cat");
+const cat = (CATEGORIES[slug] && CATEGORIES[slug].title) ? CATEGORIES[slug] : CATEGORIES["3d"];
+const activeSlug = cat === CATEGORIES[slug] ? slug : "3d";
+document.body.dataset.cat = activeSlug; // CSS styling hook per category
+
+// Fill the hero shell from the chosen config. This MUST run before erraticize,
+// because erraticize reads the title to split it into per-letter spans.
+const titleEl = document.querySelector(".cat-title");
+titleEl.dataset.text = cat.title;
+titleEl.textContent = cat.title;
+document.querySelector(".cat-hero-desc").textContent = cat.desc;
+
+// Build the collage cutouts (front-to-back via z-index). Each <img> exposes a
+// data-depth the parallax loop reads, and consumes the same CSS vars as the
+// home page (--px/--py) plus --rx/--ry (tilt) and --enter-* (entrance).
+const collage = document.querySelector(".cat-hero-collage");
+const cutouts = cat.cutouts || [];
+cutouts.forEach((c, i) => {
+    const img = document.createElement("img");
+    img.src = c.src;
+    img.alt = "";
+    img.setAttribute("aria-hidden", "true");
+    img.decoding = "async";
+    img.className = `cat-cutout ${c.pos || ""}`.trim();
+    img.dataset.depth = c.depth;
+    img.style.zIndex = String(cutouts.length - i); // first listed = frontmost
+    collage.appendChild(img);
+});
+
+// When a category brings its own collage, hide the default eye decor so they
+// don't fight for the same corner.
+if (cutouts.length) {
+    document.querySelector(".cat-hero-decor").style.display = "none";
+}
+
 document.querySelectorAll(".erratic").forEach(erraticize);
 
 // --- Section switching -----------------------------------------------------
@@ -75,24 +175,102 @@ window.addEventListener("hashchange", () => {
     setActiveSection((location.hash || "#cat-hero").slice(1));
 });
 
+// --- Pointer orbit + parallax (3D signature) -------------------------------
+// The cutouts read the cursor to fake depth: they TRANSLATE opposite the mouse
+// (--px/--py, like the home page) AND TILT toward it (--rx/--ry) so the collage
+// feels like it's orbiting in space. We only write CSS vars — the element's own
+// rotation and the entrance vars live in the same transform and aren't touched.
+// Throttled to one update per frame; skipped under reduced-motion.
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const orbitLayers = [...document.querySelectorAll(".cat-cutout")].map((el) => ({
+    el,
+    depth: parseFloat(el.dataset.depth) || 24,
+}));
+
+if (!reduceMotion && orbitLayers.length) {
+    let pointerX = window.innerWidth / 2;
+    let pointerY = window.innerHeight / 2;
+    let frameQueued = false;
+
+    function applyOrbit() {
+        frameQueued = false;
+        const nx = pointerX / window.innerWidth - 0.5;   // -0.5 .. 0.5
+        const ny = pointerY / window.innerHeight - 0.5;
+        orbitLayers.forEach(({ el, depth }) => {
+            // Translate AWAY from the cursor (looking into the scene)…
+            el.style.setProperty("--px", `${(-nx * depth).toFixed(1)}px`);
+            el.style.setProperty("--py", `${(-ny * depth).toFixed(1)}px`);
+            // …and TILT toward it. Tilt scales with depth so near layers swing
+            // more — that difference is what reads as 3D rotation.
+            el.style.setProperty("--ry", `${(nx * depth * 0.5).toFixed(1)}deg`);
+            el.style.setProperty("--rx", `${(-ny * depth * 0.5).toFixed(1)}deg`);
+        });
+    }
+
+    window.addEventListener("mousemove", (e) => {
+        pointerX = e.clientX;
+        pointerY = e.clientY;
+        if (!frameQueued) {
+            frameQueued = true;
+            requestAnimationFrame(applyOrbit);
+        }
+    });
+}
+
 // --- GSAP hero entrance ----------------------------------------------------
-// Animate OPACITY (and a safe y on the plain description) only — the letter
-// transforms above are left alone, so the two systems don't overwrite each
-// other. Skipped if GSAP didn't load or the visitor prefers reduced motion.
-if (typeof gsap !== "undefined" &&
-    !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-
-    const decor = gsap.utils.toArray(".cat-hero .cat-hero-decor");
-    const letters = gsap.utils.toArray(".cat-hero .cat-title .erratic > span, .cat-hero .cat-title > span");
+// Two signatures, chosen by the active category's `anim`:
+//   "orbit"   — the 3D one: cutouts swing in from below + the wordmark EXTRUDES
+//               (its stacked text-shadow grows from flat to deep).
+//   "default" — the simple opacity cascade every other category uses for now.
+// In both cases we animate opacity + bespoke CSS vars (--enter-y/rot/scale,
+// --extrude) so we never collide with the parallax/orbit transform above or the
+// per-letter jitter. Skipped if GSAP didn't load or reduced-motion is on.
+if (typeof gsap !== "undefined" && !reduceMotion) {
+    const letters = gsap.utils.toArray(".cat-hero .cat-title > span");
     const desc = gsap.utils.toArray(".cat-hero .cat-hero-desc");
+    const decor = gsap.utils.toArray(".cat-hero .cat-hero-decor");
 
-    // Hide before first paint so there's no flash of the final state.
-    gsap.set(decor, { opacity: 0 });
-    gsap.set(letters, { opacity: 0 });
     gsap.set(desc, { opacity: 0, y: 20 });
 
-    const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
-    tl.to(decor, { opacity: 1, duration: 1.2 })
-      .to(letters, { opacity: 1, duration: 0.5, stagger: 0.015 }, "-=0.8")
-      .to(desc, { opacity: 1, y: 0, duration: 0.8 }, "-=0.3");
+    if (cat.anim === "orbit") {
+        // Cutouts start lower, smaller and rotated, then settle (the "orbit in").
+        gsap.set(orbitLayers.map((l) => l.el), {
+            opacity: 0,
+            "--enter-y": "70px",
+            "--enter-rot": "-10deg",
+            "--enter-scale": 0.8,
+        });
+        gsap.set(letters, { opacity: 0 });
+
+        // Drive the extrude depth (px) and rebuild the stacked shadow each frame.
+        const extrude = { d: 0 };
+        const setExtrude = () => {
+            const n = Math.round(extrude.d);
+            let layers = "";
+            for (let i = 1; i <= n; i++) layers += `${i}px ${i}px 0 var(--extrude-color),`;
+            titleEl.style.textShadow = layers.slice(0, -1);
+        };
+
+        const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+        tl.to(orbitLayers.map((l) => l.el), {
+            opacity: 1,
+            "--enter-y": "0px",
+            "--enter-rot": "0deg",
+            "--enter-scale": 1,
+            duration: 1.1,
+            stagger: 0.12,
+            ease: "back.out(1.4)", // slight overshoot = the cutouts "land"
+        })
+          .to(letters, { opacity: 1, duration: 0.4, stagger: 0.04 }, "-=0.7")
+          .to(extrude, { d: 12, duration: 0.7, onUpdate: setExtrude }, "<")
+          .to(desc, { opacity: 1, y: 0, duration: 0.8 }, "-=0.4");
+    } else {
+        // Default cascade (the old behavior) for categories without a signature.
+        gsap.set(decor, { opacity: 0 });
+        gsap.set(letters, { opacity: 0 });
+        const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
+        tl.to(decor, { opacity: 1, duration: 1.2 })
+          .to(letters, { opacity: 1, duration: 0.5, stagger: 0.015 }, "-=0.8")
+          .to(desc, { opacity: 1, y: 0, duration: 0.8 }, "-=0.3");
+    }
 }

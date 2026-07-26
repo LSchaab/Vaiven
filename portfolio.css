@@ -44,12 +44,70 @@
     color: var(--text-primary);
 }
 
+/* Extrude edge for the 3D wordmark. JS stacks this colour at 1px,2px,3px… to
+   fake depth. It's the Negro token at 35% alpha (token-compliant) — swap for a
+   darker-orange token here if the brand ever adds one. The big orange title in
+   the 3D variant uses --naranja, set via the data-cat hook below. */
+body[data-cat="3d"] .cat-title { color: var(--naranja); }
+body[data-cat="3d"] .cat-title,
+body[data-cat="3d"] .cat-title > span { --extrude-color: rgba(0, 0, 0, 0.35); }
+
 .cat-hero-desc {
     margin-top: clamp(1rem, 2vh, 1.5rem);
     max-width: 40rem;
     font-size: clamp(1rem, 1.8vw, 1.4rem);
     line-height: 1.5;
     color: var(--highlight);
+}
+
+/* ---- Collage layer (3D "orbit" signature) ----
+   Full-bleed layer behind the text. `perspective` is what turns the per-cutout
+   rotateX/rotateY (written by the pointer loop) into real 3D tilt instead of a
+   flat skew. The eye decor is hidden by JS when a collage is present. */
+.cat-hero-collage {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    perspective: 1200px;       /* lower = stronger 3D; higher = subtler */
+    pointer-events: none;
+}
+
+/* Each cutout. Note the single combined transform: FOUR systems feed it via
+   CSS vars and never overwrite each other —
+     --px/--py     pointer parallax (translate away from cursor)
+     --rx/--ry     pointer orbit (tilt toward cursor)
+     --enter-*     the GSAP entrance (swing up, rotate, scale in)
+     --base-rot    the static collage tilt set per position class below
+   Order matters: translate first, then rotate, then scale. */
+.cat-cutout {
+    position: absolute;
+    width: clamp(180px, 26vw, 420px);
+    height: auto;
+    user-select: none;
+    transform:
+        translate(var(--px, 0px), var(--py, 0px))
+        translateY(var(--enter-y, 0px))
+        rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
+        rotateZ(calc(var(--base-rot, 0deg) + var(--enter-rot, 0deg)))
+        scale(var(--enter-scale, 1));
+}
+
+/* Placement to echo the 3D mock: laptop low-left, donut mid-right. */
+.cat-cutout.cutout-left {
+    left: clamp(-2rem, 2vw, 4rem);
+    bottom: clamp(2rem, 8vh, 6rem);
+    --base-rot: -6deg;
+}
+.cat-cutout.cutout-right {
+    right: clamp(-3rem, -1vw, 2rem);
+    top: 50%;
+    --base-rot: 4deg;
+}
+
+/* Drop to a single column-friendly size on small screens. */
+@media (max-width: 767px) {
+    .cat-cutout { width: clamp(130px, 42vw, 240px); }
+    .cat-cutout.cutout-right { top: auto; bottom: 30%; }
 }
 
 /* Decorative eye motif — blended into the blue, behind the text. */

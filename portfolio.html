@@ -26,17 +26,18 @@
 
     <main>
         <!-- ===== SECTION 1 — Category hero =====
-             Big category title + a short description. Same entrance animation
-             as the home hero (handled in portfolio.js).
-             PLACEHOLDER copy — swap per category. -->
+             ONE template, many variants. The title, description, collage cutouts
+             and entrance animation all come from the CATEGORIES config in
+             portfolio.js, chosen by the URL (?cat=3d). The markup below is just
+             the empty shell JS fills in — so we never duplicate this page.
+             The eye decor is only shown for categories without their own collage. -->
         <section class="cat-hero" id="cat-hero">
+            <!-- Collage layer: cutouts are injected here, front-to-back. -->
+            <div class="cat-hero-collage" aria-hidden="true"></div>
             <img class="cat-hero-decor" src="resources/ojo_1.webp" alt="" aria-hidden="true" decoding="async">
             <div class="cat-hero-inner">
                 <h1 class="cat-title erratic" data-text="Categoría">Categoría</h1>
-                <p class="cat-hero-desc">
-                    Descripción breve de la categoría: una o dos líneas que cuentan
-                    de qué va esta disciplina y qué van a encontrar abajo.
-                </p>
+                <p class="cat-hero-desc"></p>
             </div>
         </section>
 
