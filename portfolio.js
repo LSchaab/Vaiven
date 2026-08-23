@@ -42,9 +42,16 @@ function erraticize(el) {
 //
 //   title    — the big erratic wordmark
 //   desc     — the line under it
-//   anim     — "orbit" (the 3D signature: parallax + tilt + extrude) or
-//              "default" (the simple opacity cascade, until that category
-//              gets its own signature built)
+//   hero     — which hero RENDERER mounts for this category (dispatched in
+//              mountHero() after the shell is built). One of:
+//                "three"         — Three.js extruded "3D" wordmark (hero-3d.js)
+//                "typewriter"    — GSAP typewriter (category-heroes.js)
+//                "motion-kinetic"— GSAP per-letter kinetic (category-heroes.js)
+//                (unset)         — no custom renderer; the erratic-title cascade
+//                                  below (anim) plays as before.
+//   anim     — entrance for the DEFAULT cascade only: "orbit" (parallax + tilt +
+//              extrude) or "default" (simple opacity cascade). Ignored when a
+//              custom `hero` renderer owns the section.
 //   cutouts  — collage images, listed FRONT → BACK. `depth` = how far each one
 //              travels/tilts with the pointer (bigger = feels closer). `pos`
 //              is a CSS class that places it (see .cutout-left / -right).
@@ -53,22 +60,16 @@ const CATEGORIES = {
         title: "3D",
         // Copy lifted straight from the approved 3D mock.
         desc: "No es magia, es Cinema 4D, Blender, ZBrush y Substance, pero queda como magia. El realismo es nuestro extremo, y también el delirio de crear cosas que todavía no existen.",
-        anim: "orbit",
-        cutouts: [
-            // TEMP stand-ins so the motion is visible NOW. Export the real
-            // cutouts from the collage and drop them in as resources/3d-laptop.webp
-            // and resources/3d-donut.webp, then swap the two src values below.
-            { src: "resources/cerebro.webp", depth: 42, pos: "cutout-left" },
-            { src: "resources/ojo_1.webp",   depth: 26, pos: "cutout-right" },
-        ],
+        hero: "three", // Three.js extruded wordmark (falls back to the text below)
+        anim: "orbit", // fallback cascade if the canvas can't mount
+        cutouts: [],   // the 3D canvas IS the hero art now — no collage cutouts
     },
 
-    // The other four reuse the exact shape above. Placeholder copy keeps the
-    // page working; "default" plays the simple cascade until we build each
-    // discipline's own signature.
+    // Desarrollo web — GSAP typewriter on a dark surface (scoped in CSS).
     "web": {
         title: "Web",
         desc: "Placeholder — reemplazar con la copy de Desarrollo web.",
+        hero: "typewriter",
         anim: "default",
         cutouts: [],
     },
@@ -85,11 +86,11 @@ const CATEGORIES = {
         cutouts: [],
     },
 
-    // Motion Graphics. `default` cascade for now — its kinetic signature
-    // (letters with distinct eases, looping) comes in a later pass.
+    // Motion Graphics — GSAP kinetic signature (per-letter distinct eases + loop).
     "motion": {
         title: "Motion",
         desc: "Acá nada se queda quieto. After Effects, Cinema 4D y litros de café para que todo se mueva como tiene que moverse… o como nunca te lo imaginaste. El movimiento es el mensaje.",
+        hero: "motion-kinetic",
         anim: "default",
         cutouts: [
             // TEMP stand-ins — swap for the real Motion cutouts when you have them.
@@ -225,7 +226,10 @@ if (!reduceMotion && orbitLayers.length) {
 // In both cases we animate opacity + bespoke CSS vars (--enter-y/rot/scale,
 // --extrude) so we never collide with the parallax/orbit transform above or the
 // per-letter jitter. Skipped if GSAP didn't load or reduced-motion is on.
-if (typeof gsap !== "undefined" && !reduceMotion) {
+//
+// A category with its OWN hero renderer (cat.hero set → mountHero below) owns
+// the hero art entirely, so we skip this default cascade for it.
+if (!cat.hero && typeof gsap !== "undefined" && !reduceMotion) {
     const letters = gsap.utils.toArray(".cat-hero .cat-title > span");
     const desc = gsap.utils.toArray(".cat-hero .cat-hero-desc");
     const decor = gsap.utils.toArray(".cat-hero .cat-hero-decor");
@@ -274,3 +278,48 @@ if (typeof gsap !== "undefined" && !reduceMotion) {
           .to(desc, { opacity: 1, y: 0, duration: 0.8 }, "-=0.3");
     }
 }
+
+// --- Per-category hero dispatch (Feature A) --------------------------------
+// After the shell is built (title/desc filled, cutouts injected, erratic run),
+// mount the category's custom hero renderer if it has one. Each renderer is an
+// isolated module registered on window.VaivenHeroes:
+//   "three"          → hero-3d.js       (ES module, importmap; async-registered)
+//   "typewriter"     → category-heroes.js (mountWebHero)
+//   "motion-kinetic" → category-heroes.js (mountMotionHero)
+// Categories without a `hero` keep the erratic-title cascade above untouched.
+const catHero = document.getElementById("cat-hero");
+
+function mountHero(cat) {
+    const H = window.VaivenHeroes || {};
+
+    if (cat.hero === "typewriter" && typeof H.mountWebHero === "function") {
+        H.mountWebHero(catHero, cat);
+    } else if (cat.hero === "motion-kinetic" && typeof H.mountMotionHero === "function") {
+        H.mountMotionHero(catHero, cat);
+    } else if (cat.hero === "three") {
+        mount3D();
+    }
+}
+
+// The 3D hero is an ES module that may register AFTER this classic script runs.
+// Try now; if it isn't ready yet, wait for the module's ready event once.
+function mount3D() {
+    const run = () => {
+        const fn = window.VaivenHeroes && window.VaivenHeroes.mount3DHero;
+        if (typeof fn !== "function") return false;
+        // Mount the canvas into the collage layer. Only hide the erratic
+        // fallback title once the canvas confirms it's rendering.
+        const ok = fn(collage);
+        if (ok) {
+            catHero.classList.add("has-canvas-hero");
+            const decor = document.querySelector(".cat-hero-decor");
+            if (decor) decor.style.display = "none";
+        }
+        return true;
+    };
+    if (!run()) {
+        document.addEventListener("vaiven:hero3d-ready", run, { once: true });
+    }
+}
+
+mountHero(cat);

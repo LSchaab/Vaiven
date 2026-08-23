@@ -3,6 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Pre-paint palette: set the saved palette before first paint (no flash). -->
+    <script>
+      try {
+        if (localStorage.getItem("vaiven-palette") === "alt") {
+          document.documentElement.setAttribute("data-palette", "alt");
+        }
+      } catch (e) {}
+    </script>
     <title>Categoría · Vaiven</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,8 +20,28 @@
     <!-- Page-specific styles: opts out of the no-scroll layout + lays out the
          3 sections. Loaded AFTER styles.css so its overrides win. -->
     <link rel="stylesheet" href="portfolio.css">
-    <!-- GSAP (CDN, no build step) must load before portfolio.js uses it. -->
+    <!-- Shared palette toggle (owns the .volver eye). Do NOT define here. -->
+    <script src="palette.js" defer></script>
+
+    <!-- GSAP (CDN, no build step) must load before the hero scripts use it. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+
+    <!-- Three.js as an ES module via importmap (CDN, pinned r0.160.0, no build
+         step). Only the 3D category's hero-3d.js module actually imports it. -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+      }
+    }
+    </script>
+    <!-- 3D hero (ES module): registers window.VaivenHeroes.mount3DHero async. -->
+    <script type="module" src="hero-3d.js"></script>
+
+    <!-- GSAP heroes (Web typewriter + Motion kinetic). Classic script; must run
+         BEFORE portfolio.js so its renderers are registered when it dispatches.
+         Both are `defer`, which preserves document order. -->
+    <script src="category-heroes.js" defer></script>
     <script src="portfolio.js" defer></script>
 </head>
 <!-- .portfolio-page = this page scrolls (see portfolio.css). -->

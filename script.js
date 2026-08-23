@@ -57,8 +57,20 @@ window.reshuffleErratic = () => {
 
 const SECTIONS = ["hero", "portfolio", "contacto", "nosotros", "destacados"];
 
+// The currently active section id — tracked so add-ons (the tour gate) can seed
+// their state from wherever we land on load.
+let activeSection = "hero";
+
+// Navigation hooks other modules plug into (tour.js). One clean guard so we
+// never have two click handlers fighting over the same link:
+//   navGuard(id)     — return false to VETO navigating to `id` (locked section)
+//   sectionListeners — notified AFTER a section becomes active (to mark reached)
+let navGuard = null;
+const sectionListeners = [];
+
 function setActiveSection(id) {
     if (!SECTIONS.includes(id)) id = "hero";
+    activeSection = id;
     document.querySelectorAll("main > section").forEach((section) => {
         if (section.id === id) section.setAttribute("data-active", "");
         else section.removeAttribute("data-active");
@@ -68,18 +80,35 @@ function setActiveSection(id) {
         if (href === `#${id}`) link.setAttribute("aria-current", "page");
         else link.removeAttribute("aria-current");
     });
+    // Let add-ons react to the change (e.g. the tour records reached sections).
+    sectionListeners.forEach((fn) => fn(id));
 }
+
+// Public hook surface for add-on modules (see tour.js). Kept tiny + explicit.
+window.VaivenNav = {
+    setActiveSection,
+    getActiveSection: () => activeSection,
+    // Install/replace the navigation guard (pass null to remove it).
+    registerNavGuard: (fn) => { navGuard = fn; },
+    // Subscribe to section changes.
+    onSectionChange: (fn) => { sectionListeners.push(fn); },
+};
 
 // Intercept any in-page anchor click (menu + logo). Stop the browser from
 // trying to scroll to the target, switch sections instead. Links whose hash
 // doesn't match a section (e.g. placeholder href="#" on the bento cards)
 // are short-circuited so they don't accidentally navigate away.
-document.querySelectorAll('a[href^="#"]').forEach((link) => {
+// The `.volver` eye is EXCLUDED — palette.js owns it (it's a color toggle now,
+// not navigation).
+document.querySelectorAll('a[href^="#"]:not(.volver)').forEach((link) => {
     link.addEventListener("click", (e) => {
         const href = link.getAttribute("href") || "";
         const id = href.slice(1);
         e.preventDefault();
         if (!SECTIONS.includes(id)) return;
+        // Ask the guard (if any) whether this navigation is allowed. A locked
+        // section (first-visit gate) vetoes here → no section switch, no hash.
+        if (navGuard && !navGuard(id)) return;
         history.replaceState(null, "", `#${id}`);
         setActiveSection(id);
     });
@@ -88,9 +117,12 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
 // Initial state — read from URL so deep links land on the right section.
 setActiveSection((location.hash || "#hero").slice(1));
 
-// Sync when the user uses browser back/forward.
+// Sync when the user uses browser back/forward. Respect the nav guard so a
+// locked section can't be reached via the hash during the first-visit gate.
 window.addEventListener("hashchange", () => {
-    setActiveSection((location.hash || "#hero").slice(1));
+    const id = (location.hash || "#hero").slice(1);
+    if (navGuard && SECTIONS.includes(id) && !navGuard(id)) return;
+    setActiveSection(id);
 });
 
 // === Pointer parallax ===

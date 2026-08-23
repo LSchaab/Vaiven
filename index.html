@@ -3,6 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Pre-paint palette: set the saved palette before first paint (no flash). -->
+    <script>
+      try {
+        if (localStorage.getItem("vaiven-palette") === "alt") {
+          document.documentElement.setAttribute("data-palette", "alt");
+        }
+      } catch (e) {}
+    </script>
     <title>Vaiven</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,6 +23,11 @@
          Must load before hero-motion.js, which uses it. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="script.js" defer></script>
+    <!-- Eye = palette toggle (Feature B). Shared, page-agnostic; runs on its own. -->
+    <script src="palette.js" defer></script>
+    <!-- First-visit sequential gate (Feature C, home only). Loads AFTER script.js
+         so window.VaivenNav (its integration hooks) already exists. -->
+    <script src="tour.js" defer></script>
     <!-- Hero entrance animation. Loads after script.js so the per-letter
          "erratic" spans already exist for GSAP to animate. -->
     <script src="hero-motion.js" defer></script>

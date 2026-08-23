@@ -1297,3 +1297,128 @@ nav a:hover {
     .volver { transition: none; }
     .volver:hover { transform: none; }
 }
+
+/* ===== Feature B — Alt palette (the eye toggle) =====
+   Scoped to <html data-palette="alt">, set by palette.js (persisted in
+   localStorage, applied pre-paint to avoid a flash). Base = no attribute =
+   everything above, unchanged. Brand tokens ONLY. This block also covers the
+   category page's shared #contacto so the toggle looks consistent cross-page.
+
+   Sections drive their background through --section-bg, so most of this is just
+   reassigning that var per surface; text/accent vars are nudged (tokens only)
+   where the new background would hurt contrast. */
+
+/* Sections get a short bg/color transition when the palette flips. */
+#hero,
+#portfolio,
+#contacto,
+#nosotros,
+#destacados {
+    transition:
+        background-color 0.4s ease,
+        color 0.4s ease,
+        /* keep the existing section enter/exit transition intact */
+        opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+        visibility 0s linear 0.45s;
+}
+section[data-active] {
+    /* re-declare so the active state keeps the instant visibility swap */
+    transition:
+        background-color 0.4s ease,
+        color 0.4s ease,
+        opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+        transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+        visibility 0s linear 0s;
+}
+
+/* --- Hero: solid azul → naranja→violeta-claro vertical gradient. The gradient
+   is a background-IMAGE layered over --section-bg (which the shared texture
+   system still reads), so the ::before/::after texture layers keep working. --- */
+html[data-palette="alt"] #hero {
+    background-image: linear-gradient(
+        180deg,
+        var(--naranja) 0%,
+        var(--violeta-claro) 100%
+    );
+    /* Blue → orange background: orange headline text would vanish. Go white,
+       which stays legible across the whole gradient. */
+    --accent-primary: var(--blanco);
+    --next-section-bg: var(--violeta-claro); /* smooth the blend into portfolio */
+}
+
+/* #portfolio — unchanged in alt (stays --azul). */
+
+/* --- Contacto: lila → violeta-claro (dark). Flip the dark-on-light text to
+   light tokens so the titles/body stay readable. --- */
+html[data-palette="alt"] #contacto {
+    --section-bg: var(--violeta-claro);
+    color: var(--blanco);
+    --contacto-title:    var(--amarillo);          /* pops on dark violet */
+    --contacto-subtitle: var(--verde-agua-claro);  /* aqua, high contrast */
+}
+
+/* --- Nosotros: azul → azul-oscuro. Text is already white → stays legible.
+   #nosotros sets background-color directly (not via --section-bg). --- */
+html[data-palette="alt"] #nosotros {
+    background-color: var(--azul-oscuro);
+}
+
+/* --- Destacados: violeta-claro → verde. White text + amarillo title stay
+   legible on the teal green. --- */
+html[data-palette="alt"] #destacados {
+    --section-bg: var(--verde);
+    --prev-section-bg: var(--azul-oscuro); /* nosotros is now azul-oscuro */
+}
+
+/* --- Nav sidebar: dashed gradient → solid black, white links, active link
+   underlined in amarillo/naranja. --- */
+html[data-palette="alt"] nav {
+    background-color: var(--negro);
+}
+/* Swap the dashed multicolor left border for a flat naranja strip (no mask). */
+html[data-palette="alt"] nav::before {
+    background: var(--naranja);
+    -webkit-mask: none;
+            mask: none;
+}
+html[data-palette="alt"] nav a {
+    color: var(--blanco);
+}
+/* Active link stays white (readable on black); the orange brush underline (the
+   [aria-current]::after tilde SVG) already reads as the accent. Force the text
+   color so the base `nav a[aria-current] { color: var(--azul) }` (invisible on
+   black) doesn't win. */
+html[data-palette="alt"] nav a[aria-current] {
+    color: var(--amarillo);
+}
+
+/* Instant swap under reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+    #hero,
+    #portfolio,
+    #contacto,
+    #nosotros,
+    #destacados,
+    section[data-active] {
+        transition:
+            opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+            transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+            visibility 0s linear 0.45s;
+    }
+    html[data-palette="alt"] nav,
+    html[data-palette="alt"] nav a { transition: none; }
+}
+
+/* ===== Feature C — Locked nav links (first-visit gate) =====
+   A section not yet reachable in the walk order is dimmed and shows a
+   not-allowed cursor. tour.js adds .is-locked + aria-disabled; its click is
+   blocked in script.js. On-brand: just a faded, inert look. */
+nav a.is-locked {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: auto; /* keep it clickable so the JS guard can intercept */
+}
+nav a.is-locked:hover {
+    text-decoration: none; /* no affordance — it doesn't navigate */
+}

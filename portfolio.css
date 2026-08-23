@@ -196,3 +196,106 @@ body[data-cat="3d"] .cat-title > span { --extrude-color: rgba(0, 0, 0, 0.35); }
     .bento-item:nth-child(1) { grid-column: span 2; grid-row: span 1; }
     .bento-item:nth-child(5) { grid-column: span 2; }
 }
+
+/* ===================================================================
+   FEATURE A — per-category heroes
+   =================================================================== */
+
+/* ---- A1 · 3D hero (Three.js canvas) ----
+   The canvas mounts into the collage layer and fills the hero. It's the art,
+   so it sits BEHIND the text (z-index 1, same as the collage). It's pointer-
+   draggable, so unlike the collage it must accept pointer events. When the
+   canvas confirms it's rendering, JS adds .has-canvas-hero to hide the erratic
+   fallback title (the WebGL/failure fallback keeps that title visible). */
+.cat-hero-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: auto;   /* draggable wordmark */
+    touch-action: none;     /* let us handle touch-drag ourselves */
+}
+/* Once the 3D canvas is live, retire the text wordmark + its extrude shadow so
+   they don't double up with the rendered "3D". */
+.cat-hero.has-canvas-hero .cat-title {
+    opacity: 0;
+    pointer-events: none;
+}
+/* The 3D desc should sit clearly above the canvas art. */
+.cat-hero.has-canvas-hero .cat-hero-inner { pointer-events: none; }
+.cat-hero.has-canvas-hero .cat-hero-desc { pointer-events: auto; }
+
+/* ---- A2 · Web hero (GSAP typewriter) ----
+   Dark surface for THIS category only, scoped to [data-cat="web"] so it never
+   leaks. --azul-oscuro reads as a deep "terminal" backdrop for the code copy. */
+body[data-cat="web"] .cat-hero {
+    background-color: var(--azul-oscuro);
+    color: var(--blanco);
+}
+body[data-cat="web"] .cat-title {
+    color: var(--verde-agua-claro);   /* aqua = on-brand highlight on dark */
+    font-family: "Montserrat Alternates", system-ui, sans-serif;
+    font-weight: 700;
+    text-transform: none;             /* "Programación Web" as typed, mixed case */
+}
+body[data-cat="web"] .cat-hero-desc {
+    color: var(--lila);
+    font-family: "Montserrat Alternates", system-ui, sans-serif;
+}
+
+/* Blinking caret — a solid block that trails the typed text. Uses the amarillo
+   accent token. Blink is disabled under reduced motion (rule below). */
+.tw-caret {
+    display: inline-block;
+    width: 0.6ch;
+    margin-left: 0.05em;
+    background-color: var(--amarillo);
+    color: transparent;
+    animation: tw-blink 1s steps(1) infinite;
+    vertical-align: baseline;
+    align-self: stretch;
+}
+.tw-caret::before { content: "\00a0"; }  /* give it height without glyphs */
+@keyframes tw-blink {
+    0%, 49%  { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+/* ===================================================================
+   FEATURE B — alt palette overrides (this page's OWN sections only)
+   -------------------------------------------------------------------
+   Scoped to html[data-palette="alt"]. #contacto's alt look is handled in the
+   shared styles.css by the palette agent, so we don't touch it here. We shift
+   #cat-hero and #cat-projects to different on-brand tokens so the eye toggle
+   visibly changes them. Brand tokens only.
+   =================================================================== */
+
+/* Category hero: electric azul → deep violeta claro in the alt palette. */
+html[data-palette="alt"] .portfolio-page .cat-hero {
+    background-color: var(--violeta-claro);
+}
+html[data-palette="alt"] .portfolio-page .cat-hero-desc {
+    color: var(--verde-agua-claro);
+}
+
+/* Projects bento: violeta claro → verde in the alt palette, with the title
+   flipping to the aqua highlight so it stays legible on green. */
+html[data-palette="alt"] .portfolio-page .cat-projects {
+    background-color: var(--verde);
+}
+html[data-palette="alt"] .portfolio-page .cat-projects-title {
+    color: var(--verde-agua-claro);
+}
+
+/* The Web hero's dark surface must READ AS DARK in both palettes — this more
+   specific selector wins over the alt hero override above (body[data-cat] adds
+   an attribute + the html[data-palette] prefix matches the alt state). */
+html[data-palette="alt"] body[data-cat="web"].portfolio-page .cat-hero {
+    background-color: var(--azul-oscuro);
+}
+
+/* ---- Reduced motion: kill the caret blink (typing is already disabled in JS). */
+@media (prefers-reduced-motion: reduce) {
+    .tw-caret { animation: none; opacity: 1; }
+}
