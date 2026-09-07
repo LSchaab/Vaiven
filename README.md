@@ -26,13 +26,14 @@ Sitio estático, sin paso de build. Se prioriza vanilla; solo se suma una librer
 
 ```
 .
-├── index.html          # Home / Hero + secciones (Portfolio, Nosotros, Destacados, Contacto)
-├── portfolio.html      # Página de categoría de portfolio
+├── index.html          # Home / Hero + secciones (Portfolio unificado, Nosotros, Destacados, Contacto)
 ├── styles.css          # Estilos globales, tokens y roles semánticos de color
-├── portfolio.css       # Estilos de la página de portfolio
-├── script.js           # Interactividad general del sitio
-├── portfolio.js        # Lógica de las categorías de portfolio (efectos 3D, animaciones)
+├── script.js           # Interactividad general del sitio (cursor, línea de vaivén, secciones)
+├── data.js             # Datos del portfolio (categorías, proyectos, tools) — sin acceso al DOM
+├── portfolio-grid.js   # Filtro + render del portfolio unificado (categoría, programa, búsqueda)
 ├── hero-motion.js      # Parallax del hero, guiado por puntero (respeta reduced-motion)
+├── hero-3d.js          # Hero 3D con Three.js — actualmente sin montar en ninguna página (ver CLAUDE.md)
+├── category-heroes.js  # Heroes de typewriter/kinetic por categoría — ídem, sin montar por ahora
 ├── resources/          # Imágenes, logos, íconos, texturas y fotos del equipo (nosotros/)
 │
 │   # Obra por disciplina

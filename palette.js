@@ -1,8 +1,8 @@
 // palette.js — the eye = palette toggle (Feature B).
 //
-// Page-agnostic: works on index.html AND portfolio.html (any page that loads
-// it). It guards for missing elements, so it's a safe no-op where there is no
-// `.volver` eye. The eye STOPS navigating and instead flips between two
+// Page-agnostic (guards for missing elements, so it's a safe no-op where
+// there is no `.volver` eye) — though as of the 2026-09 redesign there is
+// only one page, index.html. The eye STOPS navigating and instead flips between two
 // palettes:
 //   - base : the current CSS (no attribute on <html>)
 //   - alt  : <html data-palette="alt"> (the Figma "changed" look, styled in

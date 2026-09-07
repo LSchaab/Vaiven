@@ -181,15 +181,34 @@ above — defined in `styles.css :root`.
 
 ---
 
-## Pages / Sections (from wireframe)
+## Pages / Sections (updated 2026-09-07 — see storytelling redesign below)
+
+**There is only one HTML page now: `index.html`.** The separate category pages
+(`portfolio.html?cat=...`) were retired — the team decided the site should be
+a single unified portfolio instead of 5 category subpages. `portfolio.html`,
+`portfolio.css` and `portfolio.js` are deleted. `hero-3d.js` and
+`category-heroes.js` (the per-category hero renderers: Three.js "3D" wordmark,
+GSAP typewriter, GSAP kinetic type) still exist but are currently **unmounted
+— no page loads them**. They're a good candidate for the home hero (see the
+redesign spec's recommendation to concentrate 3D in 1-2 strong moments) but
+that reintegration hasn't been done yet.
 
 | Section | Notes |
 |---|---|
 | Home / Hero | Large headline + collage imagery. Gradient background. |
-| Portfolio | Grid of categories: (1) Ilustración y Diseño Gráfico, (2) Modelado 3D, (3) Motion Graphics, (4) Desarrollo web, (5) Campañas publicitarias |
-| Contacto | Social links (Instagram, TikTok) + contact CTA |
-| Nosotros | "Dream Team" with member cards + roles |
+| Portfolio | **Unified grid**, all categories together, filterable by categoría + programa + búsqueda de texto (`data.js` + `portfolio-grid.js`). Emotion: diversión/amarillo. |
+| Contacto | Social links (Instagram, TikTok) + contact CTA. Emotion: calma/verde-agua-claro. |
+| Nosotros | "Dream Team" with member cards + roles. Emotion: ansiedad/naranja (matches the existing global default accent). |
 | Destacados | "Highlights para vagos" — featured highlights reel |
+
+### Emotion-per-section (paleta narrativa)
+
+Per the 2026-09-07 storytelling redesign, each section ties to one of the
+team's own emotions instead of a separate abstract narrative block — see the
+spec for the reasoning. Implemented today as a scoped `--accent-primary`
+override via `[data-emotion]` on the section (styles.css, bottom of file).
+Only 3 sections are mapped so far (Portfolio/Nosotros/Contacto) — Hero and
+Destacados don't have an assigned emotion yet.
 
 ---
 
@@ -221,10 +240,44 @@ above — defined in `styles.css :root`.
 
 ---
 
+## Known gaps after the 2026-09-07 storytelling redesign (first pass)
+
+- **Copy is still draft, not final.** Category descriptions (`web`/`grafico`/
+  `campanas`) and all 25 project `copy` lines in `data.js` are Claude-drafted
+  placeholders carried over from specs/01 and specs/02. Lourdes is rewriting
+  the per-project copy herself (per her decision) — nobody should treat the
+  current text as approved.
+- **`autor` is `"TODO"` for every project in `data.js`.** There's no real
+  record of who made what portfolio piece — don't invent names.
+- **`resources/logos/` does not exist.** specs/02 assumed 12 tool/software
+  logo files were already added to the repo; they were never actually added.
+  Tool filter chips render as text pills for now. Add real logo assets and
+  wire them into `portfolio-grid.js`/`data.js` (`TOOLS[key].logo`) once they
+  exist.
+- **Motion Graphics and Campañas have zero real assets.** Confirmed both will
+  be video (not images/renders like the other 3 categories) — contributed by
+  the team, not by Lourdes. `data.js` marks these 10 projects `media: "video"`
+  with `thumb: null`; the grid shows a "VIDEO — próximamente" placeholder
+  block until real files exist.
+- **The site does not scroll continuously** — sections are locked, full-
+  viewport, switched via the sidebar nav (`window.VaivenNav`). The
+  storytelling spec originally described a scroll-linked "línea que te
+  acompaña"; since there's no continuous scroll to tie it to, it was adapted
+  to react to **section changes** instead (`.vaiven-line-dot` in
+  `index.html`/`script.js`). Worth flagging if a future pass reconsiders
+  moving to continuous scroll.
+- **Cursor blur/deformation** (`.cursor-follower`, `#cursor-distort` SVG
+  filter) is a first version — tune the `feDisplacementMap` scale and the
+  lerp factor in `script.js` once someone can actually look at it live.
+- **Not yet done from the redesign spec:** the 3D/hero reintegration into the
+  main hero, per-category hero animations for `grafico`/`campanas` (print
+  misregistration / marquee flicker, from specs/01), and easter eggs.
+
 ## Notes & Decisions Log
 
 | Date | Decision | Reason |
 |---|---|---|
+| 2026-09-07 | Retired the 5 category pages (`portfolio.html?cat=...`); portfolio is now one unified, filterable grid on the home page (`data.js` + `portfolio-grid.js`). Added cursor blur/deformation, a section-linked "vaivén" progress dot, and 3 sections tagged with a narrative emotion accent. | Team review: current site lacked storytelling and underused the brand's own graphic resources; see `docs/superpowers/specs/2026-09-07-storytelling-redesign.md` |
 | 2026-04-27 | Stack: HTML + CSS + Vanilla JS | Lean and learnable for the whole team |
 | 2026-04-27 | Two color modes via CSS custom properties | Design requirement from brief |
 | 2026-04-27 | Visual direction: Cinético · Extremos · Intensidad · Movimiento · Tensión | Defined in moodboard |

@@ -1,6 +1,6 @@
 # Spec #1 — Finishing the Portfolio Category Pages
 
-**Status:** 🟢 Implemented (2026-07-26) — all 5 categories built in one pass, per Luly's instruction to stop pausing for per-category review
+**Status:** 🔴 Superseded (2026-09-07) — the category pages this spec was for (`portfolio.html?cat=...`) were retired in favor of a unified portfolio grid. See `docs/superpowers/specs/2026-09-07-storytelling-redesign.md`. Note: despite the "Implemented" status below, the copy (§3) and Proyectos data (§5) drafted here were never actually wired into `portfolio.js` — they're carried forward into `data.js` as still-placeholder content.
 **Audience:** Internal working doc (Luly + Claude only)
 **Files this touches once approved:** `portfolio.js`, `portfolio.css`, `index.html` (social links only)
 **Depends on:** none

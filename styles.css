@@ -1422,3 +1422,298 @@ nav a.is-locked {
 nav a.is-locked:hover {
     text-decoration: none; /* no affordance — it doesn't navigate */
 }
+
+/* =====================================================================
+   2026-09 Storytelling redesign — portfolio unificado + interacciones
+   (ver docs/superpowers/specs/2026-09-07-storytelling-redesign.md)
+   ===================================================================== */
+
+/* --- Utilidad: contenedor accesible-solo-para-filtros SVG (no usar
+   [hidden]/display:none en <filter>, algunos navegadores lo desactivan). --- */
+.visually-hidden-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+/* --- Cursor con blur/deformación --- */
+.cursor-follower {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 46px;
+    height: 46px;
+    margin: -23px 0 0 -23px; /* centrado en el punto que sigue */
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--naranja) 55%, transparent);
+    filter: url(#cursor-distort) blur(2px);
+    mix-blend-mode: screen;
+    pointer-events: none;
+    z-index: 9999;
+    will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+    .cursor-follower { display: none; }
+}
+
+/* --- "La línea que te acompaña" (indicador de vaivén entre secciones) --- */
+.vaiven-line {
+    position: fixed;
+    top: 50%;
+    left: clamp(0.5rem, 1.5vw, 1.25rem);
+    transform: translateY(-50%);
+    width: 24px;
+    height: min(48vh, 320px);
+    z-index: 40;
+    pointer-events: none;
+}
+
+.vaiven-line-path {
+    fill: none;
+    stroke: color-mix(in srgb, var(--blanco) 35%, transparent);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+}
+
+.vaiven-line-dot {
+    fill: var(--naranja);
+    transition: cx 0.5s cubic-bezier(0.16, 1, 0.3, 1), cy 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vaiven-line-dot { transition: none; }
+}
+
+/* Se esconde en pantallas angostas — no hay lugar y no es esencial. */
+@media (max-width: 720px) {
+    .vaiven-line { display: none; }
+}
+
+/* --- Emoción por sección (paleta narrativa) ---
+   Cada sección tiñe su acento según la emoción que le toca (spec 2026-09-07,
+   punto 3.2): Nosotros = ansiedad/naranja (ya es el default global, no hace
+   falta redeclararlo), Portfolio = diversión/amarillo, Contacto = calma/
+   verde-agua-claro. Solo se pisa --accent-primary — el resto de cada sección
+   (fondo, textura) queda como está. */
+#portfolio[data-emotion="diversion"] {
+    --accent-primary: var(--amarillo);
+}
+
+#contacto[data-emotion="calma"] {
+    --accent-primary: var(--verde-agua-claro);
+}
+
+/* --- Portfolio unificado: filtros + grid + cards --- */
+.portfolio-grid-wrap {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.75rem, 1.5vh, 1.25rem);
+    overflow-y: auto;
+}
+
+.portfolio-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+}
+
+.filter-tabs,
+.tool-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.filter-tab,
+.tool-chip {
+    font-family: "Montserrat Alternates", system-ui, sans-serif;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--text-primary) 40%, transparent);
+    background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.filter-tab[aria-pressed="true"],
+.tool-chip[aria-pressed="true"] {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: var(--bg-primary);
+}
+
+.filter-tab:hover,
+.tool-chip:hover {
+    border-color: var(--accent-primary);
+}
+
+.filter-search-label {
+    /* Visible label para accesibilidad, pero chico — el placeholder ya
+       comunica el propósito visualmente. */
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-left: auto;
+}
+
+.filter-search {
+    font-family: "Montserrat Alternates", system-ui, sans-serif;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--text-primary) 40%, transparent);
+    background: color-mix(in srgb, var(--negro) 15%, transparent);
+    color: var(--text-primary);
+    min-width: 12rem;
+}
+
+.filter-search::placeholder { color: color-mix(in srgb, var(--text-primary) 60%, transparent); }
+
+.portfolio-results-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.results-counter { opacity: 0.8; }
+
+.results-reset {
+    color: var(--accent-primary);
+    text-decoration: underline;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    overflow-y: auto;
+}
+
+.project-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 14px;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--negro) 25%, transparent);
+}
+
+.project-card-thumb {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--negro) 40%, var(--violeta-claro));
+}
+
+.project-card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(0.6) contrast(1.05);
+    transition: filter 0.4s ease;
+}
+
+/* Juego de blur: arranca blureada, se destapa al hacer foco/hover
+   (project-grid.js agrega/saca .is-blurred). Mismo tratamiento se aplicaría
+   sobre el poster de un <video> cuando Motion/Campañas suban contenido real
+   (media: "video" en data.js). */
+.project-card-thumb.is-blurred img,
+.project-card-thumb.is-blurred .project-card-standin {
+    filter: blur(14px) grayscale(0.6) contrast(1.05);
+    transform: scale(1.08); /* tapa los bordes que el blur deja ver */
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .project-card-thumb.is-blurred img,
+    .project-card-thumb.is-blurred .project-card-standin { filter: none; transform: none; }
+}
+
+.project-card-standin {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-align: center;
+    padding: 0.5rem;
+    color: var(--text-primary);
+}
+
+.project-card-body {
+    padding: 0.9rem 1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    color: var(--text-primary);
+}
+
+.project-card-categoria {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent-primary);
+}
+
+.project-card-title {
+    font-family: "Montserrat Alternates", system-ui, sans-serif;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.project-card-copy {
+    font-size: 0.8rem;
+    opacity: 0.85;
+    margin: 0;
+}
+
+.project-card-autor {
+    font-size: 0.7rem;
+    opacity: 0.6;
+}
+
+.project-card-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-top: 0.2rem;
+}
+
+.project-tool-pill {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--text-primary) 15%, transparent);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.empty-state-title {
+    font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+}
+
+.empty-state-sub {
+    opacity: 0.8;
+    margin-bottom: 1rem;
+}

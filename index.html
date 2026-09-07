@@ -25,6 +25,12 @@
     <script src="script.js" defer></script>
     <!-- Eye = palette toggle (Feature B). Shared, page-agnostic; runs on its own. -->
     <script src="palette.js" defer></script>
+    <!-- Unified portfolio data + grid (2026-09 storytelling redesign). data.js
+         has no DOM access so it can load in any order; portfolio-grid.js reads
+         it and must load after it. Both after script.js so [data-portfolio-grid]
+         exists. -->
+    <script src="data.js" defer></script>
+    <script src="portfolio-grid.js" defer></script>
     <!-- First-visit sequential gate (Feature C, home only). Loads AFTER script.js
          so window.VaivenNav (its integration hooks) already exists. -->
     <script src="tour.js" defer></script>
@@ -33,6 +39,40 @@
     <script src="hero-motion.js" defer></script>
 </head>
 <body>
+    <!-- Filtro SVG para el cursor con blur/deformación (cursor-follower en
+         script.js). display:none no funciona para <filter> (Firefox lo
+         desactiva), por eso va escondido con un contenedor de 0x0 en vez de
+         [hidden]/display:none. -->
+    <svg class="visually-hidden-defs" aria-hidden="true" focusable="false">
+        <defs>
+            <filter id="cursor-distort" x="-50%" y="-50%" width="200%" height="200%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.015 0.04" numOctaves="2" seed="7" result="noise">
+                    <animate attributeName="seed" values="7;20;7" dur="6s" repeatCount="indefinite" />
+                </feTurbulence>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="18" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- Cursor con blur/deformación (concepto ya definido para la web, ver
+         CLAUDE.md). Sigue al mouse con un pequeño lag y aplica el filtro de
+         arriba a lo que queda debajo. Desactivado bajo prefers-reduced-motion
+         y en touch (ver script.js). -->
+    <div class="cursor-follower" aria-hidden="true"></div>
+
+    <!-- "La línea que te acompaña" — indicador de vaivén entre secciones.
+         El sitio no scrollea (navegación por anclas/secciones fijas), así que
+         en vez de atarlo al scroll se ata al cambio de sección activa
+         (window.VaivenNav.onSectionChange, ver script.js): el punto se mueve
+         a lo largo de la onda según en qué sección estás. -->
+    <svg class="vaiven-line" viewBox="0 0 40 210" aria-hidden="true" focusable="false">
+        <!-- 5 puntos clave (uno por sección: hero, portfolio, contacto,
+             nosotros, destacados) en zigzag — las coordenadas exactas están
+             repetidas en script.js (SECTION_POINTS) para animar el punto. -->
+        <path class="vaiven-line-path" d="M 20 15 C 14 30 10 45 10 60 C 10 75 24 90 30 105 C 36 120 10 135 10 150 C 10 165 24 180 30 195" />
+        <circle class="vaiven-line-dot" r="4" cx="20" cy="15" />
+    </svg>
+
     <header>
         <a class="logo" href="#hero" aria-label="Vai Ven — inicio">
             <img src="resources/logo_vaiven.webp" alt="Vai Ven" decoding="async">
@@ -51,7 +91,7 @@
                 <span class="erratic line mejores">MEJORES</span>
             </h1>
         </section>
-        <section id="portfolio">
+        <section id="portfolio" data-emotion="diversion">
             <!-- Decorative eye cutouts (brand motif) behind the content. Two different eyes. -->
             <img class="portfolio-eye portfolio-eye-tr" src="resources/ojo_1.webp" alt="" aria-hidden="true" decoding="async">
             <img class="portfolio-eye portfolio-eye-bl" src="resources/ojo_2.webp" alt="" aria-hidden="true" decoding="async">
@@ -59,26 +99,32 @@
                 <span class="erratic">No somos para todos,</span>
                 <span class="erratic">mejor mirá</span>
             </h2>
-            <div class="bento-grid">
-                <a class="bento-card bento-3d" href="portfolio.html?cat=3d">
-                    <span>3D</span>
-                </a>
-                <a class="bento-card bento-web" href="portfolio.html?cat=web">
-                    <span>Diseño Web</span>
-                </a>
-                <a class="bento-card bento-grafico" href="portfolio.html?cat=grafico">
-                    <span>Diseño Gráfico</span>
-                </a>
-                <a class="bento-card bento-motion" href="portfolio.html?cat=motion">
-                    <span>Motion Graphics</span>
-                </a>
-                <a class="bento-card bento-campanas" href="portfolio.html?cat=campanas">
-                    <span>Campañas publicitarias</span>
-                </a>
+
+            <!-- Portfolio unificado: reemplaza las 5 páginas por categoría
+                 (portfolio.html?cat=...) por un solo grid filtrable. Lo arma
+                 portfolio-grid.js a partir de data.js — este <div> es el
+                 contenedor vacío que llena en tiempo de ejecución. -->
+            <div class="portfolio-grid-wrap" data-portfolio-grid>
+                <div class="portfolio-filters">
+                    <div class="filter-tabs" data-filter-categoria role="tablist" aria-label="Filtrar por categoría"></div>
+                    <div class="tool-chips" data-filter-tools role="group" aria-label="Filtrar por programa"></div>
+                    <label class="filter-search-label" for="portfolio-search">Buscar</label>
+                    <input type="search" id="portfolio-search" class="filter-search" data-filter-search
+                           placeholder="Buscar por título, copy o programa…" autocomplete="off">
+                </div>
+                <div class="portfolio-results-meta">
+                    <span class="results-counter" data-results-counter aria-live="polite"></span>
+                    <a href="#" class="results-reset" data-reset-filters hidden>Reiniciar filtros</a>
+                </div>
+                <div class="results-grid" data-results-grid></div>
+                <div class="empty-state" data-empty-state hidden>
+                    <p class="empty-state-title erratic">ACÁ NO HAY NADA. TODAVÍA.</p>
+                    <p class="empty-state-sub">Probá con otro filtro, u otra combinación.</p>
+                    <a href="#" class="results-reset" data-reset-filters>Reiniciar filtros</a>
+                </div>
             </div>
-            <a class="cta-pill" href="#">Explorá todo</a>
         </section>
-        <section id="contacto">
+        <section id="contacto" data-emotion="calma">
             <!-- Decorative pointing hands, blended into the background. -->
             <img class="contacto-hand contacto-hand-left" src="resources/mano.webp" alt="" aria-hidden="true" decoding="async">
             <img class="contacto-hand contacto-hand-right" src="resources/mano.webp" alt="" aria-hidden="true" decoding="async">
@@ -106,7 +152,7 @@
                 </a>
             </div>
         </section>
-        <section id="nosotros">
+        <section id="nosotros" data-emotion="ansiedad">
 
             <!-- Background grid texture -->
             <div class="nosotros-grid-bg" aria-hidden="true"></div>

@@ -1,8 +1,13 @@
-// hero-3d.js — Three.js extruded "3D" wordmark for the 3D category hero.
+// hero-3d.js — Three.js extruded "3D" wordmark, built for the (now retired)
+// 3D category hero.
 // ---------------------------------------------------------------------------
-// Loaded as an ES module (see the importmap in portfolio.html). It registers a
-// single entry point on window.VaivenHeroes so the classic-script portfolio.js
-// can call it after building the page shell.
+// STATUS (2026-09-07): currently UNMOUNTED — no page loads this anymore since
+// portfolio.html was removed in the storytelling redesign. Kept because it's
+// a good candidate for the main home hero (see the redesign spec's
+// recommendation to concentrate 3D in 1-2 strong moments), but that
+// reintegration hasn't happened yet. Was loaded as an ES module via an
+// importmap; registers a single entry point on window.VaivenHeroes for a
+// classic script to call after building its page shell.
 //
 // GEOMETRY APPROACH — why ExtrudeGeometry, not TextGeometry/FontLoader:
 //   The wordmark is just two glyphs ("3" and "D"). Rather than fetch a heavy

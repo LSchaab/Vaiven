@@ -174,6 +174,68 @@ if (!reduceMotion) {
     });
 }
 
+// === Cursor con blur/deformación ===
+// Un div fijo sigue al mouse con un pequeño lag (lerp) y usa el filtro SVG
+// #cursor-distort (definido en index.html) para deformar lo que queda debajo
+// — el "cursor sucio" mencionado como concepto pendiente en las instrucciones
+// del proyecto. Desactivado con prefers-reduced-motion y en touch (no hay
+// cursor real para seguir).
+(function () {
+    var follower = document.querySelector(".cursor-follower");
+    if (!follower) return;
+    if (reduceMotion) return;
+    if (window.matchMedia("(pointer: coarse)").matches) return; // touch: sin cursor
+
+    var targetX = window.innerWidth / 2;
+    var targetY = window.innerHeight / 2;
+    var curX = targetX;
+    var curY = targetY;
+
+    window.addEventListener("mousemove", function (e) {
+        targetX = e.clientX;
+        targetY = e.clientY;
+    });
+
+    function tick() {
+        // Lerp simple: se acerca un 18% de la distancia restante por frame,
+        // eso da el "delay sucio" en vez de seguir al mouse 1 a 1.
+        curX += (targetX - curX) * 0.18;
+        curY += (targetY - curY) * 0.18;
+        follower.style.transform = "translate(" + curX.toFixed(1) + "px, " + curY.toFixed(1) + "px)";
+        requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+})();
+
+// === "La línea que te acompaña" — indicador de vaivén entre secciones ===
+// El punto sobre la onda (index.html, .vaiven-line-dot) se mueve a la
+// posición de la sección activa. No está atado al scroll (el sitio no
+// scrollea) sino a window.VaivenNav.onSectionChange, que ya existe para el
+// tour. Coordenadas en el mismo sistema que el viewBox del SVG (40x210).
+(function () {
+    var dot = document.querySelector(".vaiven-line-dot");
+    if (!dot) return;
+
+    // Un punto por sección, en el mismo orden que SECTIONS.
+    var SECTION_POINTS = {
+        hero: { x: 20, y: 15 },
+        portfolio: { x: 10, y: 60 },
+        contacto: { x: 30, y: 105 },
+        nosotros: { x: 10, y: 150 },
+        destacados: { x: 30, y: 195 },
+    };
+
+    function moveDotTo(id) {
+        var p = SECTION_POINTS[id];
+        if (!p) return;
+        dot.setAttribute("cx", p.x);
+        dot.setAttribute("cy", p.y);
+    }
+
+    moveDotTo(activeSection);
+    window.VaivenNav.onSectionChange(moveDotTo);
+})();
+
 // === Modal del manifiesto (video de YouTube) ===
 // Click en "Play al manifesto" → abre un lightbox con el reproductor de YouTube.
 // El iframe se crea recién al abrir (así el video no carga ni suena de fondo) y

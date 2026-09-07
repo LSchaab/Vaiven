@@ -1,6 +1,6 @@
 # Spec #2 — "Explorá todo" Full-Portfolio Browsing Page
 
-**Status:** 🟡 Design approved (2026-08-01) — not yet implemented
+**Status:** 🔴 Superseded (2026-09-07) — a separate `explora.html` was dropped in favor of embedding this exact filter+search+grid behavior directly in the home page's unified portfolio section (`data.js` + `portfolio-grid.js`). The data model (`tools` per project, the 10-key taxonomy) and the filter/search/empty-state logic designed here carried over largely as-is. Note: the `resources/logos/` folder this spec assumes was never actually added — filters render as text chips, not icons. See `docs/superpowers/specs/2026-09-07-storytelling-redesign.md`.
 **Audience:** Internal working doc (Luly + Claude only)
 **Files this touches once approved:** new `explora.html`, new `explora.js`, new `explora.css`, `portfolio.js` (add a `tools` field to each existing `proyectos` entry), `index.html` (CTA link only)
 **Depends on:** Spec #1 — Finishing the Portfolio Category Pages (provides the `CATEGORIES.proyectos` data this page reads from)
