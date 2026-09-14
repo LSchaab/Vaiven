@@ -73,7 +73,7 @@ nav { pointer-events: auto; }
 
 .logo img {
     display: block;
-    height: 2.25rem;
+    height: 3rem;
     width: auto;
 }
 
@@ -164,3 +164,116 @@ section h2 {
 .erratic .w800 { font-weight: 800; }
 
 .erratic .it { font-style: italic; }
+
+/* ==========================================================================
+   HERO "Abrí la cabeza" — dos puertas + cerebro
+   Variables que setea hero.js:
+     --hero-progress (0..1)  scroll dentro del escenario  (Task 4)
+     --mx / --my             posición del cursor en px     (Task 2)
+     --mnx / --mny           cursor normalizado -1..1       (Task 3)
+   ========================================================================== */
+.hero {
+    position: relative;
+    display: block;           /* override del section base (era flex → colapsaba) */
+    padding: 0;               /* override del section base */
+    background: var(--negro);
+    --hero-progress: 0;       /* fallback si aún no hay JS */
+}
+
+.hero-stage {
+    position: relative;       /* Task 4 lo cambia a sticky */
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.hero-scene {
+    position: absolute; inset: 0;
+    display: grid;
+    place-items: center;   /* centra la frase (único hijo en flujo) */
+}
+
+/* capa 1 — fondo grunge */
+.hero-fondo {
+    position: absolute; inset: 0;
+    background: var(--negro) url("resources/textures/grunge_texture.webp") center / cover;
+    opacity: 0.25;
+    z-index: 0;
+}
+
+/* capa 2 — collage tenue (oculto en cerrado; Task 4 lo anima) */
+.hero-collage {
+    position: absolute; inset: 0;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 1fr;
+    gap: 8px;
+    padding: 10vh 8vw;
+    filter: grayscale(1) contrast(1.4) brightness(0.7);
+    opacity: 0;               /* Task 4: se revela tenue y se desvanece */
+    transform: scale(0.6);
+}
+.hero-collage img { width: 100%; height: 100%; object-fit: cover; }
+
+/* capa 3 — cerebro (oculto en cerrado; Task 4 lo hace crecer) */
+.hero-cerebro {
+    position: absolute; left: 50%; top: 50%;
+    width: min(42vw, 460px);
+    translate: -50% -50%;
+    transform: scale(0.6);
+    opacity: 0;
+    filter: grayscale(1) contrast(1.25);
+    z-index: 2;
+}
+
+/* capa 4 — puertas con grilla, cerradas cubren todo.
+   Grilla dibujada con gradientes CSS: líneas blancas tenues siempre visibles;
+   el glow de color naranja/azul lo agrega ::after en Task 2. */
+.puerta {
+    position: absolute; top: 0;
+    height: 100%; width: 50vw;
+    z-index: 3;
+    --grid: 44px;             /* paso de la grilla (afinable) */
+    background:
+        repeating-linear-gradient(to right,  rgba(255, 255, 255, 0.14) 0 1px, transparent 1px var(--grid)),
+        repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.14) 0 1px, transparent 1px var(--grid)),
+        var(--negro);
+}
+.puerta-izq { left: 0; }
+.puerta-der { right: 0; }
+
+/* capa 5 — motivos */
+.ojo {
+    position: absolute;
+    width: min(16vw, 185px);
+    z-index: 4;
+    filter: grayscale(1) contrast(1.2);
+}
+.ojo-izq { left: 5vw;  top: 18vh; }
+.ojo-der { right: 5vw; top: 34vh; }
+
+.mano-lupa {
+    position: absolute;
+    left: 50%; bottom: -2vh;
+    width: min(42vw, 440px);
+    translate: -50% 0;
+    z-index: 4;
+    filter: grayscale(1) contrast(1.2);
+}
+
+/* capa 6 — frase */
+.hero-frase {
+    position: relative;
+    z-index: 5;
+    margin: 0;
+    text-align: center;
+    color: var(--blanco);
+    font-family: var(--font-alt);
+    font-weight: 400;
+    font-size: clamp(2.25rem, 7vw, 5.5rem);
+    line-height: 1.05;
+    letter-spacing: 0.01em;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
+}
+.hero-frase strong { font-weight: 800; }

@@ -37,8 +37,46 @@
          reconstruyen por sesión de sección. Extremos (hero/contacto) en B&N;
          salas del medio en neutro. -->
     <main>
-        <section id="hero" class="zona-bn">
-            <h1 class="hero-headline erratic">VAI VEN</h1>
+        <section id="hero" class="hero zona-bn">
+            <!-- Escenario sticky: en Task 4 la sección se vuelve más alta que el
+                 viewport y este stage se "clava". Por ahora ocupa una pantalla. -->
+            <div class="hero-stage">
+                <div class="hero-scene">
+                    <!-- capa 1: fondo grunge profundo -->
+                    <div class="hero-fondo" aria-hidden="true"></div>
+
+                    <!-- capa 2: collage de portfolio (tenue; se revela y se aleja
+                         con el scroll en Task 4). Duotono por CSS filter. -->
+                    <div class="hero-collage" aria-hidden="true">
+                        <img src="diseno_grafico/Poster_Inari/13_titulo.png" alt="" decoding="async">
+                        <img src="diseno_grafico/Poster_Lightyear/poster_completox2.png" alt="" decoding="async">
+                        <img src="diseno_grafico/Poster_Perfume/6_FINAL.png" alt="" decoding="async">
+                        <img src="diseno_grafico/Poster_infinityWar/poster_infinityWarx2.png" alt="" decoding="async">
+                        <img src="diseno_grafico/Poster_interstellar/FINAL TDI2 AFICHE JPG.jpg" alt="" decoding="async">
+                        <img src="3d/caja_fantasia/RENDER1.png" alt="" decoding="async">
+                        <img src="3d/maquinaexp_laserenisima/RenderConPost1-01.png" alt="" decoding="async">
+                    </div>
+
+                    <!-- capa 3: cerebro protagonista (crece con el scroll en Task 4) -->
+                    <img class="hero-cerebro" src="resources/cerebro.webp" alt="" aria-hidden="true" decoding="async">
+
+                    <!-- capa 4: las dos puertas con grilla (se abren en Task 4) -->
+                    <div class="puerta puerta-izq" aria-hidden="true"></div>
+                    <div class="puerta puerta-der" aria-hidden="true"></div>
+
+                    <!-- capa 5: motivos collage (parallax en Task 3) -->
+                    <img class="ojo ojo-izq" src="resources/ojo_1.webp" alt="" aria-hidden="true" decoding="async">
+                    <img class="ojo ojo-der" src="resources/ojo_2.webp" alt="" aria-hidden="true" decoding="async">
+                    <img class="mano-lupa" src="resources/lupa_BYN.png" alt="" aria-hidden="true" decoding="async">
+
+                    <!-- capa 6: frase (único texto real). Saltos de línea fijos:
+                         "nuestra" siempre en su propia línea centrada → queda
+                         siempre alineada con la lupa (bottom-center) en cualquier
+                         resolución. "nuestra" va en <strong> para, a futuro,
+                         engancharle el efecto de hover + click al demoreel. -->
+                    <h1 class="hero-frase">Abrí la cabeza,<br>empezá por la<br><strong class="frase-nuestra">nuestra</strong>.</h1>
+                </div>
+            </div>
         </section>
         <section id="herramientas" class="zona-color">
             <h2>herramientas y servicios</h2>
