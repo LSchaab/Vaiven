@@ -78,7 +78,7 @@
         { id: "3d-objeto-cotidiano", categoria: "3d", titulo: "Objeto Cotidiano #04", copy: "Render fotorrealista de un objeto que no debería existir.", autor: "TODO", programas: ["blender", "substance"], media: "imagen", thumb: "3d/caja_fantasia/RENDER1.png" },
         { id: "3d-personaje-estatica", categoria: "3d", titulo: "Personaje: Estática", copy: "Rigging y pose de un personaje original para animación.", autor: "TODO", programas: ["blender"], media: "imagen", thumb: "3d/personaje_toon/pj_toon_sintextura.jpeg" },
         { id: "3d-entorno-abandonado", categoria: "3d", titulo: "Entorno Abandonado", copy: "Escena ambiental con iluminación volumétrica.", autor: "TODO", programas: ["blender", "substance"], media: "imagen", thumb: "3d/maquinaexp_laserenisima/render_mesh.png" },
-        { id: "3d-prop-pack-ciudad", categoria: "3d", titulo: "Prop Pack: Ciudad", copy: "Set de props modulares para escenas urbanas.", autor: "TODO", programas: ["blender"], media: "imagen", thumb: "3d/maquinaexp_laserenisima/RENDER2.png" },
+        { id: "3d-prop-pack-ciudad", categoria: "3d", titulo: "Prop Pack: Ciudad", copy: "Set de props modulares para escenas urbanas.", autor: "TODO", programas: ["blender"], media: "imagen", thumb: "3d/maquinaexp_laserenisima/RenderConPost1-01.png" },
 
         // Motion Graphics — VIDEO (por confirmar / a subir)
         { id: "motion-loop-pulso", categoria: "motion", titulo: "Loop: Pulso", copy: "Animación en loop de 8 segundos, tipografía kinética.", autor: "TODO", programas: ["after-effects", "illustrator"], media: "video", thumb: null },

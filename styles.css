@@ -184,7 +184,9 @@ section[data-active] {
    brush swipe underneath (inline SVG, tinted with --naranja). The stroke is
    attached to [aria-current], so it follows whichever link is active. */
 nav a[aria-current] {
-    color: var(--azul);
+    /* Antes era --azul (invisible sobre el nuevo fondo transparente sobre
+       secciones azules) — ahora un acento que se distinga del blanco default. */
+    color: var(--amarillo);
 }
 
 nav a[aria-current]::after {
@@ -1129,7 +1131,10 @@ nav {
     height: calc(100vh - 80px);
     width: 100%;
     box-sizing: border-box;
-    background-color: var(--blanco);
+    /* 2026-09: sin fondo — antes era un panel blanco sólido ("ese contenedor
+       blanco"). Ahora flota transparente sobre lo que sea que tenga detrás
+       (cada sección tiene su propio color), por eso nav a de abajo pasa a
+       blanco + text-shadow en vez de depender de este fondo para el contraste. */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -1172,7 +1177,12 @@ nav ul {
 nav a {
     position: relative;
     text-decoration: none;
-    color: var(--azul);
+    /* Blanco + sombra en vez de --azul: sin el panel blanco de atrás, el nav
+       flota sobre secciones que en 3 de 5 casos usan ESE MISMO azul de fondo
+       (Hero/Portfolio/Nosotros) — un link azul se volvería invisible ahí. La
+       sombra oscura mantiene la lectura incluso sobre fondos claros (Contacto). */
+    color: var(--blanco);
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.55);
     text-transform: lowercase;
     font-size: 0.875rem;
     font-weight: 500;
@@ -1371,11 +1381,9 @@ html[data-palette="alt"] #destacados {
     --prev-section-bg: var(--azul-oscuro); /* nosotros is now azul-oscuro */
 }
 
-/* --- Nav sidebar: dashed gradient → solid black, white links, active link
-   underlined in amarillo/naranja. --- */
-html[data-palette="alt"] nav {
-    background-color: var(--negro);
-}
+/* --- Nav sidebar: dashed gradient → flat naranja strip. No background box
+   in either palette anymore (2026-09) — nav a is already blanco/amarillo in
+   both, which was written for a black backing but reads fine transparent too. --- */
 /* Swap the dashed multicolor left border for a flat naranja strip (no mask). */
 html[data-palette="alt"] nav::before {
     background: var(--naranja);
