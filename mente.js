@@ -65,6 +65,27 @@
         { x:   0, y:  34 },   // Campañas publicitarias (larga)
     ];
 
+    const lluvia = stage.querySelector(".herr-lluvia");
+    // Logos: lluvia libre, sin correlación con disciplinas (decisión 2026-09-15).
+    const LOGOS = [
+        "after-effects", "audition", "blender", "capcut", "chatgpt",
+        "claude", "css", "html5", "illustrator", "js",
+        "photoshop", "substance-3d-painter", "unity", "unreal",
+        "visual-studio-code",
+    ];
+    const logoEls = LOGOS.map((name) => {
+        const img = document.createElement("img");
+        img.src = `resources/logos/${name}.svg`;
+        img.alt = "";
+        img.decoding = "async";
+        img.setAttribute("aria-hidden", "true");
+        lluvia.appendChild(img);
+        return img;
+    });
+
+    let R = 0;   // radio de borde para la lluvia (px)
+    const onResize = () => { R = Math.min(innerWidth, innerHeight) * 0.44; };
+
     const smooth01 = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
 
     const computeProgress = () => {
@@ -113,6 +134,29 @@
         wordEl.style.opacity = op;
     };
 
+    const LOGO_WIN = 0.16;      // franja de progreso visible de cada logo
+    const GOLDEN = 2.399963;    // ángulo áureo (rad)
+    const renderLogos = (herrP) => {
+        const n = logoEls.length;
+        const first = 0.02;
+        const last = 0.98 - LOGO_WIN;
+        for (let i = 0; i < n; i++) {
+            const t0 = first + (last - first) * (i / (n - 1));
+            const local = (herrP - t0) / LOGO_WIN;
+            const el = logoEls[i];
+            if (local <= 0 || local >= 1) { el.style.opacity = "0"; continue; }
+            const ang = i * GOLDEN;
+            const dist = (1 - local) * R;                 // borde → centro
+            const x = Math.cos(ang) * dist;
+            const y = Math.sin(ang) * dist;
+            const s = 0.85 * (1 - local) + 0.12;
+            const op = clamp(Math.min(local / 0.15, (1 - local) / 0.15), 0, 1);
+            el.style.opacity = op.toFixed(3);
+            el.style.transform =
+                `translate(-50%, -50%) translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${s.toFixed(3)})`;
+        }
+    };
+
     const renderPhase2 = (herrP) => {
         if (herrP <= 0) {
             // fase 1 / umbral: cerebro B&N, sin palabra.
@@ -129,6 +173,7 @@
             // del beat anterior (o B&N en el beat 0, idx -1).
             setBrainColor(local >= ABSORB_AT ? beat : beat - 1);
         }
+        renderLogos(herrP);
     };
 
     const render = (p) => {
@@ -148,7 +193,8 @@
         requestAnimationFrame(update);
     };
 
+    onResize();
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    window.addEventListener("resize", () => { onResize(); onScroll(); });
 })();
