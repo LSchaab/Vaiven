@@ -526,7 +526,7 @@ Extend `renderPhase2` (add the logos call at the end — it must run in BOTH the
         if (herrP <= 0) {
             // fase 1 / umbral: cerebro B&N, sin palabra.
             currentBeat = -1;
-            if (currentColor !== -2) { currentColor = -2; brain.style.filter = ""; }
+            if (currentColor !== -2) { currentColor = -2; brain.style.removeProperty("--cerebro-tint"); }
             wordEl.style.opacity = 0;
         } else {
             const beatFloat = herrP * BEATS;

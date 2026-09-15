@@ -92,8 +92,10 @@
     const setBrainColor = (idx) => {
         if (idx === currentColor) return;
         currentColor = idx;
-        if (idx < 0) { brain.style.filter = ""; return; }   // B&N
-        brain.style.filter = `sepia(1) saturate(4) hue-rotate(${BEAT_HUE[idx]}deg)`;
+        // El color va por variable (--cerebro-tint) para que el pulso lo conserve
+        // y no parpadee a B&N. Sin variable = B&N (fallback en CSS).
+        if (idx < 0) { brain.style.removeProperty("--cerebro-tint"); return; }
+        brain.style.setProperty("--cerebro-tint", `sepia(1) saturate(4) hue-rotate(${BEAT_HUE[idx]}deg)`);
         brain.classList.remove("is-absorbing");
         void brain.offsetWidth;              // reinicia el pulso
         brain.classList.add("is-absorbing"); // pulso al absorber
@@ -115,7 +117,7 @@
         if (herrP <= 0) {
             // fase 1 / umbral: cerebro B&N, sin palabra.
             currentBeat = -1;
-            if (currentColor !== -2) { currentColor = -2; brain.style.filter = ""; }
+            if (currentColor !== -2) { currentColor = -2; brain.style.removeProperty("--cerebro-tint"); }
             wordEl.style.opacity = 0;
         } else {
             const beatFloat = herrP * BEATS;

@@ -248,7 +248,10 @@ section h2 {
     translate: -50% -50%;
     transform: scale(0.6);
     opacity: 0;
-    filter: grayscale(1) contrast(1.25);
+    /* Tinte por variable: sin var = B&N (fase 1). mente.js setea --cerebro-tint
+       al absorber (fase 2). Así el pulso puede conservar el color en vez de
+       resetear el filtro y parpadear a B&N. */
+    filter: var(--cerebro-tint, grayscale(1) contrast(1.25));
     z-index: 2;
 }
 
@@ -331,9 +334,9 @@ section h2 {
    ocupados por la apertura y el parallax). */
 .cerebro.is-absorbing { animation: cerebro-pulse 0.5s ease-out; }
 @keyframes cerebro-pulse {
-    0%   { filter: var(--cerebro-filter, none) drop-shadow(0 0 0 rgba(255,255,255,0)); }
-    40%  { filter: var(--cerebro-filter, none) drop-shadow(0 0 26px rgba(255,255,255,0.55)); }
-    100% { filter: var(--cerebro-filter, none) drop-shadow(0 0 0 rgba(255,255,255,0)); }
+    0%   { filter: var(--cerebro-tint, grayscale(1) contrast(1.25)) drop-shadow(0 0 0 rgba(255,255,255,0)); }
+    40%  { filter: var(--cerebro-tint, grayscale(1) contrast(1.25)) drop-shadow(0 0 26px rgba(255,255,255,0.55)); }
+    100% { filter: var(--cerebro-tint, grayscale(1) contrast(1.25)) drop-shadow(0 0 0 rgba(255,255,255,0)); }
 }
 
 .ojo-izq { translate: calc(var(--mnx, 0) * -14px) calc(var(--mny, 0) * -14px); }
