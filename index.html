@@ -16,6 +16,9 @@
     <!-- Interacción del hero: glow de grilla, parallax y apertura por scroll.
          Vanilla, auto-inicializado sobre #hero. -->
     <script src="hero.js" defer></script>
+    <!-- Sala Herramientas: cerebro que absorbe logos + palabras al scrollear.
+         Vanilla, auto-inicializado sobre #herramientas. -->
+    <script src="herramientas.js" defer></script>
 </head>
 <body>
     <!-- Header fijo: logo + nav centro-arriba. Las anclas hacen scroll suave
@@ -81,8 +84,39 @@
                 </div>
             </div>
         </section>
-        <section id="herramientas" class="zona-color">
-            <h2>herramientas y servicios</h2>
+        <!-- Sala #2: el cerebro absorbe herramientas (logos) y servicios
+             (palabras). Escenario sticky; la animación vive en herramientas.js.
+             Ref: docs/superpowers/specs/2026-09-15-herramientas-cerebro-absorbe-design.md -->
+        <section id="herramientas" class="herramientas">
+            <!-- Escenario animado: pineado al centro mientras se scrollea.
+                 aria-hidden: el contenido accesible real vive en .herr-content. -->
+            <div class="herr-stage" aria-hidden="true">
+                <canvas class="herr-dust"></canvas>
+                <img class="herr-cerebro" src="resources/cerebro.webp" alt="" decoding="async">
+                <p class="herr-palabra erratic" data-text=""></p>
+                <div class="herr-lluvia"></div>
+            </div>
+
+            <!-- Contenido real: leído por lectores de pantalla siempre, y
+                 mostrado (en vez del escenario) bajo reduced-motion / touch. -->
+            <div class="herr-content">
+                <h2>herramientas y servicios</h2>
+                <p class="herr-content-intro">Lo que sabemos hacer, y con qué.</p>
+                <ul class="herr-servicios">
+                    <li>Ilustración y Diseño Gráfico</li>
+                    <li>Modelado 3D</li>
+                    <li>Motion Graphics</li>
+                    <li>Desarrollo web</li>
+                    <li>Campañas publicitarias</li>
+                </ul>
+                <ul class="herr-tools">
+                    <li>Photoshop</li><li>Illustrator</li><li>Blender</li>
+                    <li>Substance 3D Painter</li><li>Unity</li><li>Unreal</li>
+                    <li>After Effects</li><li>CapCut</li><li>Audition</li>
+                    <li>HTML5</li><li>CSS</li><li>JavaScript</li>
+                    <li>Visual Studio Code</li><li>ChatGPT</li><li>Claude</li>
+                </ul>
+            </div>
         </section>
         <section id="portfolio" class="zona-color">
             <h2>portfolio</h2>
