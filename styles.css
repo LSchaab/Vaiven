@@ -431,7 +431,7 @@ section h2 {
     position: absolute;
     left: 50%;
     top: 50%;
-    width: clamp(28px, 4.5vmin, 56px);
+    width: clamp(40px, 6.5vmin, 82px);
     height: auto;
     opacity: 0;
     will-change: transform, opacity;
