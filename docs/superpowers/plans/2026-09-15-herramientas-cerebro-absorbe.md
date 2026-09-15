@@ -524,15 +524,17 @@ Extend `renderPhase2` (add the logos call at the end — it must run in BOTH the
 ```js
     const renderPhase2 = (herrP) => {
         if (herrP <= 0) {
-            // fase 1 / umbral: cerebro vuelve a B&N (quita el tinte inline) y sin palabra.
-            if (currentBeat !== -1) { currentBeat = -1; brain.style.filter = ""; }
+            // fase 1 / umbral: cerebro B&N, sin palabra.
+            currentBeat = -1;
+            if (currentColor !== -2) { currentColor = -2; brain.style.filter = ""; }
             wordEl.style.opacity = 0;
         } else {
             const beatFloat = herrP * BEATS;
             const beat = clamp(Math.floor(beatFloat), 0, BEATS - 1);
             const local = beatFloat - beat;
-            setBeat(beat);
+            setWord(beat);
             renderWord(beat, local);
+            setBrainColor(local >= ABSORB_AT ? beat : beat - 1);
         }
         renderLogos(herrP);
     };

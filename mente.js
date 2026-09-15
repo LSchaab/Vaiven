@@ -75,17 +75,28 @@
 
     // Fase 2 (herramientas): la completan las tareas 2 (palabra + color),
     // 3 (lluvia de logos) y 4 (polvo). Recibe el progreso local 0..1.
+    // La palabra aparece al empezar cada beat; el COLOR del cerebro cambia recién
+    // cuando esa palabra se ABSORBE (se mete en el cerebro), no cuando aparece.
+    const ABSORB_AT = 0.8;   // punto del beat en que la palabra ya está "adentro"
+
     let currentBeat = -1;
-    const setBeat = (beat) => {
+    const setWord = (beat) => {
         if (beat === currentBeat) return;
         currentBeat = beat;
         wordEl.dataset.text = DISCIPLINES[beat];
         window.erraticize(wordEl);
-        // Enciende color en la fase 2 y cambia por beat (placeholder sepia).
-        brain.style.filter = `sepia(1) saturate(4) hue-rotate(${BEAT_HUE[beat]}deg)`;
+    };
+
+    // idx -1 = B&N (nada absorbido aún); >=0 = color del beat idx (placeholder sepia).
+    let currentColor = -2;
+    const setBrainColor = (idx) => {
+        if (idx === currentColor) return;
+        currentColor = idx;
+        if (idx < 0) { brain.style.filter = ""; return; }   // B&N
+        brain.style.filter = `sepia(1) saturate(4) hue-rotate(${BEAT_HUE[idx]}deg)`;
         brain.classList.remove("is-absorbing");
-        void brain.offsetWidth;              // reinicia la animación de pulso
-        brain.classList.add("is-absorbing");
+        void brain.offsetWidth;              // reinicia el pulso
+        brain.classList.add("is-absorbing"); // pulso al absorber
     };
 
     const renderWord = (beat, local) => {
@@ -102,15 +113,19 @@
 
     const renderPhase2 = (herrP) => {
         if (herrP <= 0) {
-            // fase 1 / umbral: cerebro vuelve a B&N (quita el tinte inline) y sin palabra.
-            if (currentBeat !== -1) { currentBeat = -1; brain.style.filter = ""; }
+            // fase 1 / umbral: cerebro B&N, sin palabra.
+            currentBeat = -1;
+            if (currentColor !== -2) { currentColor = -2; brain.style.filter = ""; }
             wordEl.style.opacity = 0;
         } else {
             const beatFloat = herrP * BEATS;
             const beat = clamp(Math.floor(beatFloat), 0, BEATS - 1);
             const local = beatFloat - beat;
-            setBeat(beat);
+            setWord(beat);
             renderWord(beat, local);
+            // color: recién cuando la palabra del beat se absorbe. Antes, el color
+            // del beat anterior (o B&N en el beat 0, idx -1).
+            setBrainColor(local >= ABSORB_AT ? beat : beat - 1);
         }
     };
 
