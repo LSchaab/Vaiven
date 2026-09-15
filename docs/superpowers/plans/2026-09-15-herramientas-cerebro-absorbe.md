@@ -1,83 +1,113 @@
-# Herramientas "el cerebro absorbe" — Implementation Plan
+# Hero → Herramientas "un solo cerebro" — Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build the `#herramientas` section as a sticky "brain stage" where the cerebro absorbs raining tool logos + per-beat discipline words and changes color, delivering the site's B&N→color beat.
+**Goal:** Unify the hero and herramientas into one continuous sticky stage with a single persistent brain that grows (B&N) as the doors open, then absorbs raining tool logos + per-beat discipline words while igniting color.
 
-**Architecture:** A tall section (~5 viewports) with a `position: sticky` stage pinned to the viewport. One scroll handler writes a `0..1` progress (mirroring `hero.js`) that deterministically drives: (a) 15 logos flying from the edges into the brain center, (b) the current discipline word (of 5 beats) entering and being absorbed, and (c) the brain swapping color per beat. A separate rAF loop draws an ambient dust canvas, paused when the section is offscreen. Reduced-motion and touch users get a static, readable fallback via CSS — no JS animation.
+**Architecture:** One tall wrapper `.mente-journey` holds one sticky `.mente-stage` pinned across the whole journey. A single global scroll progress `0..1` is split into two phases at boundary `B`: phase 1 exposes `--hero-progress` (doors/brain-grow — all existing hero CSS reused unchanged), phase 2 exposes `--herr-progress` (word beats, logo rain, brain color, dust). The `#hero`/`#herramientas` sections become absolute anchor markers for nav. One controller `mente.js` (superset of the old `hero.js`) drives everything.
 
-**Tech Stack:** Vanilla HTML/CSS/JS. Reuses the existing `erratic.js` type effect and the scroll-progress pattern from `hero.js`. No new dependencies.
+**Tech Stack:** Vanilla HTML/CSS/JS. Reuses `erratic.js`. Replaces `hero.js` with `mente.js`. No new dependencies.
 
 ## Global Constraints
 
-- **Colors:** only tokens from `Mode 1.tokens.json`, referenced as CSS custom properties (`--naranja`, `--azul`, `--amarillo`, `--verde-agua-claro`, `--lila`, `--azul-oscuro`, `--negro`, `--blanco`, etc.). Never hardcode a hex. No new colors without approval. (`CLAUDE.md`)
-- **Language:** code comments in English; copy/content in Spanish (Argentine). (`CLAUDE.md`)
-- **Naming:** kebab-case for files and CSS classes. (`CLAUDE.md`)
-- **Motion guards:** every motion effect must no-op under `prefers-reduced-motion: reduce` and on touch (`hover: none`), matching `hero.js`.
-- **Accessibility:** WCAG AA goal — the section's real content (services + tools) must be present for screen readers even when the animated stage is `aria-hidden`.
-- **Mode:** Mode 1 only (theme switching is paused).
-- **No build step.** Static site. There is **no test runner** — verification is manual/visual (see below).
+- **Colors:** only Mode 1 tokens via CSS custom properties (`--azul`, `--naranja`, `--blanco`, `--negro`, etc.). Never hardcode a hex. No new colors. (`CLAUDE.md`)
+- **Language:** code comments English; copy/content Spanish (Argentine).
+- **Naming:** kebab-case for files and CSS classes.
+- **Preserve hero behavior:** doors opening, cursor grid-glow (`--mx/--my`), parallax (`--mnx/--mny`), brain growth — all must keep working after the restructure. The only permitted hero change is re-homing its layers into `.mente-stage` and renaming `.hero-cerebro` → `.cerebro`.
+- **Motion guards:** cursor effects gated on `!touch && !reduced-motion`; scroll-scrub gated on `!reduced-motion` (mobile/touch still scrubs, exactly like the current `hero.js`).
+- **Accessibility (WCAG AA):** the hero `<h1>` frase stays readable (not aria-hidden); decorative layers are `aria-hidden`; the real services+tools content lives in `.herr-content` for screen readers, and is shown as the static fallback under `prefers-reduced-motion: reduce`.
+- **No build step, NO test runner** — verification is manual/visual.
 
-## Verification (how to run — no test framework in this repo)
+## Verification (no test framework — manual/visual)
 
-From the repo root, start a static server and open it in Chrome (per user's global instruction to use Chrome for the project page):
-
+`python` is the Windows Store stub here; use Node's `serve`:
 ```bash
-python -m http.server 8080
+npx --yes serve -l 8080 .
 ```
 ```bash
-& "C:\Program Files\Google\Chrome\Application\chrome.exe" "http://localhost:8080/#herramientas"
+"/c/Program Files/Google/Chrome/Application/chrome.exe" "http://localhost:8080/" >/dev/null 2>&1 &
 ```
-
-For reduced-motion checks, in Chrome DevTools: Rendering panel → "Emulate CSS prefers-reduced-motion: reduce". For the touch fallback, use DevTools device toolbar (a `hover: none` device).
+Reduced-motion: DevTools → Rendering → "Emulate prefers-reduced-motion: reduce".
 
 ---
 
 ## File Structure
 
-- **`index.html`** — replace the `#herramientas` stub with the stage markup (dust canvas, cerebro `<img>`, word element, logo-rain container) + a screen-reader/reduced-motion static content block. Add `<script src="herramientas.js" defer>` in `<head>`.
-- **`styles.css`** — add a `Herramientas` block: dark stage background (palette token), sticky stage layout, tall section height, logo/word base positioning, brain pulse animation, and the reduced-motion/touch fallback rules.
-- **`erratic.js`** — expose `erraticize` on `window` so the section can re-apply the effect to the word when its text changes each beat (currently module-private).
-- **`herramientas.js`** *(new)* — the section controller: config (disciplines, logo filenames), scroll→progress, logo rain math, per-beat word + brain-color logic, and the ambient dust canvas loop. Self-invoking IIFE like `hero.js`.
+- **`index.html`** — replace the two consecutive `<section id="hero">` and `<section id="herramientas">` blocks with one `.mente-journey` (sticky `.mente-stage` holding all hero + herramientas layers, plus `#hero`/`#herramientas` anchor sections and the `.herr-content` fallback). In `<head>`: remove the `hero.js` and `herramientas.js` tags, add one `mente.js` tag.
+- **`styles.css`** — replace the hero container rules (`.hero`, `.hero-stage`, `.hero-scene`) with `.mente-journey`/`.mente-stage`/`.mente-anchor`; rename `.hero-cerebro` → `.cerebro` (4 rules); remove the standalone herramientas container rules from commit 686d591 (`.herramientas`, `.herr-stage`, `.herr-cerebro`, its pulse + reduced-motion media query); keep `.herr-dust`/`.herr-palabra`/`.herr-lluvia`/`.herr-content`; add the new reduced-motion fallback. All preserved hero rules (puertas, grid glow, parallax, apertura) stay byte-for-byte except the cerebro rename.
+- **`mente.js`** *(new)* — the single journey controller.
+- **`hero.js`** — delete (logic migrates to `mente.js`).
 
 ---
 
-## Task 1: Markup + static layout + reduced-motion fallback (no motion yet)
+## Task 1: Unified stage + persistent brain (restructure; no beats/logos/dust yet)
 
-Lay down the DOM and CSS so the brain is pinned in the center of a tall section, and the accessible static content shows for reduced-motion/touch. No animation logic yet.
+Restructure hero + herramientas into one sticky stage with one shared brain, driven by a global progress split into two phases. Preserve ALL hero behavior. Phase-2 mechanics (beats/logos/dust) are stubbed for later tasks — but the brain must visibly persist (pinned, grown, B&N) into the phase-2 scroll range.
 
 **Files:**
-- Modify: `index.html` (the `#herramientas` section, ~lines 84-86; add script tag in `<head>` near line 18)
-- Modify: `styles.css` (append a new section block at end of file)
+- Modify: `index.html`
+- Modify: `styles.css`
+- Create: `mente.js`
+- Delete: `hero.js`
 
 **Interfaces:**
-- Produces (DOM contract consumed by Task 2-4): a `#herramientas.herramientas` section containing `.herr-stage` with children `canvas.herr-dust`, `img.herr-cerebro`, `p.herr-palabra.erratic`, `div.herr-lluvia`; plus a sibling `.herr-content` static block. A `<script src="herramientas.js" defer>` tag exists.
+- Produces (consumed by Tasks 2-4, inside `mente.js`'s IIFE): `stage` (the `.mente-stage` element), `clamp(v,a,b)`, `B` (phase boundary), and a `renderPhase2(herrP)` hook called every frame with phase-2 progress `0..1`. CSS vars on `.mente-stage`: `--hero-progress`, `--herr-progress`, `--mx/--my`, `--mnx/--mny`.
+- Produces (DOM): `.mente-stage` containing `img.cerebro`, `canvas.herr-dust`, `p.herr-palabra.erratic`, `div.herr-lluvia` (empty), plus the hero layers; and a sibling `.herr-content` static block.
 
-- [ ] **Step 1: Replace the `#herramientas` stub markup in `index.html`**
+- [ ] **Step 1: Replace the two sections in `index.html` with the unified journey**
 
-Replace the current stub:
+Find the current `<section id="hero" …>…</section>` block and the immediately-following `<section id="herramientas" …>…</section>` block (the one from commit 686d591) and replace BOTH with:
+
 ```html
-        <section id="herramientas" class="zona-color">
-            <h2>herramientas y servicios</h2>
-        </section>
-```
-with:
-```html
-        <!-- Sala #2: el cerebro absorbe herramientas (logos) y servicios
-             (palabras). Escenario sticky; la animación vive en herramientas.js.
+        <!-- Recorrido "la mente de VAI VEN": un solo escenario sticky con UN
+             cerebro persistente. Fase 1 (umbral/puertas, --hero-progress) y
+             fase 2 (absorción/herramientas, --herr-progress) las maneja mente.js.
              Ref: docs/superpowers/specs/2026-09-15-herramientas-cerebro-absorbe-design.md -->
-        <section id="herramientas" class="herramientas">
-            <!-- Escenario animado: pineado al centro mientras se scrollea.
-                 aria-hidden: el contenido accesible real vive en .herr-content. -->
-            <div class="herr-stage" aria-hidden="true">
-                <canvas class="herr-dust"></canvas>
-                <img class="herr-cerebro" src="resources/cerebro.webp" alt="" decoding="async">
-                <p class="herr-palabra erratic" data-text=""></p>
-                <div class="herr-lluvia"></div>
+        <div class="mente-journey">
+            <div class="mente-stage">
+                <!-- capa 1: fondo azul (se revela al abrir las puertas) -->
+                <div class="hero-fondo" aria-hidden="true"></div>
+
+                <!-- capa 2: collage tenue (se aleja en fase 1) -->
+                <div class="hero-collage" aria-hidden="true">
+                    <img src="diseno_grafico/Poster_Inari/13_titulo.png" alt="" decoding="async">
+                    <img src="diseno_grafico/Poster_Lightyear/poster_completox2.png" alt="" decoding="async">
+                    <img src="diseno_grafico/Poster_Perfume/6_FINAL.png" alt="" decoding="async">
+                    <img src="diseno_grafico/Poster_infinityWar/poster_infinityWarx2.png" alt="" decoding="async">
+                    <img src="diseno_grafico/Poster_interstellar/FINAL TDI2 AFICHE JPG.jpg" alt="" decoding="async">
+                    <img src="3d/caja_fantasia/RENDER1.png" alt="" decoding="async">
+                    <img src="3d/maquinaexp_laserenisima/RenderConPost1-01.png" alt="" decoding="async">
+                </div>
+
+                <!-- EL cerebro: único, persiste toda la travesía. Crece en fase 1
+                     (B&N), absorbe y se tiñe en fase 2. -->
+                <img class="cerebro" src="resources/cerebro.webp" alt="" aria-hidden="true" decoding="async">
+
+                <!-- capa 4: puertas con grilla (se abren en fase 1) -->
+                <div class="puerta puerta-izq" aria-hidden="true"></div>
+                <div class="puerta puerta-der" aria-hidden="true"></div>
+
+                <!-- capa 5: motivos (parallax; se desvanecen en fase 1) -->
+                <img class="ojo ojo-izq" src="resources/ojo_1.webp" alt="" aria-hidden="true" decoding="async">
+                <img class="ojo ojo-der" src="resources/ojo_2.webp" alt="" aria-hidden="true" decoding="async">
+                <img class="mano-lupa" src="resources/lupa_BYN.png" alt="" aria-hidden="true" decoding="async">
+
+                <!-- capa 6: frase (único texto real del hero) -->
+                <h1 class="hero-frase">Abrí la cabeza,<br>empezá por la<br><strong class="frase-nuestra">nuestra</strong>.</h1>
+
+                <!-- capas de fase 2 (herramientas): polvo, palabra, lluvia de logos -->
+                <canvas class="herr-dust" aria-hidden="true"></canvas>
+                <p class="herr-palabra erratic" data-text="" aria-hidden="true"></p>
+                <div class="herr-lluvia" aria-hidden="true"></div>
             </div>
 
-            <!-- Contenido real: leído por lectores de pantalla siempre, y
-                 mostrado (en vez del escenario) bajo reduced-motion / touch. -->
+            <!-- Anclas de nav (marcadores de scroll, sin arte). #herramientas se
+                 ubica al inicio de la fase 2 (ver --herr-anchor en CSS). -->
+            <section id="hero" class="mente-anchor"></section>
+            <section id="herramientas" class="mente-anchor"></section>
+
+            <!-- Contenido real: leído por lectores de pantalla siempre; mostrado
+                 como fallback estático bajo reduced-motion. -->
             <div class="herr-content">
                 <h2>herramientas y servicios</h2>
                 <p class="herr-content-intro">Lo que sabemos hacer, y con qué.</p>
@@ -96,211 +126,238 @@ with:
                     <li>Visual Studio Code</li><li>ChatGPT</li><li>Claude</li>
                 </ul>
             </div>
-        </section>
+        </div>
 ```
 
-- [ ] **Step 2: Add the script tag in `index.html` `<head>`**
+- [ ] **Step 2: Swap the scripts in `index.html` `<head>`**
 
-After the `hero.js` script tag (line ~18), add:
+Remove the `<script src="hero.js" defer></script>` tag (and its comment) and the `<script src="herramientas.js" defer></script>` tag (and its comment). Add, after the `erratic.js` tag:
 ```html
-    <!-- Sala Herramientas: cerebro que absorbe logos + palabras al scrollear.
-         Vanilla, auto-inicializado sobre #herramientas. -->
-    <script src="herramientas.js" defer></script>
+    <!-- Recorrido "la mente de VAI VEN": un escenario sticky, un cerebro que
+         persiste. Progreso global partido en fase umbral / fase absorción.
+         Vanilla, auto-inicializado sobre .mente-journey. -->
+    <script src="mente.js" defer></script>
 ```
 
-- [ ] **Step 3: Append the Herramientas CSS block to `styles.css`**
+- [ ] **Step 3: Restructure the container CSS in `styles.css`**
 
+**(a) Replace** the `.hero { … }`, `.hero-stage { … }`, and `.hero-scene { … }` rules (the three hero container rules) with:
 ```css
-/* === Sala Herramientas — "el cerebro absorbe" =============================
-   Escenario sticky en una sección alta. La animación (logos + palabra +
-   color del cerebro) la maneja herramientas.js. Fondo oscuro de marca para
-   que el color del cerebro y los logos resalten (dentro de la mente).
-   Ref: docs/superpowers/specs/2026-09-15-herramientas-cerebro-absorbe-design.md */
-.herramientas {
-    /* Anula el centrado flex de `section`: necesitamos flujo normal para el
-       hijo sticky, y altura de ~5 pantallas (5 beats). */
-    display: block;
-    min-height: 0;
-    height: 500vh;
-    padding: 0;
-    background: var(--azul-oscuro);   /* dentro de la mente: azul profundo, no negro (eso es B&N) */
-    color: var(--blanco);
+/* Recorrido unificado: un contenedor alto da el largo de scroll; un escenario
+   sticky queda pineado toda la travesía. Ref: spec 2026-09-15. */
+.mente-journey {
+    position: relative;
+    /* 150vh de apertura (puertas) + 500vh de absorción. Afinable; debe quedar
+       en sync con DOOR_VH/TOOLS_VH de mente.js. */
+    height: 750vh;
+    background: var(--negro);
 }
 
-.herr-stage {
+.mente-stage {
     position: sticky;
     top: 0;
     height: 100vh;
-    display: grid;
-    place-items: center;
     overflow: hidden;
+    display: grid;
+    place-items: center;     /* centra la frase (único hijo en flujo) */
+    background: var(--negro); /* umbral B&N detrás de todo */
+    --hero-progress: 0;       /* fallbacks si aún no hay JS */
+    --herr-progress: 0;
 }
 
+/* Anclas de nav: marcadores absolutos de 0px, sin arte ni interacción.
+   #herramientas al inicio de la fase 2 (150vh = DOOR_VH). */
+.mente-anchor {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 0;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    display: block;
+    pointer-events: none;
+}
+#hero.mente-anchor { top: 0; }
+#herramientas.mente-anchor { top: 150vh; }
+```
+
+**(b) Rename** every `.hero-cerebro` selector to `.cerebro` — there are exactly four rules: the base rule (`position:absolute; left:50%; top:50%; width:min(42vw,460px); …; filter:grayscale(1) contrast(1.25); z-index:2;`), the `transition: translate …` rule (shared with `.ojo`/`.mano-lupa`), the parallax `translate:` rule, and the apertura `transform: scale(…)` rule. Change ONLY the selector text `.hero-cerebro` → `.cerebro`; leave each rule body untouched.
+
+**(c) Remove** these rules that came from commit 686d591 (the standalone herramientas stage — now superseded): `.herramientas { … }`, `.herr-stage { … }`, `.herr-cerebro { … }`, `.herr-cerebro.is-absorbing { … }`, the `@keyframes herr-pulse { … }`, and the old `@media (prefers-reduced-motion: reduce), (hover: none) { … }` block that referenced `.herramientas`/`.herr-stage`. (Keep `.herr-palabra`, `.herr-lluvia`, `.herr-lluvia img`, and `.herr-content`.)
+
+Also **update** the kept `.herr-dust` rule so it sits behind the brain and only appears in phase 2 (it must not clutter the closed-door umbral of phase 1):
+```css
 .herr-dust {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     display: block;
+    z-index: 0;                       /* detrás del cerebro y capas del hero */
+    opacity: var(--herr-progress, 0); /* invisible en el umbral; aparece al absorber */
 }
+```
 
-.herr-cerebro {
-    position: relative;   /* por encima del polvo */
-    width: clamp(220px, 34vmin, 460px);
-    height: auto;
-    z-index: 1;
-    will-change: transform, filter;
-    transition: filter 0.5s ease;   /* cross-fade de color al cambiar de beat */
-}
-
-/* Pulso breve al absorber la palabra de un beat (clase togglea en JS). */
-.herr-cerebro.is-absorbing { animation: herr-pulse 0.45s ease-out; }
-@keyframes herr-pulse {
-    0%   { transform: scale(1); }
-    40%  { transform: scale(1.06); }
-    100% { transform: scale(1); }
-}
-
-/* Palabra del beat (servicio). Centrada; JS la desplaza y la absorbe. */
-.herr-palabra {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    margin: 0;
-    z-index: 2;
-    opacity: 0;
-    font-size: clamp(1.4rem, 4vw, 2.6rem);
-    color: var(--blanco);
-    white-space: nowrap;
-    pointer-events: none;
-    will-change: transform, opacity;
-}
-
-/* Contenedor de la lluvia de logos. Cada logo se posiciona en el centro y
-   JS lo traslada desde el borde hacia adentro. */
-.herr-lluvia { position: absolute; inset: 0; z-index: 1; }
-.herr-lluvia img {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: clamp(28px, 4.5vmin, 56px);
-    height: auto;
-    opacity: 0;
-    will-change: transform, opacity;
-}
-
-/* Contenido accesible: oculto visualmente en full-motion (solo lectores de
-   pantalla), visible como fallback estático bajo reduced-motion / touch. */
-.herr-content {
-    position: absolute;
-    width: 1px; height: 1px;
-    padding: 0; margin: -1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-@media (prefers-reduced-motion: reduce), (hover: none) {
-    .herramientas {
-        height: auto;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 6rem 1.5rem 3rem;
-        text-align: center;
-    }
-    .herr-stage { display: none; }
+**(d) Add** the new reduced-motion fallback at the end of the herramientas CSS region:
+```css
+/* Reduced-motion: sin pin ni scrub. Queda el umbral estático (puertas
+   cerradas + frase, --hero-progress:0) y debajo el contenido accesible. */
+@media (prefers-reduced-motion: reduce) {
+    .mente-journey { height: auto; }
+    .mente-stage { position: static; height: 100vh; }
+    .herr-dust, .herr-palabra, .herr-lluvia { display: none; }
     .herr-content {
         position: static;
         width: auto; height: auto;
-        margin: 0; padding: 0;
-        overflow: visible;
-        clip: auto;
-        white-space: normal;
+        margin: 0; padding: 3rem 1.5rem;
+        overflow: visible; clip: auto; white-space: normal;
+        color: var(--blanco); background: var(--azul); text-align: center;
     }
     .herr-content h2 {
         font-size: clamp(1.5rem, 5vw, 3rem);
-        text-transform: lowercase;
-        opacity: 1;   /* anula el opacity:0.4 del `section h2` stub global */
-        margin: 0 0 0.5rem;
+        text-transform: lowercase; opacity: 1; margin: 0 0 0.5rem;
     }
     .herr-servicios, .herr-tools {
-        list-style: none;
-        padding: 0;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem 1rem;
-        justify-content: center;
+        list-style: none; padding: 0;
+        display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; justify-content: center;
     }
     .herr-servicios { font-weight: 700; margin: 1rem 0; }
     .herr-tools { opacity: 0.75; font-size: 0.9rem; }
 }
 ```
 
-- [ ] **Step 4: Verify visually**
-
-Start the server and open the section in Chrome (see Verification above). Confirm:
-- The brain image sits centered and **stays pinned** in the viewport while you scroll through the section (which is now ~5 screens tall), against a deep blue background.
-- In DevTools, enable "Emulate prefers-reduced-motion: reduce": the animated stage disappears and the **static content** (heading + services list + tools list) is shown and readable.
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add index.html styles.css
-git commit -m "feat(herramientas): escenario sticky del cerebro + fallback estático
-
-Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
-```
-
----
-
-## Task 2: Scroll progress, 5 word-beats, brain color per beat
-
-Create `herramientas.js` with the scroll→progress engine and the beat logic: the 5 discipline words appear one-by-one and get absorbed, and the brain changes color each beat. Expose `erraticize` so the word restyles per beat. (Logo rain comes in Task 3; dust in Task 4.)
-
-**Files:**
-- Modify: `erratic.js` (expose `erraticize` on `window`)
-- Create: `herramientas.js`
-
-**Interfaces:**
-- Consumes: the DOM contract from Task 1; `window.erraticize(el)` from `erratic.js`.
-- Produces (consumed by Task 3-4, inside the same IIFE): `computeProgress() → number 0..1`; a `render(p)` function called from the scroll handler; module constants `LOGOS` (string[] of 15 filenames), `DISCIPLINES` (string[5]), `BEATS` (=5); helpers `clamp(v,a,b)` and `smooth01(t)`; and a resize-updated `R` (px, edge radius).
-
-- [ ] **Step 1: Expose `erraticize` on `window` in `erratic.js`**
-
-At the end of `erratic.js` (after the `window.reshuffleErratic` block), add:
-```js
-// Exposed so sections that swap text at runtime (e.g. Herramientas' per-beat
-// word) can re-apply the effect to an element after changing its text.
-window.erraticize = erraticize;
-```
-
-- [ ] **Step 2: Create `herramientas.js` with progress engine + beats**
+- [ ] **Step 4: Create `mente.js`**
 
 ```js
-// Sala Herramientas — "el cerebro absorbe".
-// El cerebro queda pineado al centro; al scrollear, 5 palabras de servicio
-// (beats) entran y son absorbidas, y el cerebro cambia de color por beat.
-// La lluvia de logos y el polvo ambiente se agregan en tareas siguientes.
-// Guards: sin efecto en touch / reduced-motion (el fallback estático es CSS).
+// Recorrido "la mente de VAI VEN" — controlador único.
+// Un escenario sticky (.mente-stage) pineado toda la travesía. Un progreso
+// global 0..1 sobre .mente-journey se parte en dos fases: umbral/puertas
+// (--hero-progress) y absorción/herramientas (--herr-progress). Conserva el
+// glow de grilla y el parallax del hero. Las tareas 2-4 completan renderPhase2.
+// Guards: cursor sin efecto en touch/reduced-motion; scrub sin efecto en
+// reduced-motion (mobile/touch sí scrollea, igual que el hero actual).
 // Ref: docs/superpowers/specs/2026-09-15-herramientas-cerebro-absorbe-design.md
 (() => {
     "use strict";
-    const sec = document.querySelector("#herramientas");
-    if (!sec) return;
+    const journey = document.querySelector(".mente-journey");
+    if (!journey) return;
+    const stage = journey.querySelector(".mente-stage");
 
     const reduce  = matchMedia("(prefers-reduced-motion: reduce)");
     const noHover = matchMedia("(hover: none)");
-    if (reduce.matches || noHover.matches) return;   // CSS muestra el fallback
 
-    const stage  = sec.querySelector(".herr-stage");
-    const brain  = sec.querySelector(".herr-cerebro");
-    const wordEl = sec.querySelector(".herr-palabra");
-    const lluvia = sec.querySelector(".herr-lluvia");
+    // ----- glow de grilla + parallax (migrado de hero.js) -----
+    if (!noHover.matches && !reduce.matches) {
+        window.addEventListener("mousemove", (e) => {
+            stage.style.setProperty("--mx", e.clientX + "px");
+            stage.style.setProperty("--my", e.clientY + "px");
+            const nx = (e.clientX / window.innerWidth  - 0.5) * 2;
+            const ny = (e.clientY / window.innerHeight - 0.5) * 2;
+            stage.style.setProperty("--mnx", nx.toFixed(3));
+            stage.style.setProperty("--mny", ny.toFixed(3));
+        }, { passive: true });
+    }
 
-    // ----- config -----
+    if (reduce.matches) return;   // sin scrub; CSS deja umbral estático + fallback
+
+    // ----- fases (afinables; en sync con .mente-journey height y #herramientas top) -----
+    const DOOR_VH  = 150;   // largo de scroll de la apertura de puertas
+    const TOOLS_VH = 500;   // largo de scroll de la absorción
+    const B = DOOR_VH / (DOOR_VH + TOOLS_VH);   // límite de fase en progreso global
+
+    const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
+
+    const computeProgress = () => {
+        const total = journey.offsetHeight - innerHeight;
+        const scrolled = clamp(-journey.getBoundingClientRect().top, 0, total);
+        return total > 0 ? scrolled / total : 0;
+    };
+
+    // Fase 2 (herramientas): la completan las tareas 2 (palabra + color),
+    // 3 (lluvia de logos) y 4 (polvo). Recibe el progreso local 0..1.
+    const renderPhase2 = (herrP) => { /* Task 2-4 */ };
+
+    const render = (p) => {
+        const heroP = clamp(p / B, 0, 1);
+        const herrP = clamp((p - B) / (1 - B), 0, 1);
+        stage.style.setProperty("--hero-progress", heroP.toFixed(4));
+        stage.style.setProperty("--herr-progress", herrP.toFixed(4));
+        renderPhase2(herrP);
+    };
+
+    // ----- scroll (rAF) -----
+    let ticking = false;
+    const update = () => { render(computeProgress()); ticking = false; };
+    const onScroll = () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+})();
+```
+
+- [ ] **Step 5: Delete `hero.js`**
+
+```bash
+git rm hero.js
+```
+
+- [ ] **Step 6: Verify visually**
+
+Serve and open `http://localhost:8080/`. Confirm:
+- **Hero preserved:** at top, doors closed + frase visible; moving the cursor lights the grid glow and parallaxes the motifs; scrolling opens the doors, fades frase/ojos/lupa, and the **brain grows** (B&N) — exactly as before.
+- **Brain persists:** continuing to scroll past the door phase, the brain stays **pinned and grown** (still B&N, no jump/reset) across the phase-2 range (the tools room is empty of logos/words for now — that's Tasks 2-4).
+- **Nav:** clicking "herramientas" jumps to the start of the phase-2 range (brain pinned, doors open); "home" returns to the umbral.
+- **Reduced-motion:** emulate it → the journey collapses to the static umbral (closed doors + frase) followed by the readable services/tools content on an `--azul` background.
+- Console: no errors; no `hero.js`/`herramientas.js` 404s (only `mente.js` loads).
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add index.html styles.css mente.js
+git rm --cached hero.js 2>/dev/null; git add -A hero.js 2>/dev/null
+git commit -m "feat(mente): hero+herramientas en un escenario sticky con cerebro persistente
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
+```
+(If `hero.js` was already staged for deletion by `git rm` in Step 5, a plain `git add index.html styles.css mente.js && git commit` suffices — ensure `git status` shows `hero.js` as deleted in the commit.)
+
+---
+
+## Task 2: 5 word-beats + brain B&N→color on first absorption
+
+Fill in the phase-2 word beats: the 5 discipline words appear one-by-one and get absorbed, and the brain goes from B&N to color — igniting on the first absorption, then a new color per beat. Expose `erraticize` so the changing word restyles.
+
+**Files:**
+- Modify: `erratic.js` (expose `erraticize` on `window`)
+- Modify: `mente.js` (implement the word/brain part of `renderPhase2`)
+- Modify: `styles.css` (brain color transition + a non-transform absorb pulse)
+
+**Interfaces:**
+- Consumes: `stage`, `clamp`, `renderPhase2` from Task 1; `window.erraticize(el)`.
+- Produces: constants `DISCIPLINES` (string[5]), `BEATS` (=5), `BEAT_HUE` (number[5]); helper `smooth01(t)`; functions `setBeat(beat)` and `renderWord(beat, local)`; the `.cerebro` gains `filter`/`is-absorbing` state driven by JS.
+
+- [ ] **Step 1: Expose `erraticize` on `window` in `erratic.js`**
+
+At the end of `erratic.js` add:
+```js
+// Exposed so sections that swap text at runtime (e.g. the per-beat service
+// word) can re-apply the effect after changing an element's text.
+window.erraticize = erraticize;
+```
+
+- [ ] **Step 2: Implement the word + brain logic in `mente.js`**
+
+Add config near the top of the IIFE (after the phase constants):
+```js
+    const brain = stage.querySelector(".cerebro");
+    const wordEl = stage.querySelector(".herr-palabra");
+
     const DISCIPLINES = [
         "Ilustración y Diseño Gráfico",
         "Modelado 3D",
@@ -310,56 +367,38 @@ window.erraticize = erraticize;
     ];
     const BEATS = DISCIPLINES.length;
 
-    // Logos: lluvia libre, sin correlación con disciplinas (decisión 2026-09-15).
-    const LOGOS = [
-        "after-effects", "audition", "blender", "capcut", "chatgpt",
-        "claude", "css", "html5", "illustrator", "js",
-        "photoshop", "substance-3d-painter", "unity", "unreal",
-        "visual-studio-code",
-    ];
-
-    // Placeholder de "cerebro de color por beat": hasta que lleguen los assets
-    // reales, tintamos cerebro.webp con hue-rotate. Reemplazar por swap de src
+    // Placeholder de "cerebro de color por beat": hasta tener los assets reales,
+    // se quita el B&N y se tinta con hue-rotate. Reemplazar por swap de src
     // (brain.src = BRAIN_SRCS[beat]) cuando existan las versiones de color.
     const BEAT_HUE = [0, 205, 45, 265, 140];   // deg, un tono por beat
 
-    // Posiciones (vmin) desde donde entra la palabra de cada beat, eco de las
-    // etiquetas dispersas de la referencia. Se absorbe hacia (0,0).
+    // Desde dónde entra la palabra de cada beat (vmin); se absorbe hacia (0,0).
     const WORD_SPOTS = [
         { x: -24, y: -14 }, { x: 24, y: -16 }, { x: -26, y: 16 },
         { x: 26, y: 14 }, { x: 0, y: -22 },
     ];
 
-    // ----- helpers -----
-    const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
     const smooth01 = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
+```
 
-    let R = 0;   // radio de borde para la lluvia (px) — lo usa la Tarea 3
-    const onResize = () => { R = Math.min(innerWidth, innerHeight) * 0.44; };
-
-    // ----- progreso 0..1 dentro de la sección (patrón de hero.js) -----
-    const computeProgress = () => {
-        const total = sec.offsetHeight - innerHeight;
-        const scrolled = clamp(-sec.getBoundingClientRect().top, 0, total);
-        return total > 0 ? scrolled / total : 0;
-    };
-
-    // ----- beat actual: palabra + color del cerebro -----
+Add the beat/word functions (before `renderPhase2`):
+```js
     let currentBeat = -1;
     const setBeat = (beat) => {
         if (beat === currentBeat) return;
         currentBeat = beat;
         wordEl.dataset.text = DISCIPLINES[beat];
-        window.erraticize(wordEl);                       // re-aplica el efecto
-        brain.style.filter = `hue-rotate(${BEAT_HUE[beat]}deg) saturate(1.4)`;
+        window.erraticize(wordEl);
+        // Enciende color en la 1ª absorción y cambia por beat (placeholder).
+        brain.style.filter = `hue-rotate(${BEAT_HUE[beat]}deg) saturate(1.5)`;
         brain.classList.remove("is-absorbing");
-        void brain.offsetWidth;                          // reinicia la animación
+        void brain.offsetWidth;              // reinicia la animación de pulso
         brain.classList.add("is-absorbing");
     };
 
     const renderWord = (beat, local) => {
         const spot = WORD_SPOTS[beat];
-        const absorb = smooth01((local - 0.6) / 0.4);    // 0 hasta 0.6, →1 al final
+        const absorb = smooth01((local - 0.6) / 0.4);   // 0 hasta 0.6, →1 al final
         const wx = spot.x * (1 - absorb);
         const wy = spot.y * (1 - absorb);
         const scale = 1 - 0.8 * absorb;
@@ -368,69 +407,79 @@ window.erraticize = erraticize;
             `translate(-50%, -50%) translate(${wx}vmin, ${wy}vmin) scale(${scale})`;
         wordEl.style.opacity = op;
     };
+```
 
-    // ----- render principal (lo extiende la Tarea 3 con la lluvia de logos) -----
-    const render = (p) => {
-        const beatFloat = p * BEATS;
+Replace the `renderPhase2` stub with:
+```js
+    const renderPhase2 = (herrP) => {
+        const beatFloat = herrP * BEATS;
         const beat = clamp(Math.floor(beatFloat), 0, BEATS - 1);
         const local = beatFloat - beat;
         setBeat(beat);
         renderWord(beat, local);
     };
-
-    // ----- scroll (rAF, patrón de hero.js) -----
-    let ticking = false;
-    const update = () => { render(computeProgress()); ticking = false; };
-    const onScroll = () => {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(update);
-    };
-
-    onResize();
-    update();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", () => { onResize(); onScroll(); });
-})();
 ```
 
-- [ ] **Step 3: Verify visually**
+- [ ] **Step 3: Add brain color transition + non-transform pulse to `styles.css`**
 
-Reload `http://localhost:8080/#herramientas` in Chrome. Scrolling through the section should:
-- Show the discipline words appear **one at a time** (Ilustración y Diseño Gráfico → Modelado 3D → … → Campañas publicitarias), each entering from an offset and shrinking into the brain center as that beat ends.
-- Change the **brain's color** at each new beat, with a short pulse.
-- The word is rendered with the `erratic` mixed-weight styling.
-- With reduced-motion emulated, none of this runs and the static fallback shows.
+The `.cerebro` already uses `transform` (scale/apertura) and `translate` (parallax), so the absorb pulse must NOT use those. Use a drop-shadow glow + a smooth filter transition. Add near the `.cerebro` rules:
+```css
+/* Transición de color del cerebro entre beats (el filter lo setea mente.js:
+   grayscale en fase 1 → hue-rotate por beat en fase 2). */
+.cerebro { transition: translate 0.18s ease-out, filter 0.5s ease; }
 
-- [ ] **Step 4: Commit**
+/* Pulso de absorción: glow breve por drop-shadow (no toca transform/scale,
+   ocupados por la apertura y el parallax). */
+.cerebro.is-absorbing { animation: cerebro-pulse 0.5s ease-out; }
+@keyframes cerebro-pulse {
+    0%   { filter: var(--cerebro-filter, none) drop-shadow(0 0 0 rgba(255,255,255,0)); }
+    40%  { filter: var(--cerebro-filter, none) drop-shadow(0 0 26px rgba(255,255,255,0.55)); }
+    100% { filter: var(--cerebro-filter, none) drop-shadow(0 0 0 rgba(255,255,255,0)); }
+}
+```
+Note: the existing `.cerebro` base rule already has `transition: translate 0.18s` merged from the shared `.ojo,.mano-lupa,.cerebro` rule — if adding the standalone `.cerebro { transition: … }` above conflicts, instead APPEND `, filter 0.5s ease` to the existing shared transition and skip the duplicate. The pulse `drop-shadow` intentionally layers on top; `--cerebro-filter` is optional (falls back to `none`) — the hue-rotate set inline by JS still applies during non-pulse frames.
+
+- [ ] **Step 4: Verify visually**
+
+Serve and scroll into phase 2. Confirm:
+- The 5 discipline words appear **one at a time** (Ilustración y Diseño Gráfico → … → Campañas publicitarias), each entering from an offset and shrinking into the brain as its beat ends, styled with `erratic`.
+- The brain is **B&N through the doors**, then **ignites color on the first word absorbed**, and **changes color each subsequent beat**, with a brief glow pulse — and it does NOT shrink/jump (scale stays from the hero grow).
+- Reduced-motion still shows the static fallback.
+
+- [ ] **Step 5: Commit**
 
 ```bash
-git add erratic.js herramientas.js
-git commit -m "feat(herramientas): scroll→beats, palabra por servicio y color de cerebro
+git add erratic.js mente.js styles.css
+git commit -m "feat(mente): beats de servicio + cerebro que enciende color al absorber
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
 
 ---
 
-## Task 3: Logo rain + absorption
+## Task 3: Logo rain + absorption (phase 2)
 
-Inject the 15 logo images and animate them flying in from the edges and being absorbed into the brain center, deterministically driven by scroll progress (fully reversible/scrubbable), a few at a time.
+Inject the 15 logos and animate them flying from the edges into the brain, deterministically driven by phase-2 progress, a few at a time.
 
 **Files:**
-- Modify: `herramientas.js` (inject logos at init; extend `render` to place them)
+- Modify: `mente.js` (inject logos; add `renderLogos`; call it from `renderPhase2`)
 
 **Interfaces:**
-- Consumes: `LOGOS`, `lluvia`, `R`, `clamp`, `smooth01`, `render` from Task 2.
-- Produces: a module array `logoEls` (HTMLImageElement[]) and a `renderLogos(p)` function called inside `render`.
+- Consumes: `stage`, `clamp`, `renderPhase2` from Tasks 1-2.
+- Produces: `LOGOS` (string[15]), `logoEls` (HTMLImageElement[]), `R` (px edge radius, resize-updated), `renderLogos(herrP)`.
 
-- [ ] **Step 1: Inject the logo `<img>` elements at init**
+- [ ] **Step 1: Add logo config + injection + radius in `mente.js`**
 
-In `herramientas.js`, after the `const LOGOS = [...]` config, add a build step near the other init calls (before `onResize()`):
+Add config near `DISCIPLINES`:
 ```js
-    // Instancia un <img> por logo dentro de la lluvia. Cada uno vuela desde el
-    // borde al centro en una franja del progreso; se reparten para que caigan
-    // pocos a la vez (nunca todos juntos).
+    const lluvia = stage.querySelector(".herr-lluvia");
+    // Logos: lluvia libre, sin correlación con disciplinas (decisión 2026-09-15).
+    const LOGOS = [
+        "after-effects", "audition", "blender", "capcut", "chatgpt",
+        "claude", "css", "html5", "illustrator", "js",
+        "photoshop", "substance-3d-painter", "unity", "unreal",
+        "visual-studio-code",
+    ];
     const logoEls = LOGOS.map((name) => {
         const img = document.createElement("img");
         img.src = `resources/logos/${name}.svg`;
@@ -440,31 +489,30 @@ In `herramientas.js`, after the `const LOGOS = [...]` config, add a build step n
         lluvia.appendChild(img);
         return img;
     });
+
+    let R = 0;   // radio de borde para la lluvia (px)
+    const onResize = () => { R = Math.min(innerWidth, innerHeight) * 0.44; };
 ```
 
-- [ ] **Step 2: Add `renderLogos` and call it from `render`**
+- [ ] **Step 2: Add `renderLogos` and call it from `renderPhase2`**
 
-Add the function (near `renderWord`):
 ```js
-    // Lluvia de logos: cada logo i tiene una franja [t0, t0+WIN] del progreso.
-    // Dentro de su franja viaja del borde (dist=R) al centro (dist=0), se
-    // achica y se desvanece = "absorbido". Fuera de su franja, invisible.
-    const LOGO_WIN = 0.16;                 // largo de la franja de cada logo
-    const GOLDEN = 2.399963;               // ángulo áureo (rad) → reparto parejo
-    const renderLogos = (p) => {
+    const LOGO_WIN = 0.16;      // franja de progreso visible de cada logo
+    const GOLDEN = 2.399963;    // ángulo áureo (rad)
+    const renderLogos = (herrP) => {
         const n = logoEls.length;
         const first = 0.02;
         const last = 0.98 - LOGO_WIN;
         for (let i = 0; i < n; i++) {
             const t0 = first + (last - first) * (i / (n - 1));
-            const local = (p - t0) / LOGO_WIN;
+            const local = (herrP - t0) / LOGO_WIN;
             const el = logoEls[i];
             if (local <= 0 || local >= 1) { el.style.opacity = "0"; continue; }
             const ang = i * GOLDEN;
             const dist = (1 - local) * R;                 // borde → centro
             const x = Math.cos(ang) * dist;
             const y = Math.sin(ang) * dist;
-            const s = 0.85 * (1 - local) + 0.12;          // se achica al absorberse
+            const s = 0.85 * (1 - local) + 0.12;
             const op = clamp(Math.min(local / 0.15, (1 - local) / 0.15), 0, 1);
             el.style.opacity = op.toFixed(3);
             el.style.transform =
@@ -472,32 +520,35 @@ Add the function (near `renderWord`):
         }
     };
 ```
-
-Then extend `render` to call it:
+Extend `renderPhase2` (add the logos call at the end):
 ```js
-    const render = (p) => {
-        const beatFloat = p * BEATS;
+    const renderPhase2 = (herrP) => {
+        const beatFloat = herrP * BEATS;
         const beat = clamp(Math.floor(beatFloat), 0, BEATS - 1);
         const local = beatFloat - beat;
         setBeat(beat);
         renderWord(beat, local);
-        renderLogos(p);
+        renderLogos(herrP);
     };
 ```
-(Replace the Task 2 `render` with this version.)
+Wire the radius: call `onResize()` right before the first `update()`, and add it to the resize listener:
+```js
+    onResize();
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", () => { onResize(); onScroll(); });
+```
+(Replace the Task 1 init/resize lines with this version.)
 
 - [ ] **Step 3: Verify visually**
 
-Reload and scroll. Confirm:
-- Tool logos **fly in from around the edges** and get pulled into the brain, shrinking and fading as they reach it.
-- Only **a few are visible at once** (roughly 2 overlapping), spread across the whole scroll, not all at once.
-- Scrolling **back up** reverses the motion cleanly (deterministic — no drift/pile-up).
+Scroll through phase 2. Confirm logos **fly in from the edges** and get pulled into the brain (shrink + fade), only **a few visible at once**, spread across the whole phase, and scrolling back up **reverses cleanly** (no pile-up).
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add herramientas.js
-git commit -m "feat(herramientas): lluvia de logos absorbidos por el cerebro
+git add mente.js
+git commit -m "feat(mente): lluvia de logos absorbidos por el cerebro
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
@@ -506,21 +557,21 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 ## Task 4: Ambient dust canvas
 
-Add the subtle drifting dust/starfield behind the scene on the `.herr-dust` canvas, animated by its own rAF loop that pauses when the section is offscreen. Respects reduced-motion (never starts, since JS already bails).
+Add the drifting dust starfield on `.herr-dust`, animated by its own rAF loop, paused when the journey is offscreen.
 
 **Files:**
-- Modify: `herramientas.js` (dust init + loop + IntersectionObserver)
+- Modify: `mente.js` (dust init + loop + IntersectionObserver)
 
 **Interfaces:**
-- Consumes: `stage`, `sec` from Task 2; the `.herr-dust` canvas.
-- Produces: `startDust()` / `stopDust()` controlling the dust rAF loop.
+- Consumes: `stage`, `journey` from Task 1.
+- Produces: `startDust()` / `stopDust()`.
 
-- [ ] **Step 1: Add the dust canvas loop to `herramientas.js`**
+- [ ] **Step 1: Add the dust loop to `mente.js`**
 
-Add near the end of the IIFE, before the scroll wiring:
+Add before the scroll wiring:
 ```js
     // ----- polvo ambiente (starfield tenue a la deriva) -----
-    const canvas = sec.querySelector(".herr-dust");
+    const canvas = stage.querySelector(".herr-dust");
     const ctx = canvas.getContext("2d");
     let motes = [];
     let dustRAF = 0;
@@ -533,9 +584,9 @@ Add near the end of the IIFE, before the scroll wiring:
     };
     const seedDust = () => {
         const w = stage.clientWidth, h = stage.clientHeight;
-        const count = Math.round((w * h) / 14000);   // densidad moderada
+        const count = Math.round((w * h) / 14000);
         motes = Array.from({ length: count }, (_, i) => ({
-            x: (i * 97.3) % w,                       // determinista (sin Math.random en semilla)
+            x: (i * 97.3) % w,
             y: (i * 61.7) % h,
             r: 0.5 + (i % 5) * 0.35,
             vx: ((i % 7) - 3) * 0.03,
@@ -547,10 +598,10 @@ Add near the end of the IIFE, before the scroll wiring:
         ctx.clearRect(0, 0, w, h);
         for (const m of motes) {
             m.x += m.vx; m.y += m.vy;
-            if (m.y > h) { m.y = 0; }
-            if (m.x < 0) { m.x = w; } else if (m.x > w) { m.x = 0; }
+            if (m.y > h) m.y = 0;
+            if (m.x < 0) m.x = w; else if (m.x > w) m.x = 0;
             ctx.globalAlpha = 0.25 + (m.r / 2) * 0.4;
-            ctx.fillStyle = "#FFFFFF";               // --blanco
+            ctx.fillStyle = "#FFFFFF";   // --blanco
             ctx.beginPath();
             ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
             ctx.fill();
@@ -563,38 +614,27 @@ Add near the end of the IIFE, before the scroll wiring:
 
     sizeDust();
     seedDust();
-
-    // Solo anima mientras la sección está a la vista (perf).
     const io = new IntersectionObserver((entries) => {
         entries[0].isIntersecting ? startDust() : stopDust();
     }, { threshold: 0 });
-    io.observe(sec);
+    io.observe(journey);
 ```
-
-And add dust resizing to the existing resize handler:
+Also add dust resizing to the resize listener (replace the Task 3 resize listener):
 ```js
     window.addEventListener("resize", () => {
-        onResize();
-        sizeDust();
-        seedDust();
-        onScroll();
+        onResize(); sizeDust(); seedDust(); onScroll();
     });
 ```
-(Replace the Task 2 resize listener with this version.)
 
 - [ ] **Step 2: Verify visually**
 
-Reload and scroll to the section. Confirm:
-- A subtle field of small white specks **drifts** behind the brain.
-- It sits **behind** the brain and logos (the brain and logos remain clearly on top).
-- Scrolling away from the section and back does not accumulate lag (loop pauses offscreen — check that CPU settles when the section is not visible).
-- Under reduced-motion emulation, no dust animates (whole script bails) and the static fallback shows.
+Scroll into the journey: a subtle white dust field **drifts** behind the brain (over the `--azul` backdrop once the doors open), sits **behind** the brain/logos, and the loop **pauses** when the journey is scrolled fully out of view. Reduced-motion: no dust (script bails; `.herr-dust` also hidden by CSS).
 
 - [ ] **Step 3: Commit**
 
 ```bash
-git add herramientas.js
-git commit -m "feat(herramientas): polvo ambiente en canvas, pausado fuera de vista
+git add mente.js
+git commit -m "feat(mente): polvo ambiente en canvas, pausado fuera de vista
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
@@ -603,7 +643,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 
 ## Post-implementation notes
 
-- **Colored-brain assets:** when Luly delivers the ~5 colored brain images, replace the `BEAT_HUE` hue-rotate placeholder in `setBeat()` with a real image swap (`brain.src = BRAIN_SRCS[beat]`) or a two-layer cross-fade, and drop the `saturate` filter. The `data-text`/erratic and pulse logic stay as-is.
-- **Color order:** the spec marks the per-beat color order as placeholder; finalize it against the real assets.
-- **Not in scope (own sessions):** the hard Hero→Herramientas "umbral" transition (the color-explosion cut), and any persistent connector motif between rooms.
+- **Colored-brain assets:** when Luly delivers the ~5 colored brains, replace the `BEAT_HUE` hue-rotate placeholder in `setBeat()` with `brain.src = BRAIN_SRCS[beat]` (and drop `grayscale`/`saturate`). B&N in phase 1 is the base `filter: grayscale(1) contrast(1.25)`; keep that until the first beat sets a color.
+- **Phase tuning:** `DOOR_VH`/`TOOLS_VH` in `mente.js`, `.mente-journey { height }`, and `#herramientas { top }` in CSS must stay in sync (150vh door / 500vh tools / 750vh total). Tune together.
+- **Not in scope (own sessions):** portfolio/nosotros/contacto rooms and their transitions; any persistent connector motif beyond the brain.
 ```

@@ -1,136 +1,173 @@
-# Herramientas y servicios — "el cerebro absorbe" (diseño)
+# Hero → Herramientas — "un solo cerebro que absorbe" (diseño)
 
-Estado: 🟡 En revisión de Luly (2026-09-15).
-Alcance: spec de detalle de **una sala** — la Sala #2 del recorrido. Se enmarca en
-`2026-09-14-recorrido-mente-vaiven-pantallazo.md` (la brújula narrativa) y hereda el
-esqueleto del `2026-09-14-desarme-esqueleto-design.md`.
+Estado: 🟡 En revisión de Luly (2026-09-15, **revisado tras decisión de cerebro
+persistente**).
+Alcance: cubre la **transición Hero → Herramientas como un solo recorrido continuo**
+con **un único cerebro persistente**. Enmarca el "momento clave" del
+`2026-09-14-recorrido-mente-vaiven-pantallazo.md` (el cruce del umbral donde explota
+el color). Reestructura el hero actual (`2026-09-14-hero-abri-la-cabeza-design.md`)
+para re-alojar sus capas en un escenario compartido — **sin perder ningún
+comportamiento existente** (puertas, glow de grilla, parallax, crecimiento del
+cerebro).
+
+> **Cambio respecto de la 1ª versión de este spec (2026-09-15):** la sala Herramientas
+> ya **no** es una sección con su propio cerebro independiente. Luly definió que el
+> cerebro que ves cuando se abren las puertas del hero **es el mismo** que absorbe las
+> herramientas: un solo elemento que persiste. Eso unifica hero + herramientas en un
+> escenario sticky compartido.
 
 ---
 
 ## 1. Idea central
 
-Sala #2, **primera sala adentro de la mente**. El **cerebro es el protagonista fijo
-en el centro** — continuidad directa con el hero *"Abrí la cabeza, empezá por la
-nuestra"*. Al scrollear, la mente **absorbe lo que VAI VEN sabe hacer y con qué**:
-los logos de herramientas y las palabras de cada servicio **llueven, se acercan y son
-succionados hacia el cerebro**. Cada absorción de una palabra hace que el cerebro
-**cambie de color**.
+**Un solo cerebro atraviesa todo el recorrido.** En el hero, con las puertas cerradas,
+estás en el umbral (B&N). Al scrollear, las puertas se abren y el **cerebro crece hasta
+dominar el cuadro** — sigue en B&N: todavía estás cruzando. Cuando el cerebro empieza a
+**absorber herramientas (logos) y servicios (palabras)**, **explota el color**: cada
+absorción tiñe el cerebro. No hay corte ni "otra sección": es el mismo cerebro, el
+mismo plano, que pasa de umbral (B&N) a mente-en-color.
 
-Esto **entrega la explosión de color** del arco B&N → color → B&N: el color no se
-explica, *sucede* a medida que el cerebro absorbe. Es el latido que sigue al "abrir
-las puertas" del hero.
-
-Referencia visual que trajo Luly: escena oscura con una pieza central luminosa y
-logos + palabras que aparecen/desaparecen alrededor. **De la referencia tomamos solo
-eso** — logos y palabras orbitando y entrando a la pieza central. La pieza central NO
-es el cúmulo de partículas de la referencia: es **nuestro cerebro**.
+Esto realiza el momento clave del pantallazo: *"La transición Hero → Herramientas es
+cuando cruzás el umbral y explota el color."* El color **lo causa la absorción** (no el
+umbral): el cerebro se mantiene B&N mientras las puertas se abren, y recién enciende
+color con la primera herramienta absorbida.
 
 ---
 
-## 2. Estructura y mecánica de scroll
+## 2. Arquitectura: un escenario, un cerebro, dos fases
 
-- **Escenario sticky ("brain stage").** La sección mide varias pantallas de alto
-  (~5). El cerebro queda **pineado en el centro del viewport** mientras se scrollea, y
-  el progreso de scroll maneja la secuencia.
-- **Progreso 0..1** calculado igual que en `hero.js`: `-getBoundingClientRect().top`
-  sobre `offsetHeight - innerHeight`, escrito como variable CSS (p. ej.
-  `--herr-progress`) vía un único handler de scroll con `requestAnimationFrame`.
-- **5 word-beats.** Las 5 disciplinas aparecen **una por una** a medida que avanza el
-  progreso. Cada beat = una palabra de servicio + un color de cerebro nuevo.
+Un **único contenedor alto** (`.mente-journey`) con **un único escenario sticky**
+(`.mente-stage`, `position: sticky; top:0; height:100vh`) que queda pineado durante todo
+el recorrido. Las secciones dejan de contener el arte: pasan a ser **espaciadores +
+anclas de nav** posicionados dentro del contenedor.
+
+```
+.mente-journey                      contenedor alto (relative) — da el largo de scroll
+  └─ .mente-stage (sticky, 100vh)   UN escenario pineado toda la travesía
+       ├─ .hero-fondo               capas del HERO (se conservan tal cual)
+       ├─ .hero-collage
+       ├─ .cerebro                  ← EL MISMO elemento en todo el recorrido
+       ├─ .puerta-izq / .puerta-der
+       ├─ .ojo / .mano-lupa / .hero-frase
+       ├─ .herr-dust (canvas)       capas de HERRAMIENTAS (nuevas)
+       ├─ .herr-palabra (erratic)
+       └─ .herr-lluvia (logos)
+  ├─ #hero  (ancla, arriba)         nav "home"
+  └─ #herramientas (ancla, ~fin de la fase de puertas)   nav "herramientas"
+```
+
+**Un progreso global** `p` (0..1) sobre `.mente-journey` (mismo cálculo que hoy usa
+`hero.js`: `-getBoundingClientRect().top` sobre `offsetHeight - innerHeight`). Se parte
+en dos fases con un límite `B`:
+
+- **Fase 1 — Umbral (puertas):** `p ∈ [0, B]`. Se expone como `--hero-progress = p/B`
+  (0..1). **Toda la CSS del hero actual sigue funcionando sin cambios** (está atada a
+  `--hero-progress`): puertas se abren, frase/ojos/lupa se desvanecen, collage se aleja,
+  **cerebro crece** (scale 0.6→1.35) — todo en B&N.
+- **Fase 2 — Absorción (herramientas):** `p ∈ [B, 1]`. Se expone como
+  `--herr-progress = (p - B)/(1 - B)` (0..1). El cerebro queda a tamaño pleno y ahora
+  absorbe logos + palabras y **enciende color**.
+
+`B` es afinable (arranca ~`0.38`). El ancla `#herramientas` se ubica a la profundidad de
+scroll de `B` para que el nav salte al inicio de la fase 2.
+
+> Consecuencia clave: como `--hero-progress` y `--herr-progress` son variables locales
+> por fase, **la CSS del hero y la de herramientas conviven sin pisarse**, y el cerebro
+> —único elemento— hereda ambas (crece en fase 1, se tiñe/absorbe en fase 2).
+
+---
+
+## 3. El cerebro persistente (B&N → color)
+
+Un solo `<img class="cerebro">` (hoy `cerebro.webp`).
+
+- **Fase 1:** `filter: grayscale(1) contrast(1.25)` (B&N), crece con `--hero-progress`
+  (se conserva la regla actual `.hero-cerebro`/`.cerebro`).
+- **Fase 2 (encendido en la 1ª absorción):** al absorber la palabra de cada beat, el
+  cerebro **cambia de color**. Placeholder hasta tener los assets: quitar el grayscale y
+  aplicar un tinte por beat (`hue-rotate`/`saturate`). Real: swap de `src` a las ~5
+  versiones de color que prepara Luly (`brain.src = BRAIN_SRCS[beat]`). Un pulso breve
+  por absorción.
+
+El cerebro **nunca reaparece ni salta de tamaño**: mantiene escala y centro entre fases.
+
+---
+
+## 4. Las 5 palabras-beat (servicios)
+
+En la fase 2, las 5 disciplinas aparecen **una por una** a medida que avanza
+`--herr-progress`. Cada beat = una palabra de servicio + un color de cerebro nuevo.
 
 | Beat | Palabra (servicio) | Color de cerebro |
 |---|---|---|
-| 1 | Ilustración y Diseño Gráfico | color A |
+| 1 | Ilustración y Diseño Gráfico | color A (1ª absorción = 1ª explosión) |
 | 2 | Modelado 3D | color B |
 | 3 | Motion Graphics | color C |
 | 4 | Desarrollo web | color D |
 | 5 | Campañas publicitarias | color E |
 
-Los colores concretos salen de la paleta de marca (`--naranja`, `--azul`,
-`--amarillo`, `--verde-agua-claro`, `--lila`, etc.); el orden final se ajusta cuando
-lleguen los assets de cerebro de color.
+Colores de la paleta de marca; orden final se ajusta con los assets reales. Las palabras
+usan el sistema **`erratic`** (`erratic.js`) y se absorben hacia el centro del cerebro.
 
 ---
 
-## 3. Los logos: lluvia libre, sin correlación
+## 5. Los logos: lluvia libre, sin correlación (fase 2)
 
-Decisión de Luly (2026-09-15): **los logos NO se emparejan con disciplinas.** Los 15
-llueven de forma libre y continua a lo largo de toda la sección y son absorbidos por
-el cerebro como pura textura/energía de "lluvia de ideas". No hay lógica de
-"este logo pertenece a este servicio".
+Los 15 logos de `resources/logos/` **no se emparejan con disciplinas** (decisión
+2026-09-15): llueven libre y continuamente en la fase 2 y son absorbidos por el cerebro
+como textura/energía de "lluvia de ideas". Nunca todos a la vez: cada logo tiene su
+franja de `--herr-progress` en la que entra desde el borde, viaja al centro, se achica y
+se desvanece (determinista y reversible con el scroll).
 
-Logos disponibles en `resources/logos/` (15, SVG):
-
-`after-effects`, `audition`, `blender`, `capcut`, `chatgpt`, `claude`, `css`,
-`html5`, `illustrator`, `js`, `photoshop`, `substance-3d-painter`, `unity`,
-`unreal`, `visual-studio-code`.
-
-Reglas de la lluvia:
-- **Nunca todos a la vez.** En pantalla hay pocos ítems por vez; los del beat anterior
-  ya fueron absorbidos cuando entran los siguientes.
-- Aparecen en **bordes / parte superior**, hacen un *drift* hacia adentro y luego son
-  **acelerados/succionados al centro** (bajan de escala + se desvanecen al tocar el
-  cerebro).
-- El reparto de qué logo cae en qué momento es libre; se distribuyen a lo largo del
-  progreso para que la lluvia se sienta constante, no por beat.
+Logos: `after-effects`, `audition`, `blender`, `capcut`, `chatgpt`, `claude`, `css`,
+`html5`, `illustrator`, `js`, `photoshop`, `substance-3d-painter`, `unity`, `unreal`,
+`visual-studio-code`.
 
 ---
 
-## 4. Animación de absorción
+## 6. Atmósfera
 
-Por cada ítem (logo o palabra):
-1. **Spawn** en un borde con una posición/rotación ligeramente aleatoria.
-2. **Drift** hacia el interior (lento, orgánico).
-3. **Succión**: al cruzar cierto umbral de progreso, se acelera hacia el centro del
-   cerebro, escala → 0 y opacidad → 0.
-4. **Reacción del cerebro**: al absorber la **palabra** de un beat, el cerebro hace
-   *cross-fade* al asset del color siguiente + un pulso sutil (scale/glow breve).
-
-Detrás de todo, un **campo de polvo ambiente** (starfield tenue) a la deriva, en un
-`<canvas>` chico, para dar atmósfera (lo único que replicamos del fondo de la
-referencia).
+Un **campo de polvo ambiente** (starfield tenue) a la deriva en un `<canvas>`
+(`.herr-dust`) detrás del cerebro, visible sobre todo en la fase 2 (con las puertas ya
+abiertas). Loop rAF propio, pausado cuando el recorrido está fuera de vista.
 
 ---
 
-## 5. Tipografía (las palabras)
+## 7. Tecnología y accesibilidad
 
-Las palabras de disciplina usan el sistema **`erratic`** ya existente (`erratic.js`,
-"reutilizado por cada sección"), para la mezcla cruda de pesos/itálicas que hace eco
-al contraste sans/itálica de la referencia. La palabra entra y se absorbe junto con la
-lluvia de logos.
-
----
-
-## 6. Tecnología y accesibilidad
-
-- **Vanilla-first** (coherente con el proyecto y con `hero.js`):
-  - Sección sticky + un handler de scroll → `--herr-progress` (0..1).
-  - Rain/absorción resueltas con **transforms de CSS** a partir del progreso.
-  - Cerebro como `<img>` con **swap** entre assets de color (o cross-fade de dos capas).
-  - Polvo ambiente en un `<canvas>` pequeño.
-  - Guards de `touch` / `prefers-reduced-motion` como en `hero.js`.
-- **Escape hatch:** si el scrubbing vanilla se siente duro/janky, se evalúa GSAP
-  ScrollTrigger. **No se adopta ahora** — se marca como decisión si aparece el
-  problema (regla del proyecto: librería solo con razón clara).
-- **Reduced-motion / mobile:** sin pin ni scrub. Los beats pasan a un **reveal
-  estático apilado** (por disciplina: cerebro + palabra + algunos logos), 100 %
-  legible. Requerido por el objetivo WCAG AA.
+- **Vanilla-first.** Un solo controlador `mente.js` (superconjunto del `hero.js` actual):
+  - Un handler de scroll → progreso global `p`; escribe `--hero-progress` (fase 1) y
+    `--herr-progress` (fase 2) en el escenario.
+  - Cursor: `--mx/--my` (glow de grilla) y `--mnx/--mny` (parallax) — **se conserva** la
+    lógica de `hero.js`.
+  - Fase 2: beats (palabra + color de cerebro), lluvia de logos, y el canvas de polvo.
+  - Guards de `touch` / `prefers-reduced-motion` como hoy.
+  - `hero.js` queda **reemplazado** por `mente.js` (su lógica migra íntegra).
+- **La CSS del hero se conserva** (atada a `--hero-progress`/`--mx`/`--mnx`); solo se
+  re-aloja el DOM en el escenario compartido y cambia la fuente de las variables.
+- **Reduced-motion / touch:** sin pin ni scrub. El hero queda estático en su estado de
+  umbral (puertas cerradas + frase, `--hero-progress:0`) y debajo se muestra el
+  **contenido estático accesible** de herramientas (encabezado + servicios + tools).
+  Requerido por WCAG AA.
 
 ---
 
-## 7. Assets
+## 8. Impacto y migración
 
-- **Logos** ✅ ya en `resources/logos/` (15, SVG, kebab-case).
-- **Cerebros de color (~5)** ⏳ los prepara Luly (una versión del cerebro por color de
-  beat). Hasta que lleguen se construye con **placeholders** recoloreando
-  `resources/cerebro.webp` (p. ej. `filter: hue-rotate`) para poder ver la mecánica.
+- **Reestructura el hero** (aprobado por Luly): re-aloja `.hero-*` dentro de
+  `.mente-stage`; el cerebro pasa a ser `.cerebro` compartido. Se preserva todo
+  comportamiento (puertas, glow, parallax, crecimiento).
+- **Supersede** la Tarea 1 ya commiteada (`686d591`, escenario `herr` autónomo): el nuevo
+  plan la reescribe hacia el escenario unificado.
+- **Assets:** logos ✅ en `resources/logos/`. Cerebros de color (~5) ⏳ los prepara Luly;
+  hasta entonces, placeholder con `hue-rotate`.
 
 ---
 
-## 8. Qué NO cubre este spec
+## 9. Qué NO cubre este spec
 
-- Copy fino / nombres exactos si cambian las etiquetas de disciplina.
-- La transición dura Hero → Herramientas (el "cruce del umbral"); se diseña en su
-  propia sesión (es el momento clave según el pantallazo general).
-- Orden final y valores exactos de los colores de cerebro (dependen de los assets).
-- Assets reales de Motion/Campañas para el portfolio (otra sala).
+- Copy fino de las palabras si cambian las etiquetas de disciplina.
+- Orden y valores exactos de los colores de cerebro (dependen de los assets).
+- Salas posteriores (portfolio, nosotros, contacto) y sus transiciones.
+- Un motivo conector persistente entre salas más allá del cerebro (decisión futura del
+  pantallazo).
