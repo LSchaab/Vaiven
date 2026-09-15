@@ -322,6 +322,20 @@ section h2 {
 .mano-lupa,
 .cerebro { transition: translate 0.18s ease-out; }
 
+/* Transición de color del cerebro entre beats (el filter lo setea mente.js:
+   grayscale en fase 1 → hue-rotate por beat en fase 2). Se agrega `filter`
+   a la transición del cerebro sin duplicar la regla compartida de arriba. */
+.cerebro { transition: translate 0.18s ease-out, filter 0.5s ease; }
+
+/* Pulso de absorción: glow breve por drop-shadow (no toca transform/scale,
+   ocupados por la apertura y el parallax). */
+.cerebro.is-absorbing { animation: cerebro-pulse 0.5s ease-out; }
+@keyframes cerebro-pulse {
+    0%   { filter: var(--cerebro-filter, none) drop-shadow(0 0 0 rgba(255,255,255,0)); }
+    40%  { filter: var(--cerebro-filter, none) drop-shadow(0 0 26px rgba(255,255,255,0.55)); }
+    100% { filter: var(--cerebro-filter, none) drop-shadow(0 0 0 rgba(255,255,255,0)); }
+}
+
 .ojo-izq { translate: calc(var(--mnx, 0) * -14px) calc(var(--mny, 0) * -14px); }
 .ojo-der { translate: calc(var(--mnx, 0) *  18px) calc(var(--mny, 0) *  12px); }
 .mano-lupa { translate: calc(-50% + var(--mnx, 0) * 22px) calc(var(--mny, 0) * 10px); }

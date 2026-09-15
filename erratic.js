@@ -38,6 +38,10 @@ function erraticize(el) {
 
 document.querySelectorAll(".erratic").forEach(erraticize);
 
+// Exposed so sections that swap text at runtime (e.g. the per-beat service
+// word) can re-apply the effect after changing an element's text.
+window.erraticize = erraticize;
+
 // Exposed for design iteration — call window.reshuffleErratic() from devtools
 // to remix without reloading.
 window.reshuffleErratic = () => {
