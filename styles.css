@@ -167,7 +167,7 @@ section h2 {
 
 /* ==========================================================================
    HERO "Abrí la cabeza" — dos puertas + cerebro
-   Variables que setea hero.js:
+   Variables que setea mente.js:
      --hero-progress (0..1)  scroll dentro del escenario  (Task 4)
      --mx / --my             posición del cursor en px     (Task 2)
      --mnx / --mny           cursor normalizado -1..1       (Task 3)
@@ -273,7 +273,7 @@ section h2 {
 
 /* grilla iluminada cerca del cursor: la misma trama pero en color de marca
    (verticales azul, horizontales naranja), revelada sólo bajo un halo radial
-   que sigue al mouse (--mx/--my las setea hero.js). Fuera del halo: invisible. */
+   que sigue al mouse (--mx/--my las setea mente.js). Fuera del halo: invisible. */
 .puerta::after {
     content: "";
     position: absolute; inset: 0;
@@ -317,7 +317,7 @@ section h2 {
 }
 
 /* --- Parallax sutil (Task 3): cada motivo se desplaza con el cursor
-   (--mnx/--mny las setea hero.js). Distintos factores = distinta profundidad.
+   (--mnx/--mny las setea mente.js). Distintos factores = distinta profundidad.
    La transición sobre `translate` da una inercia suave. Fallback 0 sin JS.
    Nota: `translate` (parallax + centrado) y `transform` (scale por scroll,
    Task 4) son propiedades distintas: conviven sin pisarse. --- */
@@ -345,7 +345,7 @@ section h2 {
 .cerebro { translate: calc(-50% + var(--mnx, 0) * 8px) calc(-50% + var(--mny, 0) * 8px); }
 
 /* --- Apertura por scroll (Task 4): todo atado a --hero-progress (0..1),
-   que setea hero.js según el scroll dentro del escenario. Los valores son
+   que setea mente.js según el scroll dentro del escenario. Los valores son
    afinables. Sensación buscada: entrar (profundidad), no bajar. --- */
 
 /* puertas: se abren del centro hacia afuera */
@@ -396,7 +396,7 @@ section h2 {
 
 /* === Sala Herramientas — "el cerebro absorbe" =============================
    Escenario sticky en una sección alta. La animación (logos + palabra +
-   color del cerebro) la maneja herramientas.js. Fondo oscuro de marca para
+   color del cerebro) la maneja mente.js. Fondo oscuro de marca para
    que el color del cerebro y los logos resalten (dentro de la mente).
    Ref: docs/superpowers/specs/2026-09-15-herramientas-cerebro-absorbe-design.md */
 .herr-dust {
