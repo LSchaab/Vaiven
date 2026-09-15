@@ -193,8 +193,59 @@
         requestAnimationFrame(update);
     };
 
+    // ----- polvo ambiente (starfield tenue a la deriva) -----
+    const canvas = stage.querySelector(".herr-dust");
+    const ctx = canvas.getContext("2d");
+    let motes = [];
+    let dustRAF = 0;
+
+    const sizeDust = () => {
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        canvas.width = Math.floor(stage.clientWidth * dpr);
+        canvas.height = Math.floor(stage.clientHeight * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    const seedDust = () => {
+        const w = stage.clientWidth, h = stage.clientHeight;
+        const count = Math.round((w * h) / 14000);
+        motes = Array.from({ length: count }, (_, i) => ({
+            x: (i * 97.3) % w,
+            y: (i * 61.7) % h,
+            r: 0.5 + (i % 5) * 0.35,
+            vx: ((i % 7) - 3) * 0.03,
+            vy: 0.05 + (i % 3) * 0.04,
+        }));
+    };
+    const drawDust = () => {
+        const w = stage.clientWidth, h = stage.clientHeight;
+        ctx.clearRect(0, 0, w, h);
+        for (const m of motes) {
+            m.x += m.vx; m.y += m.vy;
+            if (m.y > h) m.y = 0;
+            if (m.x < 0) m.x = w; else if (m.x > w) m.x = 0;
+            ctx.globalAlpha = 0.25 + (m.r / 2) * 0.4;
+            ctx.fillStyle = "#FFFFFF";   // --blanco
+            ctx.beginPath();
+            ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        dustRAF = requestAnimationFrame(drawDust);
+    };
+    const startDust = () => { if (!dustRAF) dustRAF = requestAnimationFrame(drawDust); };
+    const stopDust = () => { cancelAnimationFrame(dustRAF); dustRAF = 0; };
+
+    sizeDust();
+    seedDust();
+    const io = new IntersectionObserver((entries) => {
+        entries[0].isIntersecting ? startDust() : stopDust();
+    }, { threshold: 0 });
+    io.observe(journey);
+
     onResize();
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", () => { onResize(); onScroll(); });
+    window.addEventListener("resize", () => {
+        onResize(); sizeDust(); seedDust(); onScroll();
+    });
 })();
