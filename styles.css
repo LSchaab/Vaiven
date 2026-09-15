@@ -288,6 +288,20 @@ section h2 {
     filter: grayscale(1) contrast(1.2);
 }
 
+/* --- Parallax sutil (Task 3): cada motivo se desplaza con el cursor
+   (--mnx/--mny las setea hero.js). Distintos factores = distinta profundidad.
+   La transición sobre `translate` da una inercia suave. Fallback 0 sin JS.
+   Nota: `translate` (parallax + centrado) y `transform` (scale por scroll,
+   Task 4) son propiedades distintas: conviven sin pisarse. --- */
+.ojo,
+.mano-lupa,
+.hero-cerebro { transition: translate 0.18s ease-out; }
+
+.ojo-izq { translate: calc(var(--mnx, 0) * -14px) calc(var(--mny, 0) * -14px); }
+.ojo-der { translate: calc(var(--mnx, 0) *  18px) calc(var(--mny, 0) *  12px); }
+.mano-lupa { translate: calc(-50% + var(--mnx, 0) * 22px) calc(var(--mny, 0) * 10px); }
+.hero-cerebro { translate: calc(-50% + var(--mnx, 0) * 8px) calc(-50% + var(--mny, 0) * 8px); }
+
 /* capa 6 — frase */
 .hero-frase {
     position: relative;
