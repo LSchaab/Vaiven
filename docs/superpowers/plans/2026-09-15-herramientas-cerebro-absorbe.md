@@ -520,14 +520,20 @@ Add config near `DISCIPLINES`:
         }
     };
 ```
-Extend `renderPhase2` (add the logos call at the end):
+Extend `renderPhase2` (add the logos call at the end — it must run in BOTH the phase-1 and phase-2 branches so logos hide when `herrP` is 0; keep the existing phase-1 B&N guard intact):
 ```js
     const renderPhase2 = (herrP) => {
-        const beatFloat = herrP * BEATS;
-        const beat = clamp(Math.floor(beatFloat), 0, BEATS - 1);
-        const local = beatFloat - beat;
-        setBeat(beat);
-        renderWord(beat, local);
+        if (herrP <= 0) {
+            // fase 1 / umbral: cerebro vuelve a B&N (quita el tinte inline) y sin palabra.
+            if (currentBeat !== -1) { currentBeat = -1; brain.style.filter = ""; }
+            wordEl.style.opacity = 0;
+        } else {
+            const beatFloat = herrP * BEATS;
+            const beat = clamp(Math.floor(beatFloat), 0, BEATS - 1);
+            const local = beatFloat - beat;
+            setBeat(beat);
+            renderWord(beat, local);
+        }
         renderLogos(herrP);
     };
 ```

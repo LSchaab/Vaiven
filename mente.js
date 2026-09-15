@@ -49,14 +49,20 @@
     const BEATS = DISCIPLINES.length;
 
     // Placeholder de "cerebro de color por beat": hasta tener los assets reales,
-    // se quita el B&N y se tinta con hue-rotate. Reemplazar por swap de src
+    // se colorea el cerebro (aunque sea B&N) con sepia + hue-rotate — el sepia
+    // aporta saturación para que el hue-rotate SÍ cambie el color (hue-rotate
+    // solo no tiñe una imagen en escala de grises). Reemplazar por swap de src
     // (brain.src = BRAIN_SRCS[beat]) cuando existan las versiones de color.
-    const BEAT_HUE = [0, 205, 45, 265, 140];   // deg, un tono por beat
+    const BEAT_HUE = [340, 200, 10, 140, 210];   // deg, un tono por beat (aprox. marca)
 
     // Desde dónde entra la palabra de cada beat (vmin); se absorbe hacia (0,0).
+    // Repartidas por la pantalla (las largas con x chico para no desbordar).
     const WORD_SPOTS = [
-        { x: -24, y: -14 }, { x: 24, y: -16 }, { x: -26, y: 16 },
-        { x: 26, y: 14 }, { x: 0, y: -22 },
+        { x: -14, y: -30 },   // Ilustración y Diseño Gráfico (larga)
+        { x:  34, y: -16 },   // Modelado 3D
+        { x: -36, y:  14 },   // Motion Graphics
+        { x:  24, y:  30 },   // Desarrollo web
+        { x:   0, y:  34 },   // Campañas publicitarias (larga)
     ];
 
     const smooth01 = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
@@ -75,8 +81,8 @@
         currentBeat = beat;
         wordEl.dataset.text = DISCIPLINES[beat];
         window.erraticize(wordEl);
-        // Enciende color en la 1ª absorción y cambia por beat (placeholder).
-        brain.style.filter = `hue-rotate(${BEAT_HUE[beat]}deg) saturate(1.5)`;
+        // Enciende color en la fase 2 y cambia por beat (placeholder sepia).
+        brain.style.filter = `sepia(1) saturate(4) hue-rotate(${BEAT_HUE[beat]}deg)`;
         brain.classList.remove("is-absorbing");
         void brain.offsetWidth;              // reinicia la animación de pulso
         brain.classList.add("is-absorbing");
@@ -95,11 +101,17 @@
     };
 
     const renderPhase2 = (herrP) => {
-        const beatFloat = herrP * BEATS;
-        const beat = clamp(Math.floor(beatFloat), 0, BEATS - 1);
-        const local = beatFloat - beat;
-        setBeat(beat);
-        renderWord(beat, local);
+        if (herrP <= 0) {
+            // fase 1 / umbral: cerebro vuelve a B&N (quita el tinte inline) y sin palabra.
+            if (currentBeat !== -1) { currentBeat = -1; brain.style.filter = ""; }
+            wordEl.style.opacity = 0;
+        } else {
+            const beatFloat = herrP * BEATS;
+            const beat = clamp(Math.floor(beatFloat), 0, BEATS - 1);
+            const local = beatFloat - beat;
+            setBeat(beat);
+            renderWord(beat, local);
+        }
     };
 
     const render = (p) => {
