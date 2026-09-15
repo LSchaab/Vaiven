@@ -8,7 +8,7 @@
 :root {
     --naranja:            #FF5B23;
     --verde-agua-claro:   #ADE6ED;
-    --azul:               #3A39FF;
+    --azul:               #2222A0;
     --lila:               #B4B4ED;
     --amarillo:           #FFCC00;
     --verde:              #167A72;
@@ -172,33 +172,58 @@ section h2 {
      --mx / --my             posición del cursor en px     (Task 2)
      --mnx / --mny           cursor normalizado -1..1       (Task 3)
    ========================================================================== */
-.hero {
+/* Recorrido unificado: un contenedor alto da el largo de scroll; un escenario
+   sticky queda pineado toda la travesía. Ref: spec 2026-09-15. */
+.mente-journey {
     position: relative;
-    display: block;           /* override del section base (era flex → colapsaba) */
-    padding: 0;               /* override del section base */
+    /* 150vh de apertura (puertas) + 500vh de absorción. Afinable; debe quedar
+       en sync con DOOR_VH/TOOLS_VH de mente.js. */
+    height: 750vh;
     background: var(--negro);
-    --hero-progress: 0;       /* fallback si aún no hay JS */
 }
 
-.hero-stage {
-    position: relative;       /* Task 4 lo cambia a sticky */
-    width: 100%;
+.mente-stage {
+    position: sticky;
+    top: 0;
     height: 100vh;
     overflow: hidden;
-}
-
-.hero-scene {
-    position: absolute; inset: 0;
     display: grid;
-    place-items: center;   /* centra la frase (único hijo en flujo) */
+    place-items: center;     /* centra la frase (único hijo en flujo) */
+    background: var(--negro); /* umbral B&N detrás de todo */
+    --hero-progress: 0;       /* fallbacks si aún no hay JS */
+    --herr-progress: 0;
 }
 
-/* capa 1 — fondo grunge */
+/* Anclas de nav: marcadores absolutos de 0px, sin arte ni interacción.
+   #herramientas al inicio de la fase 2 (150vh = DOOR_VH). */
+.mente-anchor {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 0;
+    min-height: 0;
+    padding: 0;
+    margin: 0;
+    display: block;
+    pointer-events: none;
+}
+#hero.mente-anchor { top: 0; }
+#herramientas.mente-anchor { top: 150vh; }
+
+/* capa 1 — fondo: azul de marca. Se revela al abrir las puertas ("ya entramos
+   a los colores"); con las puertas cerradas queda tapado por el negro, así que
+   el extremo B&N del hero se mantiene. Grunge sutil encima para no dejarlo plano. */
 .hero-fondo {
     position: absolute; inset: 0;
-    background: var(--negro) url("resources/textures/grunge_texture.webp") center / cover;
-    opacity: 0.25;
+    background: var(--azul);
     z-index: 0;
+}
+.hero-fondo::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: url("resources/textures/grunge_texture.webp") center / cover;
+    mix-blend-mode: overlay;
+    opacity: 0.3;
 }
 
 /* capa 2 — collage tenue (oculto en cerrado; Task 4 lo anima) */
@@ -217,7 +242,7 @@ section h2 {
 .hero-collage img { width: 100%; height: 100%; object-fit: cover; }
 
 /* capa 3 — cerebro (oculto en cerrado; Task 4 lo hace crecer) */
-.hero-cerebro {
+.cerebro {
     position: absolute; left: 50%; top: 50%;
     width: min(42vw, 460px);
     translate: -50% -50%;
@@ -295,12 +320,46 @@ section h2 {
    Task 4) son propiedades distintas: conviven sin pisarse. --- */
 .ojo,
 .mano-lupa,
-.hero-cerebro { transition: translate 0.18s ease-out; }
+.cerebro { transition: translate 0.18s ease-out; }
 
 .ojo-izq { translate: calc(var(--mnx, 0) * -14px) calc(var(--mny, 0) * -14px); }
 .ojo-der { translate: calc(var(--mnx, 0) *  18px) calc(var(--mny, 0) *  12px); }
 .mano-lupa { translate: calc(-50% + var(--mnx, 0) * 22px) calc(var(--mny, 0) * 10px); }
-.hero-cerebro { translate: calc(-50% + var(--mnx, 0) * 8px) calc(-50% + var(--mny, 0) * 8px); }
+.cerebro { translate: calc(-50% + var(--mnx, 0) * 8px) calc(-50% + var(--mny, 0) * 8px); }
+
+/* --- Apertura por scroll (Task 4): todo atado a --hero-progress (0..1),
+   que setea hero.js según el scroll dentro del escenario. Los valores son
+   afinables. Sensación buscada: entrar (profundidad), no bajar. --- */
+
+/* puertas: se abren del centro hacia afuera */
+.puerta-izq { transform: translateX(calc(var(--hero-progress) * -100%)); }
+.puerta-der { transform: translateX(calc(var(--hero-progress) *  100%)); }
+
+/* frase: se desvanece y sube apenas en el primer tramo (queda "afuera") */
+.hero-frase {
+    opacity: clamp(0, calc(1 - var(--hero-progress) * 3), 1);
+    transform: translateY(calc(var(--hero-progress) * -6vh));
+}
+
+/* ojos y lupa: se desvanecen con la apertura (como la frase) → sólo queda
+   el cerebro. La opacity no toca el `translate` del parallax. */
+.ojo,
+.mano-lupa {
+    opacity: clamp(0, calc(1 - var(--hero-progress) * 3), 1);
+}
+
+/* collage: se insinúa tenue y se aleja + desvanece (protagonismo al cerebro) */
+.hero-collage {
+    opacity: max(0, calc(0.18 - var(--hero-progress) * 0.3));
+    transform: scale(calc(0.6 - var(--hero-progress) * 0.12));
+}
+
+/* cerebro: crece y aparece hasta dominar el cuadro (el `translate` de parallax
+   lo mantiene centrado; el scale va en `transform`, no se pisan) */
+.cerebro {
+    opacity: clamp(0, calc((var(--hero-progress) - 0.1) * 2.2), 1);
+    transform: scale(calc(0.6 + var(--hero-progress) * 0.75));
+}
 
 /* capa 6 — frase */
 .hero-frase {
@@ -323,49 +382,14 @@ section h2 {
    color del cerebro) la maneja herramientas.js. Fondo oscuro de marca para
    que el color del cerebro y los logos resalten (dentro de la mente).
    Ref: docs/superpowers/specs/2026-09-15-herramientas-cerebro-absorbe-design.md */
-.herramientas {
-    /* Anula el centrado flex de `section`: necesitamos flujo normal para el
-       hijo sticky, y altura de ~5 pantallas (5 beats). */
-    display: block;
-    min-height: 0;
-    height: 500vh;
-    padding: 0;
-    background: var(--azul-oscuro);   /* dentro de la mente: azul profundo, no negro (eso es B&N) */
-    color: var(--blanco);
-}
-
-.herr-stage {
-    position: sticky;
-    top: 0;
-    height: 100vh;
-    display: grid;
-    place-items: center;
-    overflow: hidden;
-}
-
 .herr-dust {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     display: block;
-}
-
-.herr-cerebro {
-    position: relative;   /* por encima del polvo */
-    width: clamp(220px, 34vmin, 460px);
-    height: auto;
-    z-index: 1;
-    will-change: transform, filter;
-    transition: filter 0.5s ease;   /* cross-fade de color al cambiar de beat */
-}
-
-/* Pulso breve al absorber la palabra de un beat (clase togglea en JS). */
-.herr-cerebro.is-absorbing { animation: herr-pulse 0.45s ease-out; }
-@keyframes herr-pulse {
-    0%   { transform: scale(1); }
-    40%  { transform: scale(1.06); }
-    100% { transform: scale(1); }
+    z-index: 0;                       /* detrás del cerebro y capas del hero */
+    opacity: var(--herr-progress, 0); /* invisible en el umbral; aparece al absorber */
 }
 
 /* Palabra del beat (servicio). Centrada; JS la desplaza y la absorbe. */
@@ -408,38 +432,26 @@ section h2 {
     border: 0;
 }
 
-@media (prefers-reduced-motion: reduce), (hover: none) {
-    .herramientas {
-        height: auto;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 6rem 1.5rem 3rem;
-        text-align: center;
-    }
-    .herr-stage { display: none; }
+/* Reduced-motion: sin pin ni scrub. Queda el umbral estático (puertas
+   cerradas + frase, --hero-progress:0) y debajo el contenido accesible. */
+@media (prefers-reduced-motion: reduce) {
+    .mente-journey { height: auto; }
+    .mente-stage { position: static; height: 100vh; }
+    .herr-dust, .herr-palabra, .herr-lluvia { display: none; }
     .herr-content {
         position: static;
         width: auto; height: auto;
-        margin: 0; padding: 0;
-        overflow: visible;
-        clip: auto;
-        white-space: normal;
+        margin: 0; padding: 3rem 1.5rem;
+        overflow: visible; clip: auto; white-space: normal;
+        color: var(--blanco); background: var(--azul); text-align: center;
     }
     .herr-content h2 {
         font-size: clamp(1.5rem, 5vw, 3rem);
-        text-transform: lowercase;
-        opacity: 1;   /* anula el opacity:0.4 del `section h2` stub global */
-        margin: 0 0 0.5rem;
+        text-transform: lowercase; opacity: 1; margin: 0 0 0.5rem;
     }
     .herr-servicios, .herr-tools {
-        list-style: none;
-        padding: 0;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem 1rem;
-        justify-content: center;
+        list-style: none; padding: 0;
+        display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; justify-content: center;
     }
     .herr-servicios { font-weight: 700; margin: 1rem 0; }
     .herr-tools { opacity: 0.75; font-size: 0.9rem; }

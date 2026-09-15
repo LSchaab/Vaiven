@@ -13,12 +13,10 @@
     <!-- erratic typography effect (Mateo). Infrastructure — reused by every
          section as it gets rebuilt. Self-invokes over `.erratic` on load. -->
     <script src="erratic.js" defer></script>
-    <!-- Interacción del hero: glow de grilla, parallax y apertura por scroll.
-         Vanilla, auto-inicializado sobre #hero. -->
-    <script src="hero.js" defer></script>
-    <!-- Sala Herramientas: cerebro que absorbe logos + palabras al scrollear.
-         Vanilla, auto-inicializado sobre #herramientas. -->
-    <script src="herramientas.js" defer></script>
+    <!-- Recorrido "la mente de VAI VEN": un escenario sticky, un cerebro que
+         persiste. Progreso global partido en fase umbral / fase absorción.
+         Vanilla, auto-inicializado sobre .mente-journey. -->
+    <script src="mente.js" defer></script>
 </head>
 <body>
     <!-- Header fijo: logo + nav centro-arriba. Las anclas hacen scroll suave
@@ -43,62 +41,55 @@
          reconstruyen por sesión de sección. Extremos (hero/contacto) en B&N;
          salas del medio en neutro. -->
     <main>
-        <section id="hero" class="hero zona-bn">
-            <!-- Escenario sticky: en Task 4 la sección se vuelve más alta que el
-                 viewport y este stage se "clava". Por ahora ocupa una pantalla. -->
-            <div class="hero-stage">
-                <div class="hero-scene">
-                    <!-- capa 1: fondo grunge profundo -->
-                    <div class="hero-fondo" aria-hidden="true"></div>
-
-                    <!-- capa 2: collage de portfolio (tenue; se revela y se aleja
-                         con el scroll en Task 4). Duotono por CSS filter. -->
-                    <div class="hero-collage" aria-hidden="true">
-                        <img src="diseno_grafico/Poster_Inari/13_titulo.png" alt="" decoding="async">
-                        <img src="diseno_grafico/Poster_Lightyear/poster_completox2.png" alt="" decoding="async">
-                        <img src="diseno_grafico/Poster_Perfume/6_FINAL.png" alt="" decoding="async">
-                        <img src="diseno_grafico/Poster_infinityWar/poster_infinityWarx2.png" alt="" decoding="async">
-                        <img src="diseno_grafico/Poster_interstellar/FINAL TDI2 AFICHE JPG.jpg" alt="" decoding="async">
-                        <img src="3d/caja_fantasia/RENDER1.png" alt="" decoding="async">
-                        <img src="3d/maquinaexp_laserenisima/RenderConPost1-01.png" alt="" decoding="async">
-                    </div>
-
-                    <!-- capa 3: cerebro protagonista (crece con el scroll en Task 4) -->
-                    <img class="hero-cerebro" src="resources/cerebro.webp" alt="" aria-hidden="true" decoding="async">
-
-                    <!-- capa 4: las dos puertas con grilla (se abren en Task 4) -->
-                    <div class="puerta puerta-izq" aria-hidden="true"></div>
-                    <div class="puerta puerta-der" aria-hidden="true"></div>
-
-                    <!-- capa 5: motivos collage (parallax en Task 3) -->
-                    <img class="ojo ojo-izq" src="resources/ojo_1.webp" alt="" aria-hidden="true" decoding="async">
-                    <img class="ojo ojo-der" src="resources/ojo_2.webp" alt="" aria-hidden="true" decoding="async">
-                    <img class="mano-lupa" src="resources/lupa_BYN.png" alt="" aria-hidden="true" decoding="async">
-
-                    <!-- capa 6: frase (único texto real). Saltos de línea fijos:
-                         "nuestra" siempre en su propia línea centrada → queda
-                         siempre alineada con la lupa (bottom-center) en cualquier
-                         resolución. "nuestra" va en <strong> para, a futuro,
-                         engancharle el efecto de hover + click al demoreel. -->
-                    <h1 class="hero-frase">Abrí la cabeza,<br>empezá por la<br><strong class="frase-nuestra">nuestra</strong>.</h1>
-                </div>
-            </div>
-        </section>
-        <!-- Sala #2: el cerebro absorbe herramientas (logos) y servicios
-             (palabras). Escenario sticky; la animación vive en herramientas.js.
+        <!-- Recorrido "la mente de VAI VEN": un solo escenario sticky con UN
+             cerebro persistente. Fase 1 (umbral/puertas, --hero-progress) y
+             fase 2 (absorción/herramientas, --herr-progress) las maneja mente.js.
              Ref: docs/superpowers/specs/2026-09-15-herramientas-cerebro-absorbe-design.md -->
-        <section id="herramientas" class="herramientas">
-            <!-- Escenario animado: pineado al centro mientras se scrollea.
-                 aria-hidden: el contenido accesible real vive en .herr-content. -->
-            <div class="herr-stage" aria-hidden="true">
-                <canvas class="herr-dust"></canvas>
-                <img class="herr-cerebro" src="resources/cerebro.webp" alt="" decoding="async">
-                <p class="herr-palabra erratic" data-text=""></p>
-                <div class="herr-lluvia"></div>
+        <div class="mente-journey">
+            <div class="mente-stage">
+                <!-- capa 1: fondo azul (se revela al abrir las puertas) -->
+                <div class="hero-fondo" aria-hidden="true"></div>
+
+                <!-- capa 2: collage tenue (se aleja en fase 1) -->
+                <div class="hero-collage" aria-hidden="true">
+                    <img src="diseno_grafico/Poster_Inari/13_titulo.png" alt="" decoding="async">
+                    <img src="diseno_grafico/Poster_Lightyear/poster_completox2.png" alt="" decoding="async">
+                    <img src="diseno_grafico/Poster_Perfume/6_FINAL.png" alt="" decoding="async">
+                    <img src="diseno_grafico/Poster_infinityWar/poster_infinityWarx2.png" alt="" decoding="async">
+                    <img src="diseno_grafico/Poster_interstellar/FINAL TDI2 AFICHE JPG.jpg" alt="" decoding="async">
+                    <img src="3d/caja_fantasia/RENDER1.png" alt="" decoding="async">
+                    <img src="3d/maquinaexp_laserenisima/RenderConPost1-01.png" alt="" decoding="async">
+                </div>
+
+                <!-- EL cerebro: único, persiste toda la travesía. Crece en fase 1
+                     (B&N), absorbe y se tiñe en fase 2. -->
+                <img class="cerebro" src="resources/cerebro.webp" alt="" aria-hidden="true" decoding="async">
+
+                <!-- capa 4: puertas con grilla (se abren en fase 1) -->
+                <div class="puerta puerta-izq" aria-hidden="true"></div>
+                <div class="puerta puerta-der" aria-hidden="true"></div>
+
+                <!-- capa 5: motivos (parallax; se desvanecen en fase 1) -->
+                <img class="ojo ojo-izq" src="resources/ojo_1.webp" alt="" aria-hidden="true" decoding="async">
+                <img class="ojo ojo-der" src="resources/ojo_2.webp" alt="" aria-hidden="true" decoding="async">
+                <img class="mano-lupa" src="resources/lupa_BYN.png" alt="" aria-hidden="true" decoding="async">
+
+                <!-- capa 6: frase (único texto real del hero) -->
+                <h1 class="hero-frase">Abrí la cabeza,<br>empezá por la<br><strong class="frase-nuestra">nuestra</strong>.</h1>
+
+                <!-- capas de fase 2 (herramientas): polvo, palabra, lluvia de logos -->
+                <canvas class="herr-dust" aria-hidden="true"></canvas>
+                <p class="herr-palabra erratic" data-text="" aria-hidden="true"></p>
+                <div class="herr-lluvia" aria-hidden="true"></div>
             </div>
 
-            <!-- Contenido real: leído por lectores de pantalla siempre, y
-                 mostrado (en vez del escenario) bajo reduced-motion / touch. -->
+            <!-- Anclas de nav (marcadores de scroll, sin arte). #herramientas se
+                 ubica al inicio de la fase 2 (ver --herr-anchor en CSS). -->
+            <section id="hero" class="mente-anchor"></section>
+            <section id="herramientas" class="mente-anchor"></section>
+
+            <!-- Contenido real: leído por lectores de pantalla siempre; mostrado
+                 como fallback estático bajo reduced-motion. -->
             <div class="herr-content">
                 <h2>herramientas y servicios</h2>
                 <p class="herr-content-intro">Lo que sabemos hacer, y con qué.</p>
@@ -117,7 +108,7 @@
                     <li>Visual Studio Code</li><li>ChatGPT</li><li>Claude</li>
                 </ul>
             </div>
-        </section>
+        </div>
         <section id="portfolio" class="zona-color">
             <h2>portfolio</h2>
         </section>
