@@ -243,12 +243,38 @@ section h2 {
 .puerta-izq { left: 0; }
 .puerta-der { right: 0; }
 
+/* grilla iluminada cerca del cursor: la misma trama pero en color de marca
+   (verticales azul, horizontales naranja), revelada sólo bajo un halo radial
+   que sigue al mouse (--mx/--my las setea hero.js). Fuera del halo: invisible. */
+.puerta::after {
+    content: "";
+    position: absolute; inset: 0;
+    background:
+        repeating-linear-gradient(to right,  var(--azul)    0 1px, transparent 1px var(--grid)),
+        repeating-linear-gradient(to bottom, var(--naranja) 0 1px, transparent 1px var(--grid));
+    -webkit-mask: radial-gradient(circle 200px at var(--mx, -999px) var(--my, -999px),
+                                  #000 0%, transparent 70%);
+    mask: radial-gradient(circle 200px at var(--mx, -999px) var(--my, -999px),
+                          #000 0%, transparent 70%);
+    pointer-events: none;
+}
+/* la puerta derecha empieza en la mitad del viewport: correr el centro del
+   halo para que coincida con la posición real del cursor. */
+.puerta-der::after {
+    -webkit-mask: radial-gradient(circle 200px at calc(var(--mx, -999px) - 50vw) var(--my, -999px),
+                                  #000 0%, transparent 70%);
+    mask: radial-gradient(circle 200px at calc(var(--mx, -999px) - 50vw) var(--my, -999px),
+                          #000 0%, transparent 70%);
+}
+
 /* capa 5 — motivos */
 .ojo {
     position: absolute;
     width: min(16vw, 185px);
-    z-index: 4;
-    filter: grayscale(1) contrast(1.2);
+    z-index: 6;
+    /* halo negro: despega el ojo de la grilla (se corta la trama alrededor
+       del recorte rasgado) para que quede claramente por encima. */
+    filter: grayscale(1) contrast(1.2) drop-shadow(0 0 16px rgba(0, 0, 0, 0.95));
 }
 .ojo-izq { left: 5vw;  top: 18vh; }
 .ojo-der { right: 5vw; top: 34vh; }
