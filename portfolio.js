@@ -83,96 +83,107 @@
     renderWall();
     renderFallback();
 
-    // ----- Carrusel 3D (coverflow) -----
+    // ----- Carrusel 3D (coverflow curvo, scroll-driven) -----
+    // Se navega con la RUEDA/scroll (no siguiendo el mouse): cada tramo mueve el
+    // centro y las cards recorren una curva 3D — aparecen desde la derecha y se
+    // van por la izquierda a medida que scrolleás. En los extremos, el scroll se
+    // suelta a la página. Drag y flechas también funcionan. Click abre el modal.
     const reduce = matchMedia("(prefers-reduced-motion: reduce)");
-    const noHover = matchMedia("(hover: none)");
 
     // Feel del coverflow (afinable en vivo).
-    const GAP = 300;    // px de separación lateral entre cards vecinas
-    const ANGLE = 42;   // deg de rotación por paso
-    const DEPTH = 170;  // px de hundimiento en Z por paso
-    const EASE = 0.14;  // suavizado del scrub (0..1; más alto = más directo)
+    const GAP = 260;        // px de separación lateral entre cards vecinas
+    const ANGLE = 46;       // deg de rotación por paso (deformación)
+    const DEPTH = 210;      // px de hundimiento en Z por paso
+    const ARC = 30;         // px de caída vertical por paso² (curva, no una línea)
+    const EASE = 0.12;      // suavizado del scrub
+    const WHEEL_STEP = 0.5; // cuánto avanza el centro por tramo de rueda
     const clampN = (v, a, b) => Math.min(Math.max(v, a), b);
 
     const N = WORKS.length;
     const cardEls = () => Array.from(wall.querySelectorAll(".pf-card"));
-    let center = (N - 1) / 2;   // posición actual (fraccional)
-    let target = center;        // posición objetivo
+    let center = 0;   // posición actual (fraccional)
+    let target = 0;   // posición objetivo
+    let intro = 1;    // 1→0: entrada "desde la derecha" en la primera vista
 
     const layout = () => {
         cardEls().forEach((card, i) => {
-            const k = i - center;              // offset con signo al centro
+            // durante la entrada (intro→0) todo arranca corrido a la derecha
+            const k = (i - center) + intro * (N + 2);
             const ak = Math.abs(k);
-            card.style.setProperty("--x", (k * GAP) + "px");
-            card.style.setProperty("--rot", (-k * ANGLE) + "deg");
-            card.style.setProperty("--z", (-ak * DEPTH) + "px");
-            card.style.setProperty("--s", (1 - Math.min(ak, 3) * 0.06).toFixed(3));
-            card.style.setProperty("--op", ak > 3.6 ? "0" : (1 - ak * 0.16).toFixed(2));
+            const y = ak * ak * ARC;                 // curva: los extremos caen
+            card.style.setProperty("--x", (k * GAP).toFixed(1) + "px");
+            card.style.setProperty("--y", y.toFixed(1) + "px");
+            card.style.setProperty("--rot", (-k * ANGLE).toFixed(1) + "deg");
+            card.style.setProperty("--z", (-ak * DEPTH).toFixed(1) + "px");
+            card.style.setProperty("--s", (1 - Math.min(ak, 3) * 0.08).toFixed(3));
+            card.style.setProperty("--op", ak > 3.2 ? "0" : (1 - ak * 0.22).toFixed(2));
             card.style.zIndex = String(1000 - Math.round(ak * 10));
-            card.classList.toggle("pf-card--center", ak < 0.5);
+            card.classList.toggle("pf-card--center", ak < 0.5 && intro < 0.02);
         });
     };
 
-    // Lerp continuo hacia target (scrub suave); se detiene al asentarse.
+    // Lerp hacia target + decaimiento de la entrada; se detiene al asentarse.
     let raf = 0;
+    const settling = () => Math.abs(target - center) > 0.0008 || intro > 0.002;
     const tick = () => {
         center += (target - center) * EASE;
-        if (Math.abs(target - center) < 0.0008) { center = target; raf = 0; layout(); return; }
+        if (Math.abs(target - center) < 0.0008) center = target;
+        intro = intro > 0.002 ? intro + (0 - intro) * 0.06 : 0;
         layout();
-        raf = requestAnimationFrame(tick);
+        raf = settling() ? requestAnimationFrame(tick) : 0;
     };
-    const animateTo = (t) => {
-        target = clampN(t, 0, N - 1);
-        if (!raf) raf = requestAnimationFrame(tick);
-    };
+    const kick = () => { if (!raf) raf = requestAnimationFrame(tick); };
+    const animateTo = (t) => { target = clampN(t, 0, N - 1); kick(); };
 
-    // Bajo reduced-motion la pared vuelve a grilla plana (CSS); no montamos el
-    // carrusel. En el resto, posicionamos y enganchamos la navegación.
+    // Bajo reduced-motion la pared es grilla plana (CSS); no montamos el carrusel.
     if (!reduce.matches) {
-        layout();
+        layout();  // estado inicial (cards fuera, a la derecha)
 
-        // Scrub por hover: la X del mouse sobre el escenario mapea al índice.
-        const idxFromX = (clientX) => {
-            const r = wall.getBoundingClientRect();
-            return clampN((clientX - r.left) / r.width, 0, 1) * (N - 1);
-        };
+        // Entrada "desde la derecha": arranca cuando la sección entra en vista.
+        const io = new IntersectionObserver((ents) => {
+            ents.forEach((en) => { if (en.isIntersecting) { kick(); io.disconnect(); } });
+        }, { threshold: 0.2 });
+        io.observe(section);
 
+        // Scroll-driven: la rueda recorre el carrusel; en los extremos se suelta
+        // a la página (para poder salir de la sección scrolleando).
+        wall.addEventListener("wheel", (e) => {
+            const dir = Math.sign(e.deltaY);
+            if (!dir) return;
+            if ((target <= 0 && dir < 0) || (target >= N - 1 && dir > 0)) return;
+            e.preventDefault();
+            animateTo(target + dir * WHEEL_STEP);
+        }, { passive: false });
+
+        // Drag (mouse/touch) como alternativa.
         let dragging = false, dragStartX = 0, dragStartTarget = 0, dragMoved = false;
-
-        wall.addEventListener("pointermove", (e) => {
-            if (dragging) {
-                const r = wall.getBoundingClientRect();
-                const dx = (e.clientX - dragStartX) / r.width;
-                if (Math.abs(e.clientX - dragStartX) > 6) dragMoved = true;
-                animateTo(dragStartTarget - dx * (N - 1));
-                return;
-            }
-            if (e.pointerType === "touch" || noHover.matches) return;
-            animateTo(idxFromX(e.clientX));
-        });
-
         wall.addEventListener("pointerdown", (e) => {
             dragging = true; dragMoved = false;
             dragStartX = e.clientX; dragStartTarget = target;
             if (wall.setPointerCapture) wall.setPointerCapture(e.pointerId);
         });
+        wall.addEventListener("pointermove", (e) => {
+            if (!dragging) return;
+            const r = wall.getBoundingClientRect();
+            const dx = (e.clientX - dragStartX) / r.width;
+            if (Math.abs(e.clientX - dragStartX) > 6) dragMoved = true;
+            animateTo(dragStartTarget - dx * (N - 1));
+        });
         const endDrag = () => { dragging = false; };
         wall.addEventListener("pointerup", endDrag);
         wall.addEventListener("pointercancel", endDrag);
 
-        // Flechas: un paso (el foco en una card burbujea hasta acá).
+        // Flechas (el foco en una card burbujea hasta acá).
         wall.addEventListener("keydown", (e) => {
             if (e.key === "ArrowLeft") { animateTo(Math.round(target) - 1); e.preventDefault(); }
             else if (e.key === "ArrowRight") { animateTo(Math.round(target) + 1); e.preventDefault(); }
         });
 
         // Guard: si el click fue el final de un arrastre, no abrir el modal.
-        // Captura → corre antes del listener de apertura (fase burbuja).
         wall.addEventListener("click", (e) => {
             if (dragMoved) { dragMoved = false; e.stopImmediatePropagation(); e.preventDefault(); }
         }, true);
 
-        // Los offsets son en px → recomponer al cambiar de tamaño.
         addEventListener("resize", layout);
     }
 

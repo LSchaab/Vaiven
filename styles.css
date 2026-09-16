@@ -400,12 +400,13 @@ section h2 {
     translate: -50% -50%;
     z-index: 1;                 /* DETRÁS del cerebro (z-index 2): el cerebro se
                                    desvanece encima y revela el portal atrás. */
-    /* Fase A (salida 0→~0.55): cápsula chica y quieta detrás del cerebro, que se
-       está desvaneciendo. Fase B (~0.55→1): la cápsula se expande hasta desbordar
-       el viewport (corners afuera → la pantalla queda toda violeta). */
-    --portal-grow: clamp(0, calc((var(--salida-progress, 0) - 0.55) / 0.45), 1);
-    width: calc(42vmin + var(--portal-grow) * 260vmax);
-    height: calc(74vmin + var(--portal-grow) * 260vmax);
+    /* Fase A (salida 0→0.5): cápsula CHICA y quieta detrás del cerebro, que se
+       desvanece (termina de irse ~0.45). Fase B (0.5→1): la cápsula se expande
+       hasta desbordar el viewport (corners afuera → pantalla toda violeta).
+       El "hueco" debe ser apenas mayor que el cerebro; nada de expandir antes. */
+    --portal-grow: clamp(0, calc((var(--salida-progress, 0) - 0.5) / 0.5), 1);
+    width: calc(30vmin + var(--portal-grow) * 280vmax);
+    height: calc(48vmin + var(--portal-grow) * 280vmax);
     border-radius: 9999px;
     background:
         radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1.6px) 0 0 / 14px 14px,
@@ -420,22 +421,22 @@ section h2 {
     pointer-events: none;
 }
 .salida-portal-word {
-    margin: 0;
-    font-family: var(--font-alt);
-    font-weight: 800;
+    /* horizontal, una palabra debajo de la otra (dos líneas .erratic) */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1em;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    line-height: 1.05;
-    text-align: center;         /* horizontal, una palabra debajo de la otra */
     color: var(--blanco);
     font-size: clamp(1.4rem, 6vmin, 3.4rem);
     /* aparece a medida que el cerebro se va (0.1→0.35) y se desvanece cuando el
-       portal empieza a expandirse (0.55→0.72). */
+       portal empieza a expandirse (0.5→0.65). */
     opacity: calc(
         clamp(0, calc((var(--salida-progress, 0) - 0.1) * 4), 1) *
-        clamp(0, calc(1 - (var(--salida-progress, 0) - 0.55) * 6), 1)
+        clamp(0, calc(1 - (var(--salida-progress, 0) - 0.5) * 6), 1)
     );
 }
+.salida-portal-word .erratic { font-size: 1em; }
 
 /* capa 6 — frase */
 .hero-frase {
@@ -584,6 +585,7 @@ section h2 {
     transform:
         translate(-50%, -50%)
         translateX(var(--x, 0))
+        translateY(var(--y, 0))
         translateZ(var(--z, 0))
         rotateY(var(--rot, 0deg))
         scale(var(--s, 1));
