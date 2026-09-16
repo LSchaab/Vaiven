@@ -29,15 +29,32 @@
 
     if (reduce.matches) return;   // sin scrub; CSS deja umbral estático + fallback
 
-    // ----- fases (afinables; en sync con .mente-journey height y #herramientas top) -----
+    // ----- fases del recorrido ÚNICO (todo en el mismo stage pineado) -----
+    // Alturas en vh. En DESKTOP (coverflow) el recorrido incluye la pista de cards,
+    // así el portfolio vive en el mismo stage que el cerebro (sin salto de sección).
+    // En mobile/tablet (galería) el recorrido termina al abrir el portal y la
+    // galería va aparte en #work.
     const DOOR_VH   = 150;   // apertura de puertas
     const TOOLS_VH  = 500;   // absorción
-    const SALIDA_VH = 120;   // salida del cerebro → entrada del portfolio
-    const TOTAL = DOOR_VH + TOOLS_VH + SALIDA_VH;
-    const B1 = DOOR_VH / TOTAL;                    // fin fase 1 (umbral)
-    const B2 = (DOOR_VH + TOOLS_VH) / TOTAL;       // fin fase 2 (absorción)
-
+    const PORTAL_VH = 180;   // el cerebro se encoge y el iris (portal) se abre desde él
     const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
+
+    const coverflowOn = () => !!(window.WorkCarousel && window.WorkCarousel.coverflow);
+    const cardsVH = () => (coverflowOn()
+        ? window.WorkCarousel.N * window.WorkCarousel.CONFIG.screensPerCard * 100
+        : 0);
+
+    // Thresholds de scroll en px (se recalculan por resize) + alto del recorrido.
+    let DOOR_PX = 0, TOOLS_PX = 0, PORTAL_PX = 0, CARDS_PX = 0;
+    const layout = () => {
+        const vh = innerHeight / 100;
+        DOOR_PX = DOOR_VH * vh;
+        TOOLS_PX = TOOLS_VH * vh;
+        PORTAL_PX = PORTAL_VH * vh;
+        CARDS_PX = cardsVH() * vh;
+        // +100vh de "cola" para que el stage siga pineado durante la última pantalla.
+        journey.style.height = (DOOR_VH + TOOLS_VH + PORTAL_VH + cardsVH() + 100) + "vh";
+    };
 
     const brain = stage.querySelector(".cerebro");
     const wordEl = stage.querySelector(".herr-palabra");
@@ -96,10 +113,10 @@
 
     const smooth01 = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
 
-    const computeProgress = () => {
-        const total = journey.offsetHeight - innerHeight;
-        const scrolled = clamp(-journey.getBoundingClientRect().top, 0, total);
-        return total > 0 ? scrolled / total : 0;
+    // px scrolleados dentro del recorrido (0 arriba de todo → max abajo).
+    const computeScrolled = () => {
+        const max = journey.offsetHeight - innerHeight;
+        return clamp(-journey.getBoundingClientRect().top, 0, max);
     };
 
     // Fase 2 (herramientas): la completan las tareas 2 (palabra + color),
@@ -193,25 +210,28 @@
         renderLogos(herrP);
     };
 
-    // Fase 3 (salida): el cerebro se desvanece; el portal (CSS) se expande detrás.
-    // Todo derivado de --salida-progress; nada que calcular acá salvo dejar la
-    // variable seteada (lo hace render()). Se mantiene la firma por claridad.
-    const renderSalida = (salidaP) => { void salidaP; };
-
-    const render = (p) => {
-        const heroP   = clamp(p / B1, 0, 1);
-        const herrP   = clamp((p - B1) / (B2 - B1), 0, 1);
-        const salidaP = clamp((p - B2) / (1 - B2), 0, 1);
+    const render = (scrolled) => {
+        // Fases secuenciales sobre el scroll absoluto (px).
+        const heroP   = clamp(scrolled / DOOR_PX, 0, 1);
+        const herrP   = clamp((scrolled - DOOR_PX) / TOOLS_PX, 0, 1);
+        // Portal: el cerebro se encoge y el iris (.portfolio-stage) se abre.
+        const portalP = clamp((scrolled - DOOR_PX - TOOLS_PX) / PORTAL_PX, 0, 1);
         stage.style.setProperty("--hero-progress", heroP.toFixed(4));
         stage.style.setProperty("--herr-progress", herrP.toFixed(4));
-        stage.style.setProperty("--salida-progress", salidaP.toFixed(4));
+        stage.style.setProperty("--portal-open", portalP.toFixed(4));
         renderPhase2(herrP);
-        renderSalida(salidaP);
+        // Cards: sólo en coverflow. Progreso local de la pista → work-carousel.
+        if (coverflowOn() && window.WorkCarousel.render) {
+            const cardsP = CARDS_PX > 0
+                ? clamp((scrolled - DOOR_PX - TOOLS_PX - PORTAL_PX) / CARDS_PX, 0, 1)
+                : 0;
+            window.WorkCarousel.render(cardsP);
+        }
     };
 
     // ----- scroll (rAF) -----
     let ticking = false;
-    const update = () => { render(computeProgress()); ticking = false; };
+    const update = () => { render(computeScrolled()); ticking = false; };
     const onScroll = () => {
         if (ticking) return;
         ticking = true;
@@ -268,9 +288,10 @@
     io.observe(journey);
 
     onResize();
+    layout();      // alto del recorrido + thresholds px (según modo coverflow)
     update();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", () => {
-        onResize(); sizeDust(); seedDust(); onScroll();
+        onResize(); layout(); sizeDust(); seedDust(); onScroll();
     });
 })();
