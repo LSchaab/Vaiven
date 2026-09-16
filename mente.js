@@ -179,15 +179,10 @@
         renderLogos(herrP);
     };
 
-    // Fase 3 (salida): vibración decreciente al inicio + deslizamiento a la
-    // izquierda. Determinista y reversible (todo derivado de salidaP).
-    const renderSalida = (salidaP) => {
-        const shake = salidaP > 0 && salidaP < 0.15
-            ? Math.sin(salidaP * 70) * (1 - salidaP / 0.15) * 1.4   // vw
-            : 0;
-        const slide = smooth01((salidaP - 0.12) / 0.88) * -135;      // vw a la izquierda
-        brain.style.setProperty("--cerebro-exit-x", (shake + slide).toFixed(2));
-    };
+    // Fase 3 (salida): el cerebro se desvanece; el portal (CSS) se expande detrás.
+    // Todo derivado de --salida-progress; nada que calcular acá salvo dejar la
+    // variable seteada (lo hace render()). Se mantiene la firma por claridad.
+    const renderSalida = (salidaP) => { void salidaP; };
 
     const render = (p) => {
         const heroP   = clamp(p / B1, 0, 1);

@@ -376,11 +376,9 @@ section h2 {
    lo mantiene centrado; el scale va en `transform`, no se pisan) */
 .cerebro {
     opacity: clamp(0, calc((var(--hero-progress) - 0.1) * 2.2), 1);
-    /* scale por scroll + salida a la izquierda (--cerebro-exit-x en vw, lo setea
-       mente.js en la fase salida; 0 en el resto). */
-    transform:
-        translateX(calc(var(--cerebro-exit-x, 0) * 1vw))
-        scale(calc(0.6 + var(--hero-progress) * 0.75));
+    /* scale por scroll. El fade de salida lo hace la regla de opacity de abajo;
+       el portal (CSS, --salida-progress) se expande detrás del cerebro. */
+    transform: scale(calc(0.6 + var(--hero-progress) * 0.75));
 }
 /* fade final del cerebro al irse (después del 60% de la salida). Pisa la
    `opacity` de la regla de arriba por cascada — intencional; el transform queda. */
@@ -391,36 +389,42 @@ section h2 {
     );
 }
 
-/* Fase salida — capa puente hacia el portfolio: entra desde la derecha a
-   medida que avanza --salida-progress (lo setea mente.js). */
-.salida-intro {
+/* Portal de salida: cápsula oscura que aparece detrás del cerebro y crece hasta
+   llenar la pantalla en violeta, empalmando con la sección #portfolio.
+   Todo atado a --salida-progress (lo setea mente.js). */
+.salida-portal {
     position: absolute;
-    inset: 0;
-    z-index: 7;
+    left: 50%; top: 50%;
+    translate: -50% -50%;
+    z-index: 6;                 /* detrás del cerebro (que se desvanece encima) */
+    /* crece desde una cápsula chica hasta desbordar el viewport (corners afuera
+       → la pantalla queda toda violeta). */
+    width: calc(42vmin + var(--salida-progress, 0) * 260vmax);
+    height: calc(74vmin + var(--salida-progress, 0) * 260vmax);
+    border-radius: 9999px;
+    background:
+        radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1.6px) 0 0 / 14px 14px,
+        var(--violeta-claro);
+    /* aparece apenas arranca la salida; el crecimiento la vuelve el fondo. */
+    opacity: clamp(0, calc(var(--salida-progress, 0) * 6), 1);
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 1.2rem;
-    /* empieza afuera a la derecha; entra a medida que avanza la salida */
-    transform: translateX(calc((1 - var(--salida-progress, 0)) * 60vw));
-    opacity: clamp(0, calc((var(--salida-progress, 0) - 0.25) * 2), 1);
+    overflow: hidden;
     pointer-events: none;
 }
-.salida-titulo {
-    margin: 0;
+.salida-portal-word {
     font-family: var(--font-alt);
     font-weight: 800;
-    text-transform: lowercase;
-    font-size: clamp(2rem, 8vw, 5rem);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
     color: var(--blanco);
-}
-.salida-card {
-    width: min(46vw, 420px);
-    aspect-ratio: 16 / 9;
-    border-radius: 8px;
-    background: linear-gradient(135deg, var(--violeta-claro), var(--azul));
-    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    white-space: nowrap;
+    font-size: clamp(1.2rem, 4vmin, 2.4rem);
+    /* la palabra se desvanece a medida que el portal se expande. */
+    opacity: clamp(0, calc(1 - var(--salida-progress, 0) * 3), 1);
 }
 
 /* capa 6 — frase */
