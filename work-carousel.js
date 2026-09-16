@@ -103,39 +103,55 @@
         fallback.appendChild(ul);
     }
 
-    // ---- Letras del título dispersas (capa detrás de las cards) ----
-    // Cada letra tiene un slot horizontal fijo (--progress 0..1) y un --iy
-    // sembrado; se dispersan según --state (lo setea render). Decorativas.
-    const TITLE = "portfolio";
-    const M = TITLE.length;
-    [...TITLE].forEach((ch, j) => {
-        const el = document.createElement("span");
-        el.className = "scene__letter";
-        el.setAttribute("aria-hidden", "true");
-        el.setAttribute("data-letter", ch);
-        el.textContent = ch;
-        el.style.setProperty("--progress", (M > 1 ? j / (M - 1) : 0.5).toFixed(3));
-        el.style.setProperty("--iy", (seeded(1000 + j) * 2 - 1).toFixed(3));
-        scene.appendChild(el);
-    });
-
-    // ---- Grilla de fondo (canvas 2D estático; parallax por CSS) ----
+    // ---- Partículas de fondo: starfield a la deriva (el mismo del cerebro) ----
+    // Motes blancos que caen lento y flotan, reciclados en los bordes. Se pausan
+    // cuando #work no está en vista. Bajo reduced-motion: sólo un frame estático.
     const canvas = section.querySelector(".work__grid");
     if (canvas && canvas.getContext) {
         const ctx = canvas.getContext("2d");
-        const drawGrid = () => {
+        const reduceStars = matchMedia("(prefers-reduced-motion: reduce)");
+        let motes = [];
+        let starRAF = 0;
+        const dims = () => ({ w: canvas.offsetWidth || innerWidth, h: canvas.offsetHeight || innerHeight });
+        const sizeStars = () => {
             const dpr = Math.min(window.devicePixelRatio || 1, 2);
-            const w = (canvas.width = Math.max(1, Math.round(canvas.offsetWidth * dpr)));
-            const h = (canvas.height = Math.max(1, Math.round(canvas.offsetHeight * dpr)));
-            ctx.clearRect(0, 0, w, h);
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.06)";
-            ctx.lineWidth = 1;
-            const step = 44 * dpr;
-            for (let x = 0; x <= w; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-            for (let y = 0; y <= h; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+            const { w, h } = dims();
+            canvas.width = Math.max(1, Math.round(w * dpr));
+            canvas.height = Math.max(1, Math.round(h * dpr));
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         };
-        drawGrid();
-        addEventListener("resize", drawGrid);
+        const seedStars = () => {
+            const { w, h } = dims();
+            const count = Math.round((w * h) / 14000);
+            motes = Array.from({ length: count }, (_, i) => ({
+                x: (i * 97.3) % w, y: (i * 61.7) % h,
+                r: 0.5 + (i % 5) * 0.35,
+                vx: ((i % 7) - 3) * 0.03, vy: 0.05 + (i % 3) * 0.04,
+            }));
+        };
+        const paintStars = (move) => {
+            const { w, h } = dims();
+            ctx.clearRect(0, 0, w, h);
+            for (const m of motes) {
+                if (move) {
+                    m.x += m.vx; m.y += m.vy;
+                    if (m.y > h) m.y = 0;
+                    if (m.x < 0) m.x = w; else if (m.x > w) m.x = 0;
+                }
+                ctx.globalAlpha = 0.25 + (m.r / 2) * 0.4;
+                ctx.fillStyle = "#FFFFFF";   // --blanco
+                ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2); ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+        };
+        const loop = () => { paintStars(true); starRAF = requestAnimationFrame(loop); };
+        const startStars = () => { if (!starRAF && !reduceStars.matches) starRAF = requestAnimationFrame(loop); };
+        const stopStars = () => { cancelAnimationFrame(starRAF); starRAF = 0; };
+        sizeStars(); seedStars(); paintStars(false);   // frame inicial estático
+        new IntersectionObserver((e) => {
+            e[0].isIntersecting ? startStars() : stopStars();
+        }, { threshold: 0 }).observe(section);
+        addEventListener("resize", () => { sizeStars(); seedStars(); paintStars(false); });
     }
 
     // ---- Scroll → progress ----
@@ -143,7 +159,9 @@
     // S < center → progress > 0 (card a la derecha, entrando); S = center → 0
     // (centrada); S > center → progress < 0 (salió por la izquierda).
     const W = CONFIG.transitWindow;
-    const centerOf = (i) => (N > 1 ? W / 2 + i * (1 - W) / (N - 1) : 0.5);
+    // La card 0 queda centrada en S=0 (arriba de #work) y la última en S=1 → no
+    // hay violeta vacío al entrar: ya ves una card apenas llegás a la sección.
+    const centerOf = (i) => (N > 1 ? i / (N - 1) : 0.5);
 
     const render = (S) => {
         // parallax + dispersión de letras (los consumen el CSS de Task 4)

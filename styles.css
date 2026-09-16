@@ -405,8 +405,10 @@ section h2 {
        hasta desbordar el viewport (corners afuera → pantalla toda violeta).
        El "hueco" debe ser apenas mayor que el cerebro; nada de expandir antes. */
     --portal-grow: clamp(0, calc((var(--salida-progress, 0) - 0.5) / 0.5), 1);
-    width: calc(30vmin + var(--portal-grow) * 280vmax);
-    height: calc(48vmin + var(--portal-grow) * 280vmax);
+    /* Base MÁS CHICA que el cerebro: mientras el cerebro está/se desvanece, el
+       hueco queda tapado detrás; recién se ve al expandirse. */
+    width: calc(20vmin + var(--portal-grow) * 300vmax);
+    height: calc(30vmin + var(--portal-grow) * 300vmax);
     border-radius: 9999px;
     background:
         radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1.6px) 0 0 / 14px 14px,
@@ -429,11 +431,12 @@ section h2 {
     text-transform: uppercase;
     color: var(--blanco);
     font-size: clamp(1.4rem, 6vmin, 3.4rem);
-    /* aparece a medida que el cerebro se va (0.1→0.35) y se desvanece cuando el
-       portal empieza a expandirse (0.5→0.65). */
+    /* La frase va DETRÁS y recién se ve cuando el portal SE ABRE: aparece con la
+       expansión (0.55→0.72) y se desvanece antes de llenar la pantalla (0.85→0.97).
+       Mientras el cerebro está/se desvanece (≤0.5) queda invisible. */
     opacity: calc(
-        clamp(0, calc((var(--salida-progress, 0) - 0.1) * 4), 1) *
-        clamp(0, calc(1 - (var(--salida-progress, 0) - 0.5) * 6), 1)
+        clamp(0, calc((var(--salida-progress, 0) - 0.55) * 6), 1) *
+        clamp(0, calc(1 - (var(--salida-progress, 0) - 0.85) * 8), 1)
     );
 }
 .salida-portal-word .erratic { font-size: 1em; }
@@ -640,39 +643,11 @@ section h2 {
 .card__title { font-weight: 700; }
 .card__count { font-size: 0.8rem; opacity: 0.8; letter-spacing: 0.04em; }
 
-/* Parallax sutil: la escena y la grilla se mueven con --scroll-progress. */
+/* Parallax sutil: la escena y las partículas se mueven con --scroll-progress. */
 .work__scene { transform: translateY(calc(var(--scroll-progress, 0) * -15%)); }
 .work__grid  { transform: translateY(calc(var(--scroll-progress, 0) * -5%)); }
-
-/* Letras del título dispersas. --state (0→1) las abre; --progress = slot fijo. */
-.scene__letter {
-    position: absolute; top: 50%; left: 50%;
-    z-index: 0;
-    margin: 0;
-    font-family: var(--font-alt);
-    font-weight: 800;
-    text-transform: uppercase;
-    font-size: clamp(4rem, 22vh, 16rem);
-    line-height: 1;
-    color: rgba(255, 255, 255, 0.06);
-    pointer-events: none;
-    --head: calc((var(--progress, 0.5) - 0.5) * -2);
-    --ahead: calc(var(--head) * var(--head));
-    transform:
-        translate(-50%, -50%)
-        rotateY(calc(var(--head) * -10deg * var(--state, 0)))
-        translate3d(
-            calc(var(--head) * 50vw * var(--state, 0)),
-            calc(var(--iy, 0) * 50% * var(--ahead) * var(--state, 0)),
-            0
-        );
-}
-.scene__letter::before {
-    content: attr(data-letter);
-    position: absolute; inset: 0; z-index: -1;
-    opacity: min(calc(var(--state, 0) * 2), 1);
-    transform: scale(1.05, 1.02);
-}
+/* (Las letras dispersas del título se quitaron; el fondo son partículas a la
+   deriva — mismo starfield del cerebro — dibujadas en .work__grid por JS.) */
 
 .pf-fallback { display: none; }   /* sólo visible bajo reduced-motion (Task 5) */
 
