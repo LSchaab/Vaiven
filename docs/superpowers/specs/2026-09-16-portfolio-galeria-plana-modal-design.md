@@ -178,13 +178,12 @@ usan fallback teñido; Web no tiene works aún.
 
 ---
 
-## 9. Wording del portal (PENDIENTE — decisión de Luly)
+## 9. Wording del portal
 
-La palabra vertical dentro del portal **no** es "Work". Candidata de Luly:
-**"IDEAS RESUELTAS"**. Default propuesto para arrancar: **`IDEAS RESUELTAS`**
-(alternativas a considerar: `PORTFOLIO`, `LO QUE HICIMOS`, `TRABAJOS`). Se define
-antes de implementar el paso del portal; queda como variable de contenido fácil de
-cambiar.
+La palabra dentro del portal es **"NOSOTROS RESOLVEMOS"** (decisión de Luly,
+2026-09-16). Queda como variable de contenido fácil de cambiar. Nota de layout: son
+dos palabras — decidir en implementación si van en dos líneas verticales apiladas o
+como texto vertical en una sola columna (afinable con el tamaño del portal).
 
 ---
 
