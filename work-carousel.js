@@ -104,6 +104,41 @@
         fallback.appendChild(ul);
     }
 
+    // ---- Letras del título dispersas (capa detrás de las cards) ----
+    // Cada letra tiene un slot horizontal fijo (--progress 0..1) y un --iy
+    // sembrado; se dispersan según --state (lo setea render). Decorativas.
+    const TITLE = "portfolio";
+    const M = TITLE.length;
+    [...TITLE].forEach((ch, j) => {
+        const el = document.createElement("span");
+        el.className = "scene__letter";
+        el.setAttribute("aria-hidden", "true");
+        el.setAttribute("data-letter", ch);
+        el.textContent = ch;
+        el.style.setProperty("--progress", (M > 1 ? j / (M - 1) : 0.5).toFixed(3));
+        el.style.setProperty("--iy", (seeded(1000 + j) * 2 - 1).toFixed(3));
+        scene.appendChild(el);
+    });
+
+    // ---- Grilla de fondo (canvas 2D estático; parallax por CSS) ----
+    const canvas = section.querySelector(".work__grid");
+    if (canvas && canvas.getContext) {
+        const ctx = canvas.getContext("2d");
+        const drawGrid = () => {
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const w = (canvas.width = Math.max(1, Math.round(canvas.offsetWidth * dpr)));
+            const h = (canvas.height = Math.max(1, Math.round(canvas.offsetHeight * dpr)));
+            ctx.clearRect(0, 0, w, h);
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.06)";
+            ctx.lineWidth = 1;
+            const step = 44 * dpr;
+            for (let x = 0; x <= w; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+            for (let y = 0; y <= h; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+        };
+        drawGrid();
+        addEventListener("resize", drawGrid);
+    }
+
     // ---- Scroll → progress ----
     // center_i = el S donde la card i queda centrada; progress ∈ [-1,1].
     // S < center → progress > 0 (card a la derecha, entrando); S = center → 0

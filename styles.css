@@ -632,6 +632,40 @@ section h2 {
 .card__title { font-weight: 700; }
 .card__count { font-size: 0.8rem; opacity: 0.8; letter-spacing: 0.04em; }
 
+/* Parallax sutil: la escena y la grilla se mueven con --scroll-progress. */
+.work__scene { transform: translateY(calc(var(--scroll-progress, 0) * -15%)); }
+.work__grid  { transform: translateY(calc(var(--scroll-progress, 0) * -5%)); }
+
+/* Letras del título dispersas. --state (0→1) las abre; --progress = slot fijo. */
+.scene__letter {
+    position: absolute; top: 50%; left: 50%;
+    z-index: 0;
+    margin: 0;
+    font-family: var(--font-alt);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: clamp(4rem, 22vh, 16rem);
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.06);
+    pointer-events: none;
+    --head: calc((var(--progress, 0.5) - 0.5) * -2);
+    --ahead: calc(var(--head) * var(--head));
+    transform:
+        translate(-50%, -50%)
+        rotateY(calc(var(--head) * -10deg * var(--state, 0)))
+        translate3d(
+            calc(var(--head) * 50vw * var(--state, 0)),
+            calc(var(--iy, 0) * 50% * var(--ahead) * var(--state, 0)),
+            0
+        );
+}
+.scene__letter::before {
+    content: attr(data-letter);
+    position: absolute; inset: 0; z-index: -1;
+    opacity: min(calc(var(--state, 0) * 2), 1);
+    transform: scale(1.05, 1.02);
+}
+
 .pf-fallback { display: none; }   /* sólo visible bajo reduced-motion (Task 5) */
 
 /* ---- Modal de proyecto ---- */
