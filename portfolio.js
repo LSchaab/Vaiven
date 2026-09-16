@@ -96,6 +96,32 @@
 
     const go = (delta) => { state.center += delta; layout(); };
 
+    const zona = section;   // .zona-portfolio
+    const setLight = (hue) => {
+        if (hue == null) {
+            zona.style.setProperty("--pf-lit", "0");
+        } else {
+            zona.style.setProperty("--pf-hue", String(hue));
+            zona.style.setProperty("--pf-lit", "1");
+        }
+    };
+
+    const openCategory = (key) => {
+        const cat = window.PORTFOLIO.find((c) => c.key === key);
+        if (!cat) return;
+        state.level = 1;
+        state.activeCat = key;
+        render();          // repuebla con works + re-centra + layout
+        setLight(cat.hue); // re-ilumina la escena en el hue de la disciplina
+    };
+
+    const back = () => {
+        state.level = 0;
+        state.activeCat = null;
+        render();
+        setLight(null);
+    };
+
     const init = () => {
         render();
         section.querySelector(".pf-prev").addEventListener("click", () => go(-1));
@@ -107,13 +133,17 @@
             if (e.key === "ArrowRight") { go(1); e.preventDefault(); }
         });
 
-        // click en una card lateral → la trae al centro
+        // click en una card: si es lateral, la trae al centro; si ya está
+        // centrada y es una categoría (Nivel 0), abre esa categoría.
         track.addEventListener("click", (e) => {
             const card = e.target.closest(".pf-card");
             if (!card) return;
             const i = cards().indexOf(card);
-            if (i !== state.center) { state.center = i; layout(); }
+            if (i !== state.center) { state.center = i; layout(); return; }
+            if (state.level === 0 && card.dataset.cat) openCategory(card.dataset.cat);
         });
+
+        backBtn.addEventListener("click", back);
 
         // drag lateral (pointer): cada ~90px de arrastre = un paso
         let dragX = null, moved = 0;
@@ -126,6 +156,6 @@
         window.addEventListener("pointerup", () => { dragX = null; });
     };
 
-    window.Portfolio = { init, state, render, layout, go, hueFilter };
+    window.Portfolio = { init, state, render, layout, go, openCategory, back, hueFilter };
     init();
 })();

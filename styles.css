@@ -487,6 +487,18 @@ section h2 {
     background: var(--violeta-claro);   /* nueva sala del interior (tunable) */
     color: var(--blanco);
     overflow: hidden;
+    --pf-hue: none;
+    transition: background 0.6s ease;
+}
+/* halo de color de la disciplina activa (Nivel 2); en Nivel 1 queda neutro */
+.zona-portfolio::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(60% 50% at 50% 45%,
+                hsl(var(--pf-hue, 0) 80% 55% / 0.28), transparent 70%);
+    opacity: var(--pf-lit, 0);
+    transition: opacity 0.6s ease;
+    pointer-events: none;
 }
 
 .pf-head { text-align: center; }
