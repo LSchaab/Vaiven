@@ -726,3 +726,32 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 @media (min-width: 720px) {
     .pf-modal-body { grid-template-columns: 2fr 1fr; }
 }
+
+.pf-modal-meta { font-family: var(--font-alt); }
+.pf-modal-subhead {
+    margin: 0 0 0.5rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.8;
+}
+.pf-tools-list {
+    list-style: none;
+    margin: 0 0 1.2rem;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+.pf-tool {
+    width: 44px; height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.14);
+}
+.pf-tool img { width: 26px; height: 26px; object-fit: contain; }
+.pf-modal-desc { margin: 0; line-height: 1.5; opacity: 0.92; }
+.pf-modal-tools[hidden],
+.pf-modal-desc[hidden] { display: none; }

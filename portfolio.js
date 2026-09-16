@@ -108,9 +108,37 @@
     const modal = document.querySelector("#pf-modal");
     const mTitle = modal.querySelector(".pf-modal-title");
     const mTag = modal.querySelector(".pf-modal-tag");
+    const mTools = modal.querySelector(".pf-modal-tools");
+    const mDesc = modal.querySelector(".pf-modal-desc");
     let lastFocused = null;
 
     const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+    // Herramientas → chips con logo (resources/logos/<key>.svg). Oculta si no hay.
+    const renderTools = (work) => {
+        mTools.innerHTML = "";
+        const tools = work.tools || [];
+        if (!tools.length) { mTools.hidden = true; return; }
+        mTools.hidden = false;
+        const h = document.createElement("h4");
+        h.className = "pf-modal-subhead";
+        h.textContent = "Herramientas";
+        mTools.appendChild(h);
+        const ul = document.createElement("ul");
+        ul.className = "pf-tools-list";
+        tools.forEach((key) => {
+            const li = document.createElement("li");
+            li.className = "pf-tool";
+            const img = document.createElement("img");
+            img.src = `resources/logos/${key}.svg`;
+            img.alt = key;
+            img.title = key;
+            img.decoding = "async";
+            li.appendChild(img);
+            ul.appendChild(li);
+        });
+        mTools.appendChild(ul);
+    };
 
     const open = (index) => {
         const work = WORKS[index];
@@ -120,7 +148,11 @@
         mTitle.textContent = work.title;
         mTag.textContent = work.catLabel;
         mTag.style.setProperty("--card-hue", String(work.hue));
-        // (media / tools / descripción los completan las Tasks 4-5)
+        renderTools(work);
+        // Descripción (se oculta si está vacía — no inventar copy).
+        const desc = (work.descripcion || "").trim();
+        mDesc.textContent = desc;
+        mDesc.hidden = !desc;
 
         modal.hidden = false;
         document.body.classList.add("pf-modal-open");
