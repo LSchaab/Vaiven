@@ -737,6 +737,43 @@ section h2 {
 }
 .work__more:hover { opacity: 0.9; }
 
+/* ---- Salida espejo (coverflow): la cápsula violeta llena el cuadro cuando las
+   cards ya pasaron (--work-exit 0→~0.4) y se contrae a un punto (0.4→1),
+   revelando #nosotros que sube detrás. Inverso del portal de entrada. ---- */
+.work__exit {
+    position: fixed;
+    left: 50%; top: 50%;
+    translate: -50% -50%;
+    z-index: 4;
+    pointer-events: none;
+    border-radius: 9999px;
+    background:
+        radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1.6px) 0 0 / 14px 14px,
+        var(--violeta-claro);
+    /* Fase A (0→0.4): crece de nada a tapar todo (las cards desaparecen tras el
+       violeta). Fase B (0.4→1): se contrae de vuelta a un punto. */
+    --exit-grow: clamp(0, calc(var(--work-exit, 0) / 0.4), 1);
+    --exit-shrink: clamp(0, calc((var(--work-exit, 0) - 0.4) / 0.6), 1);
+    --exit-size: calc(300vmax * var(--exit-grow) * (1 - var(--exit-shrink)));
+    width: var(--exit-size);
+    height: var(--exit-size);
+    opacity: clamp(0, calc(var(--work-exit, 0) * 8), 1);
+}
+/* #nosotros sube para quedar detrás del overlay y revelarse cuando éste se
+   contrae (mismo truco de overlap que la entrada). */
+#nosotros {
+    position: relative;
+    z-index: 0;
+    margin-top: calc(-1 * var(--work-exit-overlap, 80vh));
+}
+@media (prefers-reduced-motion: reduce) {
+    .work__exit { display: none; }
+    #nosotros { margin-top: 0; }
+}
+/* En galería no hay salida animada: el overlay no se muestra. */
+.work--gallery .work__exit { display: none; }
+.work--gallery ~ #nosotros, #work.work--gallery + #nosotros { margin-top: 0; }
+
 /* ---- Modal de proyecto ---- */
 body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 

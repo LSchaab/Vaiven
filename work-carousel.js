@@ -20,6 +20,7 @@
         depthZ: 5,             // rem de alejamiento en Z (progress²·-depthZ)
         sizeRange: [0.6, 0.95],
         yRange: [-1, 1],
+        exitStart: 0.82,       // S a partir del cual las cards ya pasaron y corre la salida
     };
     window.WorkCarousel = { CONFIG, N };
 
@@ -153,9 +154,13 @@
     const W = CONFIG.transitWindow;
     // La card 0 queda centrada en S=0 (arriba de #work) y la última en S=1 → no
     // hay violeta vacío al entrar: ya ves una card apenas llegás a la sección.
-    const centerOf = (i) => (N > 1 ? i / (N - 1) : 0.5);
+    const centerOf = (i) => (N > 1 ? (i / (N - 1)) * CONFIG.exitStart : 0.5 * CONFIG.exitStart);
 
     const render = (S) => {
+        // Progreso de salida (0 hasta exitStart, →1 al final). Lo consume el CSS
+        // del overlay .work__exit y el reveal de #nosotros.
+        const exitP = clamp((S - CONFIG.exitStart) / (1 - CONFIG.exitStart), 0, 1);
+        section.style.setProperty("--work-exit", exitP.toFixed(4));
         // parallax + dispersión de letras (los consumen el CSS de Task 4)
         section.style.setProperty("--scroll-progress", S.toFixed(4));
         scene.style.setProperty("--state", clamp(S / 0.08, 0, 1).toFixed(4));
