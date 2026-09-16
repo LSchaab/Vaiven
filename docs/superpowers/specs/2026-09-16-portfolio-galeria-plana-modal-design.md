@@ -107,10 +107,13 @@ directamente `#portfolio` (accesible). El portal es puramente decorativo
 - Cada card es un **botón accesible** (rol button, foco, Enter/Espacio abren el
   modal), no solo un div clickeable.
 
-**Cinético de marca (opcional, tunable):** un leve tilt/parallax o entrada
-escalonada al hacer scroll (IntersectionObserver) para conservar el aire cinético de
-las referencias, sin romper el "scroll vertical normal". Marcado como afinable, no
-bloqueante.
+**Deformación sutil (decidido — Luly, 2026-09-16):** la grilla y el scroll son
+normales, pero cada card tiene **tilt 3D hacia el mouse** en hover (se inclina
+siguiendo el cursor) + una **sombra que la levanta**, y **entra al aparecer en
+viewport** (IntersectionObserver, stagger natural por scroll). Conserva el aire
+cinético de la marca sin romper la legibilidad. Sólo con hover real y sin
+reduced-motion (en touch/reduced-motion las cards quedan estáticas). Los valores
+(ángulo del tilt, distancia/tiempo de la entrada) son afinables.
 
 ---
 

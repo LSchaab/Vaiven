@@ -30,9 +30,9 @@ Referencia viva del diseño: `docs/superpowers/specs/2026-09-16-portfolio-galeri
 ## File Structure
 
 - **Modify** `portfolio-data.js` — extiende cada work con campos opcionales (`tools`, `descripcion`, `galeria`, `video`); siembra `galeria`/`tools` reales/provisionales en algunos works para poder verificar el modal.
-- **Rewrite** `portfolio.js` — aplana works; render de la pared; hover tag (marcado por CSS); apertura/cierre del modal; herramientas + descripción; media (masonry + lightbox / video); fallback accesible.
+- **Rewrite** `portfolio.js` — aplana works; render de la pared; deformación sutil (tilt al mouse + entrada por IntersectionObserver); apertura/cierre del modal; herramientas + descripción; media (masonry + lightbox / video); fallback accesible.
 - **Modify** `index.html` — nuevo markup de `#portfolio` (header + `ul.pf-wall` + `.pf-fallback`); esqueleto del modal `#pf-modal`; portal `.salida-portal` dentro de `.mente-stage`; **quitar** `.salida-intro`.
-- **Modify** `styles.css` — **quitar** CSS de coverflow/drill-in/`.salida-intro`; **mantener** card 16:9 + fallback + sección violeta; **agregar** pared grid, hover tag, modal, masonry, lightbox, portal + expansión.
+- **Modify** `styles.css` — **quitar** CSS de coverflow/drill-in/`.salida-intro`; **mantener** card 16:9 + fallback + sección violeta; **agregar** pared grid, hover tag, deformación sutil (perspectiva/tilt + entrada), modal, masonry, lightbox, portal + expansión.
 - **Modify** `mente.js` — reemplazar `renderSalida` (slide a la izquierda + `--cerebro-exit-x`) por el fade del cerebro; el portal lo maneja el CSS vía `--salida-progress` (ya se calcula).
 
 ---
@@ -318,16 +318,17 @@ git commit -m "feat(portfolio): galería plana de todos los trabajos (reemplaza 
 
 ---
 
-### Task 2: Hover — oscurecer la card + tag de categoría
+### Task 2: Hover (oscurecer + tag) + deformación sutil (tilt al mouse + entrada)
 
-Al pasar el mouse (o enfocar por teclado) una card, se oscurece un toque y aparece la tag con la categoría, teñida con el hue de la disciplina. Solo CSS (los elementos `.pf-tag` ya los crea Task 1).
+Al pasar el mouse (o enfocar por teclado) una card, se oscurece un toque y aparece la tag con la categoría, teñida con el hue de la disciplina. Además, **deformación sutil**: la card se inclina en 3D hacia el mouse (tilt) con una sombra que la levanta, y **entra al aparecer en viewport** (stagger natural por scroll). Todo esto sólo con hover real y sin `prefers-reduced-motion` (en touch/reduced-motion las cards quedan estáticas y visibles).
 
 **Files:**
-- Modify: `styles.css` (agregar reglas de hover/tag al bloque de la pared)
+- Modify: `styles.css` (hover/tag + perspectiva/tilt + entrada)
+- Modify: `portfolio.js` (tilt al mouse + IntersectionObserver de entrada; guards touch/reduced-motion)
 
 **Interfaces:**
-- Consumes: `.pf-card-btn`, `.pf-tag[style="--card-hue"]` (Task 1).
-- Produces: estados visuales de hover/focus. Sin cambios de JS.
+- Consumes: `wall`, `.pf-card-btn`, `.pf-card`, `.pf-tag[style="--card-hue"]` (Task 1).
+- Produces: la card recibe `--rx`/`--ry` (deg) por JS en hover; `.pf-card.is-in` al entrar en viewport; `section` recibe la clase `pf-anim` cuando la entrada está activa.
 
 - [ ] **Step 1: Agregar el overlay de oscurecido + la tag (en `styles.css`)**
 
@@ -372,15 +373,89 @@ Agregar después de la regla `.pf-cap { … }` del bloque de la pared:
 }
 ```
 
-- [ ] **Step 2: Verificar en el navegador**
+- [ ] **Step 2: Agregar la deformación sutil (tilt + entrada) en `styles.css`**
 
-En `#portfolio`: al pasar el mouse por una card se oscurece y aparece arriba-izquierda la tag con el nombre de la disciplina, con un color distinto por categoría (gráfico rosado ~340, 3D celeste ~200, motion rojo-naranja ~10, campañas azul ~210). Con Tab, al enfocar una card pasa lo mismo (foco visible). Sin errores.
+Agregar después de las reglas de la tag:
 
-- [ ] **Step 3: Commit**
+```css
+/* Deformación sutil: cada card tiene su propia perspectiva; el botón se inclina
+   hacia el mouse (JS setea --rx/--ry) con una sombra que lo levanta. */
+.pf-card { perspective: 800px; }
+.pf-card-btn {
+    transform: rotateX(var(--ry, 0deg)) rotateY(var(--rx, 0deg));
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    will-change: transform;
+}
+.pf-card-btn:hover { box-shadow: 0 22px 60px rgba(0, 0, 0, 0.55); }
+
+/* Entrada: revelar cada card al aparecer en viewport. Scoped a .pf-anim (que
+   agrega el JS) para que, sin JS o bajo reduced-motion, las cards se vean igual. */
+.pf-anim .pf-card {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.pf-anim .pf-card.is-in { opacity: 1; transform: none; }
+```
+
+- [ ] **Step 3: Agregar el tilt + IntersectionObserver en `portfolio.js`**
+
+Insertar este bloque **antes** de la línea `window.Portfolio = { WORKS, renderWall, hueFilter };` (al final del IIFE):
+
+```javascript
+    // ----- Deformación sutil: tilt al mouse + entrada al scrollear -----
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+    const noHover = matchMedia("(hover: none)");
+
+    // Tilt: la card se inclina hacia el mouse. Sólo con hover real y sin reduced-motion.
+    if (!reduce.matches && !noHover.matches) {
+        const TILT = 8; // grados máx
+        wall.addEventListener("pointermove", (e) => {
+            const btn = e.target.closest(".pf-card-btn");
+            if (!btn) return;
+            const r = btn.getBoundingClientRect();
+            const px = (e.clientX - r.left) / r.width - 0.5;
+            const py = (e.clientY - r.top) / r.height - 0.5;
+            btn.style.setProperty("--rx", (px * TILT).toFixed(2) + "deg");
+            btn.style.setProperty("--ry", (-py * TILT).toFixed(2) + "deg");
+        });
+        wall.addEventListener("pointerout", (e) => {
+            const btn = e.target.closest(".pf-card-btn");
+            if (!btn) return;
+            btn.style.setProperty("--rx", "0deg");
+            btn.style.setProperty("--ry", "0deg");
+        });
+    }
+
+    // Entrada: revelar cada card al entrar en viewport (stagger natural por scroll).
+    if (!reduce.matches) {
+        section.classList.add("pf-anim");
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach((en) => {
+                if (en.isIntersecting) {
+                    en.target.classList.add("is-in");
+                    io.unobserve(en.target);
+                }
+            });
+        }, { threshold: 0.12 });
+        wall.querySelectorAll(".pf-card").forEach((c) => io.observe(c));
+    }
+
+```
+
+- [ ] **Step 4: Verificar en el navegador**
+
+En `#portfolio`:
+- Al pasar el mouse por una card se oscurece y aparece arriba-izquierda la tag con el nombre de la disciplina, con color distinto por categoría (gráfico rosado ~340, 3D celeste ~200, motion rojo-naranja ~10, campañas azul ~210).
+- La card **se inclina hacia el mouse** (tilt 3D suave) y se levanta con sombra; al salir, vuelve a plano.
+- Al **scrollear**, las cards **entran** (fade + subida) a medida que aparecen.
+- Con Tab, al enfocar una card se ve el foco + la tag. Sin errores.
+
+- [ ] **Step 5: Commit**
 
 ```bash
-git add styles.css
-git commit -m "feat(portfolio): hover/focus oscurece la card y muestra tag de categoría"
+git add styles.css portfolio.js
+git commit -m "feat(portfolio): hover (oscurece+tag) + deformación sutil (tilt al mouse + entrada)"
 ```
 
 ---
@@ -427,11 +502,9 @@ Antes de `</main>` (después de la `<section id="contacto">`), agregar:
 
 - [ ] **Step 2: `portfolio.js` — click en la pared + open/close + a11y**
 
-Reemplazar el final del IIFE (desde `renderWall();` hasta el cierre) por:
+Reemplazar la línea `window.Portfolio = { WORKS, renderWall, hueFilter };` y el cierre `})();` (el bloque de tilt de la Task 2 queda arriba, intacto) por:
 
 ```javascript
-    renderWall();
-
     // ----- Modal -----
     const modal = document.querySelector("#pf-modal");
     const mTitle = modal.querySelector(".pf-modal-title");
@@ -1078,8 +1151,10 @@ En la línea donde se llama `renderWall();` (la primera, después de definir `re
     }
     .pf-fallback ul { margin: 0; padding-left: 1.2rem; }
     .pf-fallback li { margin: 0.2rem 0; font-family: var(--font-alt); opacity: 0.9; }
-    /* Sin transiciones de hover en la pared. */
-    .pf-card-btn::after, .pf-tag { transition: none; }
+    /* Sin transiciones ni tilt en la pared (el JS ya no agrega .pf-anim ni el
+       tilt bajo reduced-motion; esto cubre el resto). Cards visibles por defecto. */
+    .pf-card-btn, .pf-card-btn::after, .pf-tag { transition: none; }
+    .pf-card { opacity: 1; transform: none; }
 }
 ```
 
@@ -1103,7 +1178,7 @@ git commit -m "feat(portfolio): fallback accesible + degradado reduced-motion"
 
 **Spec coverage:**
 - §5 transición portal (cerebro se desvanece → portal cápsula con "NOSOTROS RESOLVEMOS" → expande) → **Task 6**. ✅
-- §6 pared plana (todos los works, scroll vertical, 16:9 + fallback, hover oscurece + tag) → **Tasks 1 (pared), 2 (hover/tag)**. ✅
+- §6 pared plana (todos los works, scroll vertical, 16:9 + fallback, hover oscurece + tag, **deformación sutil: tilt al mouse + entrada al scrollear**) → **Tasks 1 (pared), 2 (hover/tag + tilt + entrada)**. ✅
 - §7 modal (título, tag, herramientas-logos, descripción, media masonry/video, lightbox, cerrar X/Esc/click-afuera, focus trap) → **Tasks 3 (base+a11y), 4 (tools+desc), 5 (media+lightbox)**. ✅
 - §8 datos (flatten + campos opcionales) → **Task 1**. ✅
 - §9 wording "NOSOTROS RESOLVEMOS" → **Task 6**. ✅
@@ -1112,6 +1187,6 @@ git commit -m "feat(portfolio): fallback accesible + degradado reduced-motion"
 
 **Placeholder scan:** Sin "TBD/TODO" en pasos; todo el código escrito. `descripcion`/`video` vacíos y `works: []` de Web son estados de datos reales (contenido pendiente del equipo), no placeholders del plan — disparan "próximamente"/ocultamiento definidos. `tools` sembradas marcadas provisionales por constraint.
 
-**Type consistency:** `WORKS` con `{title,portada,media,catKey,catLabel,hue,tools?,descripcion?,galeria?,video?}` usado igual en Tasks 1/3/4/5/7. Helpers `renderWall`, `hueFilter`, `open(index)`, `close`, `renderTools(work)`, `renderMedia(work)`, `openLightbox(list,i)`, `closeLightbox`, `stepLb(d)`, `renderFallback` definidos y referenciados con los mismos nombres. Clases CSS consistentes: `.pf-wall/.pf-card/.pf-card-btn/.pf-card-img/.pf-cap/.pf-tag` (pared), `.pf-modal*` (modal), `.pf-gallery/.pf-video/.pf-media-soon/.pf-lightbox/.pf-lb-*` (media), `.salida-portal/.salida-portal-word` (portal). `--card-hue` (tags/fallback), `--salida-progress` (stage). ✅
+**Type consistency:** `WORKS` con `{title,portada,media,catKey,catLabel,hue,tools?,descripcion?,galeria?,video?}` usado igual en Tasks 1/3/4/5/7. Helpers `renderWall`, `hueFilter`, `open(index)`, `close`, `renderTools(work)`, `renderMedia(work)`, `openLightbox(list,i)`, `closeLightbox`, `stepLb(d)`, `renderFallback` definidos y referenciados con los mismos nombres. Clases CSS consistentes: `.pf-wall/.pf-card/.pf-card-btn/.pf-card-img/.pf-cap/.pf-tag` (pared), `.pf-anim`/`.is-in` (entrada), `.pf-modal*` (modal), `.pf-gallery/.pf-video/.pf-media-soon/.pf-lightbox/.pf-lb-*` (media), `.salida-portal/.salida-portal-word` (portal). Variables: `--card-hue` (tags/fallback), `--rx`/`--ry` (tilt de la card), `--salida-progress` (stage). Edición incremental de `portfolio.js`: Task 2 inserta el bloque de tilt/entrada **antes** de la línea `window.Portfolio = …`; Task 3 reemplaza esa línea + cierre (no toca el bloque de tilt); Task 7 inserta `renderFallback();` tras `renderWall();`. Sin colisiones de anclas. ✅
 
 Nota de riesgo (tuning, no bloqueante): ritmo/tamaños de la expansión del portal (`260vmax`, umbrales de opacidad) y colores exactos del portal se afinan en vivo; aislados como valores en sus reglas.
