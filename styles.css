@@ -540,6 +540,12 @@ section h2 {
    Ref: docs/superpowers/specs/2026-09-16-work-carrusel-scroll-3d-design.md
    ========================================================================== */
 .zona-work {
+    /* IMPORTANTE: pisar el `section { display:flex; align-items/justify:center;
+       padding; text-align }` global — con flex el item se colapsa a ~0 de ancho
+       (todos los hijos de la escena son absolutos) y las cards quedan invisibles. */
+    display: block;
+    padding: 0;
+    text-align: left;
     position: relative;
     background: var(--violeta-claro);
     color: var(--blanco);
@@ -547,12 +553,14 @@ section h2 {
 }
 .work__outer {
     position: relative;
+    width: 100%;
     /* alto de la pista lo setea JS en Task 3 (N * screensPerCard * 100vh) */
     min-height: 100lvh;
 }
 .work__inner {
     position: sticky;
     top: 0;
+    width: 100%;
     height: 100lvh;
     overflow: hidden;
     display: grid;
