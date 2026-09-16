@@ -825,29 +825,30 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 .pf-lb-close { position: absolute; top: 1rem; right: 1rem; }
 .pf-lb-nav:hover, .pf-lb-close:hover { background: rgba(255,255,255,0.15); }
 
+/* ---- Mobile: sin parallax ni scale; caption oculto; card más grande ---- */
+@media (max-width: 576px), (max-height: 767px) and (orientation: landscape) {
+    .work__scene, .work__grid { transform: none; }   /* sin parallax */
+    .card {
+        width: min(80vw, 560px);                      /* video hasta ~80vw */
+        --size: 1 !important;                         /* sin scale (pisa el inline) */
+    }
+    .card__caption { display: none; }                 /* sin caption */
+    .scene__letter { font-size: clamp(3rem, 30vw, 9rem); }
+}
+
+/* ---- Reduced-motion: sin carrusel; grilla estática + fallback accesible ---- */
 @media (prefers-reduced-motion: reduce) {
-    /* El portal no anima (mente.js hace return temprano); asegurar que no tape nada. */
-    .salida-portal { display: none; }
-    /* Sin coverflow 3D: la pared vuelve a ser una grilla plana con scroll normal
-       (el JS salta el layout/nav del carrusel bajo reduced-motion). */
-    .pf-wall {
+    .salida-portal { display: none; }   /* el portal no anima (mente.js hace return) */
+    .work__outer { height: auto !important; }
+    .work__inner {
         position: static;
         height: auto;
-        perspective: none;
-        width: min(1200px, 100%);
-        padding: 0 clamp(1rem, 4vw, 3rem);
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
-        gap: 1.2rem;
+        overflow: visible;
+        padding: 3rem 1.5rem;
+        display: block;
     }
-    .pf-card {
-        position: static;
-        transform: none;
-        opacity: 1;
-        width: auto;
-    }
-    .pf-card-btn, .pf-card-btn::after, .pf-tag { transition: none; }
-    /* Mostrar la lista de texto accesible bajo la pared. */
+    .work__scene { display: none; }     /* sin carrusel 3D */
+    .work__grid { transform: none; }    /* grilla estática, ya no anima */
     .pf-fallback {
         display: block;
         width: min(88vw, 900px);
