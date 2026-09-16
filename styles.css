@@ -544,6 +544,7 @@ section h2 {
     background: var(--violeta-claro);
     color: var(--blanco);
     padding: clamp(2rem, 6vw, 5rem) 0 5rem;
+    overflow: hidden;               /* recorta las cards que se alejan del centro */
 }
 .pf-head { text-align: center; padding: 0 1.5rem; }
 .pf-title {
