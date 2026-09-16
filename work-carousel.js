@@ -20,7 +20,7 @@
         transitWindow: 0.14,   // W: ventana en S del pase +1→-1 (solapamiento 1–2)
         maxRotateY: 20,        // deg de giro en los extremos
         depthZ: 5,             // rem de alejamiento en Z (progress²·-depthZ)
-        sizeRange: [0.6, 0.95],
+        sizeRange: [0.82, 1.02],   // escala por card (más grande = más cerca de cámara)
         exitStart: 0.82,       // S a partir del cual corre la salida (portal se cierra → nosotros)
         introEnd: 0.16,        // S donde la frase ya se fue y entra la 1ª card
     };

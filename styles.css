@@ -569,7 +569,7 @@ body.coverflow .portfolio-stage {
 /* Card: absoluta y centrada; todo el movimiento por --progress/--lane/--size. */
 .card {
     position: absolute; top: 50%; left: 50%;
-    width: min(46vw, 560px);
+    width: min(56vw, 720px);
     --lane-gap: clamp(9vmin, 13vmin, 15vmin);   /* separación entre carriles (más juntas = más al centro) */
     aspect-ratio: 16 / 9;
     margin: 0; padding: 0; border: 0;
@@ -637,7 +637,7 @@ body.coverflow .portfolio-stage {
     gap: 0.1em;
     text-transform: uppercase;
     color: var(--blanco);
-    font-size: clamp(1.4rem, 6vmin, 3.4rem);
+    font-size: clamp(2.2rem, 10vmin, 6rem);
     text-align: center;
 }
 .work__intro-word .erratic { font-size: 1em; }
