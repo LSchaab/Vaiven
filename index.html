@@ -113,8 +113,29 @@
                 </ul>
             </div>
         </div>
-        <section id="portfolio" class="zona-color">
-            <h2>portfolio</h2>
+        <!-- Portfolio: isla interactiva. Carrusel 3D de dos niveles (categorías →
+             trabajos). Render e interacción: portfolio.js. Fallback estático
+             accesible dentro de .pf-fallback (visible bajo reduced-motion). -->
+        <section id="portfolio" class="zona-portfolio" aria-label="Portfolio">
+            <div class="pf-head">
+                <h2 class="pf-title erratic" data-text="portfolio">portfolio</h2>
+                <p class="pf-crumb" aria-live="polite"></p>
+            </div>
+
+            <div class="pf-stage">
+                <button class="pf-nav pf-prev" type="button" aria-label="Anterior">◂</button>
+                <div class="pf-viewport">
+                    <ul class="pf-track" role="list"></ul>
+                </div>
+                <button class="pf-nav pf-next" type="button" aria-label="Siguiente">▸</button>
+            </div>
+
+            <button class="pf-back" type="button" hidden>← volver</button>
+            <p class="pf-cue" aria-hidden="true">seguí ↓</p>
+
+            <!-- Fallback estático accesible (lectores de pantalla siempre; visible
+                 como lista bajo reduced-motion). Lo puebla portfolio.js. -->
+            <div class="pf-fallback"></div>
         </section>
         <section id="nosotros" class="zona-color">
             <h2>nosotros</h2>
