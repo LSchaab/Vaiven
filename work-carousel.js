@@ -9,7 +9,6 @@
     if (!section || !window.WORKS) return;
 
     const scene = section.querySelector(".work__scene");
-    const fallback = section.querySelector(".pf-fallback");
     const WORKS = window.WORKS;
     const N = WORKS.length;
 
@@ -37,6 +36,9 @@
     };
     const fromRange = (r, u) => r[0] + u * (r[1] - r[0]);
 
+    // Monta el coverflow 3D (desktop, sin reduced-motion). Todo lo que había
+    // suelto en el IIFE (cards, starfield, scroll) vive ahora acá adentro.
+    const mountCoverflow = () => {
     // ---- Build cards ----
     const cardData = WORKS.map((work, i) => {
         const el = document.createElement("button");
@@ -92,19 +94,6 @@
         scene.appendChild(el);
         return { el, video, inview: false, lastP: 2 };
     });
-
-    // ---- Fallback estático accesible (lectores de pantalla siempre; visible bajo
-    //      reduced-motion). ----
-    if (fallback) {
-        const ul = document.createElement("ul");
-        WORKS.forEach((w) => {
-            const li = document.createElement("li");
-            li.textContent = `${w.title} — ${w.catLabel}`;
-            ul.appendChild(li);
-        });
-        if (!N) { const li = document.createElement("li"); li.textContent = "Próximamente."; ul.appendChild(li); }
-        fallback.appendChild(ul);
-    }
 
     // ---- Partículas de fondo: starfield a la deriva (el mismo del cerebro) ----
     // Motes blancos que caen lento y flotan, reciclados en los bordes. Se pausan
@@ -219,9 +208,86 @@
         render(0);
     };
 
-    if (reduce.matches) {
-        section.classList.add("work--static");   // Task 5 lo estiliza
-    } else {
         initScroll();
-    }
+    };   // fin mountCoverflow
+
+    // Monta la galería vertical estática (tablet/mobile/reduced-motion). Grilla
+    // con scroll normal + "Ver más" que revela de a lotes. Mismo modal.
+    const mountGallery = () => {
+        const gallery = section.querySelector(".work__gallery");
+        const list = gallery.querySelector(".work__cards");
+        const moreBtn = gallery.querySelector(".work__more");
+        const BATCH = 6;   // lote inicial y por click (afinable)
+        let shown = 0;
+
+        const cellFor = (work, i) => {
+            const li = document.createElement("li");
+            li.className = "work__cell";
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "work__cell-btn";
+            btn.setAttribute("aria-label", `${work.title} — ${work.catLabel}`);
+
+            const media = document.createElement("span");
+            media.className = "work__cell-media";
+            if (work.portada) {
+                const img = document.createElement("img");
+                img.src = work.portada;
+                img.alt = work.title;
+                img.loading = "lazy";
+                img.decoding = "async";
+                media.appendChild(img);
+            } else {
+                btn.classList.add("work__cell--fallback");
+                btn.style.setProperty("--card-hue", String(work.hue));
+            }
+            btn.appendChild(media);
+
+            const cap = document.createElement("span");
+            cap.className = "work__cell-cap";
+            cap.innerHTML =
+                `<span class="work__cell-title">${work.title}</span>` +
+                `<span class="work__cell-tag">${work.catLabel}</span>`;
+            btn.appendChild(cap);
+
+            btn.addEventListener("click", () => {
+                if (window.PortfolioModal) window.PortfolioModal.open(i);
+            });
+            li.appendChild(btn);
+            return li;
+        };
+
+        const reveal = () => {
+            const next = Math.min(shown + BATCH, N);
+            for (let i = shown; i < next; i++) list.appendChild(cellFor(WORKS[i], i));
+            shown = next;
+            moreBtn.hidden = shown >= N;   // sin más → se oculta el botón
+        };
+
+        if (!N) {
+            const li = document.createElement("li");
+            li.className = "work__cell work__cell--empty";
+            li.textContent = "Próximamente.";
+            list.appendChild(li);
+        } else {
+            reveal();
+            moreBtn.addEventListener("click", reveal);
+        }
+
+        gallery.hidden = false;
+        section.classList.add("work--gallery");   // el CSS oculta el coverflow
+    };
+
+    // ---- Elegir modo: coverflow 3D (desktop, sin reduced-motion) o galería ----
+    const coverflowMQ = matchMedia("(min-width: 1025px)");
+    const reduceMQ = matchMedia("(prefers-reduced-motion: reduce)");
+    const useCoverflow = () => coverflowMQ.matches && !reduceMQ.matches;
+
+    if (useCoverflow()) mountCoverflow();
+    else mountGallery();
+
+    // Cruzar el breakpoint o togglear reduced-motion cambia de modo por completo;
+    // recargar es la forma más robusta de re-montar sin restos del modo anterior.
+    coverflowMQ.addEventListener("change", () => location.reload());
+    reduceMQ.addEventListener("change", () => location.reload());
 })();

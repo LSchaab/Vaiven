@@ -133,18 +133,23 @@
              en 3D controladas por scroll. Render: work-carousel.js; detalle:
              portfolio-modal.js. Ref: spec 2026-09-16-work-carrusel-scroll-3d. -->
         <section id="work" class="zona-work" aria-label="Portfolio">
+            <!-- Coverflow 3D (desktop, sin reduced-motion). Lo puebla work-carousel.js. -->
             <div class="work__outer">
                 <div class="work__inner">
                     <h2 class="work__title erratic" data-text="portfolio">portfolio</h2>
                     <canvas class="work__grid" aria-hidden="true"></canvas>
                     <div class="work__scene">
-                        <!-- letras del título y cards: las inyecta work-carousel.js -->
+                        <!-- cards: las inyecta work-carousel.js -->
                     </div>
                 </div>
             </div>
-            <!-- Fallback estático accesible (lectores de pantalla siempre; visible
-                 bajo reduced-motion). Lo puebla work-carousel.js. -->
-            <div class="pf-fallback"></div>
+            <!-- Galería vertical (tablet/mobile/reduced-motion). Scroll normal +
+                 "Ver más". Misma data y mismo modal que el coverflow. -->
+            <div class="work__gallery" hidden>
+                <h2 class="work__gallery-title">portfolio</h2>
+                <ul class="work__cards"></ul>
+                <button class="work__more" type="button" hidden>Ver más</button>
+            </div>
         </section>
         <section id="nosotros" class="zona-color">
             <h2>nosotros</h2>

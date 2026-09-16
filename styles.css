@@ -660,7 +660,75 @@ section h2 {
 /* (Las letras dispersas del título se quitaron; el fondo son partículas a la
    deriva — mismo starfield del cerebro — dibujadas en .work__grid por JS.) */
 
-.pf-fallback { display: none; }   /* sólo visible bajo reduced-motion (Task 5) */
+/* ---- Galería vertical (tablet/mobile/reduced-motion) ---- */
+.work--gallery .work__outer { display: none; }   /* apaga el coverflow */
+.work__gallery {
+    padding: clamp(4rem, 10vh, 8rem) 6vw;
+    min-height: 100lvh;
+}
+.work__gallery-title {
+    margin: 0 0 2rem;
+    text-align: center;
+    font-size: clamp(1.8rem, 7vw, 3rem);
+    font-weight: 800;
+    text-transform: lowercase;
+}
+.work__cards {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 1000px;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(2, 1fr);   /* tablet: 2 columnas */
+}
+@media (max-width: 560px) {
+    .work__cards { grid-template-columns: 1fr; }   /* mobile: 1 columna */
+}
+.work__cell { margin: 0; }
+.work__cell-btn {
+    display: block;
+    width: 100%;
+    margin: 0; padding: 0; border: 0;
+    background: var(--negro);
+    color: var(--blanco);
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    text-align: left;
+}
+.work__cell-media { display: block; aspect-ratio: 16 / 9; }
+.work__cell-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.work__cell--fallback .work__cell-media {
+    background:
+        linear-gradient(135deg, rgba(255,255,255,0.12), rgba(0,0,0,0.35)),
+        var(--negro);
+    filter: sepia(1) saturate(4) hue-rotate(calc(var(--card-hue, 0) * 1deg));
+}
+.work__cell-cap {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.7rem 0.9rem;
+    font-family: var(--font-alt);
+}
+.work__cell-title { font-weight: 700; }
+.work__cell-tag { font-size: 0.8rem; opacity: 0.85; }
+.work__cell--empty { grid-column: 1 / -1; opacity: 0.8; }
+.work__more {
+    display: block;
+    margin: 2.5rem auto 0;
+    padding: 0.8rem 2rem;
+    border: 0;
+    border-radius: 8px;
+    background: var(--blanco);
+    color: var(--violeta-claro);
+    font-family: var(--font-alt);
+    font-weight: 700;
+    cursor: pointer;
+}
+.work__more:hover { opacity: 0.9; }
 
 /* ---- Modal de proyecto ---- */
 body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
@@ -819,35 +887,12 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 .pf-lb-close { position: absolute; top: 1rem; right: 1rem; }
 .pf-lb-nav:hover, .pf-lb-close:hover { background: rgba(255,255,255,0.15); }
 
-/* ---- Mobile: sin parallax ni scale; caption oculto; card más grande ---- */
-@media (max-width: 576px), (max-height: 767px) and (orientation: landscape) {
-    .work__scene, .work__grid { transform: none; }   /* sin parallax */
-    .card {
-        width: min(80vw, 560px);                      /* video hasta ~80vw */
-        --size: 1 !important;                         /* sin scale (pisa el inline) */
-    }
-    .card__caption { display: none; }                 /* sin caption */
-}
+/* (El coverflow sólo se monta en ≥1025px; en pantallas chicas va la galería, así
+   que ya no hacen falta reglas mobile para .card.) */
 
-/* ---- Reduced-motion: sin carrusel; grilla estática + fallback accesible ---- */
+/* ---- Reduced-motion: el cerebro no anima (mente.js hace return) y #work cae a
+   la galería vertical (work-carousel.js monta mountGallery). Sólo apagamos el
+   portal de salida, que tampoco anima. ---- */
 @media (prefers-reduced-motion: reduce) {
-    .salida-portal { display: none; }   /* el portal no anima (mente.js hace return) */
-    .work__outer { height: auto !important; }
-    .work__inner {
-        position: static;
-        height: auto;
-        overflow: visible;
-        padding: 3rem 1.5rem;
-        display: block;
-    }
-    .work__scene { display: none; }     /* sin carrusel 3D */
-    .work__grid { transform: none; }    /* grilla estática, ya no anima */
-    .pf-fallback {
-        display: block;
-        width: min(88vw, 900px);
-        margin: 2rem auto 0;
-        color: var(--blanco);
-    }
-    .pf-fallback ul { margin: 0; padding-left: 1.2rem; }
-    .pf-fallback li { margin: 0.2rem 0; font-family: var(--font-alt); opacity: 0.9; }
+    .salida-portal { display: none; }
 }
