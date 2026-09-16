@@ -99,4 +99,12 @@
             ],
         },
     ];
+
+    // Flattened list consumed by the carousel (#work) and the detail modal.
+    // Index into this array is the card index. Category fields embedded per work.
+    window.WORKS = window.PORTFOLIO.flatMap((cat) =>
+        cat.works.map((w) => ({
+            ...w, catKey: cat.key, catLabel: cat.label, hue: cat.hue,
+        }))
+    );
 })();
