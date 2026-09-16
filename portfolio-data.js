@@ -1,4 +1,4 @@
-// Portfolio data — single source for the 3D carousel (portfolio.js consumes it).
+// Portfolio data — single source consumed by work-carousel.js (carrusel) and portfolio-modal.js (modal).
 // Categories are in the same order/hue as DISCIPLINES/BEAT_HUE in mente.js so the
 // portfolio re-uses the brain's per-discipline color. Keep the two in sync.
 // Copy note: work titles derived from filenames are PROVISIONAL placeholders;
