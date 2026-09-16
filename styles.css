@@ -812,3 +812,21 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 }
 .pf-lb-close { position: absolute; top: 1rem; right: 1rem; }
 .pf-lb-nav:hover, .pf-lb-close:hover { background: rgba(255,255,255,0.15); }
+
+@media (prefers-reduced-motion: reduce) {
+    /* El portal no anima (mente.js hace return temprano); asegurar que no tape nada. */
+    .salida-portal { display: none; }
+    /* Mostrar la lista de texto accesible bajo la pared. */
+    .pf-fallback {
+        display: block;
+        width: min(88vw, 900px);
+        margin: 2rem auto 0;
+        color: var(--blanco);
+    }
+    .pf-fallback ul { margin: 0; padding-left: 1.2rem; }
+    .pf-fallback li { margin: 0.2rem 0; font-family: var(--font-alt); opacity: 0.9; }
+    /* Sin transiciones ni tilt en la pared (el JS ya no agrega .pf-anim ni el
+       tilt bajo reduced-motion; esto cubre el resto). Cards visibles por defecto. */
+    .pf-card-btn, .pf-card-btn::after, .pf-tag { transition: none; }
+    .pf-card { opacity: 1; transform: none; }
+}

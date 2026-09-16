@@ -8,6 +8,7 @@
     if (!section || !window.PORTFOLIO) return;
 
     const wall = section.querySelector(".pf-wall");
+    const fallback = section.querySelector(".pf-fallback");
 
     // Brain-hue → filtro CSS (sepia+saturate para que el hue-rotate tiña un fondo neutro).
     const hueFilter = (hue) => `sepia(1) saturate(4) hue-rotate(${hue}deg)`;
@@ -64,7 +65,26 @@
         WORKS.forEach((w, i) => wall.appendChild(makeCard(w, i)));
     };
 
+    // Fallback estático accesible: lista de todos los trabajos con su categoría.
+    // Lo leen los lectores de pantalla siempre; visible bajo reduced-motion.
+    const renderFallback = () => {
+        fallback.innerHTML = "";
+        const ul = document.createElement("ul");
+        WORKS.forEach((w) => {
+            const li = document.createElement("li");
+            li.textContent = `${w.title} — ${w.catLabel}`;
+            ul.appendChild(li);
+        });
+        if (!WORKS.length) {
+            const li = document.createElement("li");
+            li.textContent = "Próximamente.";
+            ul.appendChild(li);
+        }
+        fallback.appendChild(ul);
+    };
+
     renderWall();
+    renderFallback();
 
     // ----- Deformación sutil: tilt al mouse + entrada al scrollear -----
     const reduce = matchMedia("(prefers-reduced-motion: reduce)");
