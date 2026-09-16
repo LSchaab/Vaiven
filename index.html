@@ -120,28 +120,19 @@
                 </ul>
             </div>
         </div>
-        <!-- Portfolio: isla interactiva. Carrusel 3D de dos niveles (categorías →
-             trabajos). Render e interacción: portfolio.js. Fallback estático
-             accesible dentro de .pf-fallback (visible bajo reduced-motion). -->
-        <section id="portfolio" class="zona-portfolio" aria-label="Portfolio" tabindex="0">
+        <!-- Portfolio: galería plana de TODOS los trabajos (sin niveles de
+             categoría). Cards 16:9; hover → tag de categoría; click → modal.
+             Render: portfolio.js. Ref: spec 2026-09-16-portfolio-galeria-plana-modal. -->
+        <section id="portfolio" class="zona-portfolio" aria-label="Portfolio">
             <div class="pf-head">
                 <h2 class="pf-title erratic" data-text="portfolio">portfolio</h2>
-                <p class="pf-crumb" aria-live="polite"></p>
+                <p class="pf-sub">Todo lo que resolvimos, en un solo lugar.</p>
             </div>
 
-            <div class="pf-stage">
-                <button class="pf-nav pf-prev" type="button" aria-label="Anterior">◂</button>
-                <div class="pf-viewport">
-                    <ul class="pf-track" role="list"></ul>
-                </div>
-                <button class="pf-nav pf-next" type="button" aria-label="Siguiente">▸</button>
-            </div>
-
-            <button class="pf-back" type="button" hidden>← volver</button>
-            <p class="pf-cue" aria-hidden="true">seguí ↓</p>
+            <ul class="pf-wall" role="list"></ul>
 
             <!-- Fallback estático accesible (lectores de pantalla siempre; visible
-                 como lista bajo reduced-motion). Lo puebla portfolio.js. -->
+                 como lista bajo reduced-motion). Lo puebla portfolio.js (Task 7). -->
             <div class="pf-fallback"></div>
         </section>
         <section id="nosotros" class="zona-color">
