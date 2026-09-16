@@ -622,13 +622,15 @@ body.coverflow .portfolio-stage {
    mismo lugar, sin deslizar secciones. Centrada como estaba en el portal. */
 .work__intro {
     position: absolute; inset: 0;
-    z-index: 3;
+    z-index: 4;                         /* sobre las cards (scene z2) durante la intro */
     display: grid; place-items: center;
     pointer-events: none;
-    /* Fade-in rápido (0→0.02) para no aparecer de golpe al pinnearse #work, y
-       fade-out (0.06→0.12) al scrollear hacia las cards. */
-    opacity: clamp(0, min(calc(var(--scroll-progress, 0) / 0.02),
-                          calc((0.12 - var(--scroll-progress, 0)) / 0.06)), 1);
+    /* Aparece MIENTRAS el portal se abre (--portal-open 0.3→0.7) → ya está cuando
+       el portal terminó de abrir. Se va al scrollear hacia las cards (0→0.12). */
+    opacity: calc(
+        clamp(0, calc((var(--portal-open, 0) - 0.3) / 0.4), 1) *
+        clamp(0, calc(1 - var(--scroll-progress, 0) / 0.12), 1)
+    );
 }
 .work__intro-word {
     display: flex; flex-direction: column; align-items: center;
