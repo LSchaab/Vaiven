@@ -668,3 +668,33 @@ section h2 {
 @keyframes pf-cue-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(6px); } }
 
 .pf-fallback { display: none; }   /* solo visible bajo reduced-motion (Task 6) */
+
+/* Portfolio bajo reduced-motion (y red de seguridad en touch): sin coverflow 3D.
+   Fila plana con scroll horizontal nativo + lista de texto accesible debajo. */
+@media (prefers-reduced-motion: reduce) {
+    .pf-viewport { perspective: none; overflow-x: auto; }
+    .pf-track {
+        transform-style: flat;
+        height: auto;
+        display: flex;
+        gap: 1rem;
+    }
+    .pf-card {
+        position: static;
+        transform: none !important;
+        opacity: 1 !important;
+        flex: 0 0 auto;
+        transition: none;
+    }
+    /* Mostrar el contenido estático accesible bajo la fila. */
+    .pf-fallback {
+        display: block;
+        width: min(88vw, 900px);
+        margin: 2rem auto 0;
+        color: var(--blanco);
+        text-align: left;
+    }
+    .pf-fallback h3 { margin: 1rem 0 0.25rem; font-family: var(--font-alt); }
+    .pf-fallback ul { margin: 0; padding-left: 1.2rem; opacity: 0.85; }
+    .pf-cue { display: none; }
+}

@@ -10,6 +10,7 @@
     const track = section.querySelector(".pf-track");
     const crumb = section.querySelector(".pf-crumb");
     const backBtn = section.querySelector(".pf-back");
+    const fallback = section.querySelector(".pf-fallback");
 
     // Brain-hue → filtro CSS. Igual que el placeholder de mente.js: sepia+saturate
     // aportan saturación para que el hue-rotate SÍ tiña una imagen/fondo neutro.
@@ -96,6 +97,30 @@
 
     const go = (delta) => { state.center += delta; layout(); };
 
+    // Fallback estático accesible: lista completa de disciplinas + works. La leen
+    // los lectores de pantalla siempre; se muestra visualmente bajo reduced-motion.
+    const renderFallback = () => {
+        fallback.innerHTML = "";
+        window.PORTFOLIO.forEach((cat) => {
+            const h = document.createElement("h3");
+            h.textContent = cat.label;
+            fallback.appendChild(h);
+            const ul = document.createElement("ul");
+            if (!cat.works.length) {
+                const li = document.createElement("li");
+                li.textContent = "Próximamente.";
+                ul.appendChild(li);
+            } else {
+                cat.works.forEach((w) => {
+                    const li = document.createElement("li");
+                    li.textContent = w.title;
+                    ul.appendChild(li);
+                });
+            }
+            fallback.appendChild(ul);
+        });
+    };
+
     const zona = section;   // .zona-portfolio
     const setLight = (hue) => {
         if (hue == null) {
@@ -124,6 +149,7 @@
 
     const init = () => {
         render();
+        renderFallback();
         section.querySelector(".pf-prev").addEventListener("click", () => go(-1));
         section.querySelector(".pf-next").addEventListener("click", () => go(1));
 
