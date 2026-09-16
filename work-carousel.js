@@ -205,6 +205,7 @@
             onUpdate: (self) => render(self.progress),
             onRefresh: (self) => render(self.progress),
         });
+        ScrollTrigger.refresh();
         render(0);
     };
 

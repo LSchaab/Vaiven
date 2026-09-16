@@ -563,6 +563,13 @@ section h2 {
     background: var(--violeta-claro);
     color: var(--blanco);
     --scroll-progress: 0;
+    /* Continuidad con la transición del cerebro: #work sube y se solapa con el
+       tramo final del portal (violeta pleno + "NOSOTROS RESOLVEMOS"). Como el
+       portal y esta sección comparten --violeta-claro, el empalme es invisible;
+       la primera card entra encima del violeta apenas se va la frase, sin
+       pantalla muerta. El overlap es afinable en vivo. */
+    margin-top: calc(-1 * var(--work-overlap, 70vh));
+    z-index: 1;   /* las cards se dibujan sobre el portal durante el solape */
 }
 .work__outer {
     position: relative;
