@@ -65,10 +65,67 @@
                 cat.works.forEach((w) => track.appendChild(makeCard(w, cat.hue)));
             }
         }
+        // centrar el carrusel y posicionar en 3D
+        state.center = Math.floor(track.children.length / 2);
+        layout();
     };
 
-    const init = () => { render(); };
+    // Coverflow tunables (afinables en vivo).
+    const GAP = 300;    // px de separación lateral entre cards vecinas
+    const ANGLE = 38;   // deg de rotación por paso
+    const DEPTH = 140;  // px de hundimiento en Z por paso
+    const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
 
-    window.Portfolio = { init, state, render, hueFilter };
+    const cards = () => Array.from(track.children);
+
+    const layout = () => {
+        const list = cards();
+        state.center = clamp(state.center, 0, Math.max(0, list.length - 1));
+        list.forEach((card, i) => {
+            const k = i - state.center;            // offset con signo al centro
+            const ak = Math.abs(k);
+            card.style.setProperty("--x", (k * GAP) + "px");
+            card.style.setProperty("--rot", (-k * ANGLE) + "deg");
+            card.style.setProperty("--z", (-ak * DEPTH) + "px");
+            card.style.setProperty("--s", (1 - Math.min(ak, 3) * 0.06).toFixed(3));
+            card.style.setProperty("--op", ak > 3 ? "0" : (1 - ak * 0.18).toFixed(2));
+            card.style.zIndex = String(100 - ak);
+            card.classList.toggle("pf-card--center", k === 0);
+        });
+    };
+
+    const go = (delta) => { state.center += delta; layout(); };
+
+    const init = () => {
+        render();
+        section.querySelector(".pf-prev").addEventListener("click", () => go(-1));
+        section.querySelector(".pf-next").addEventListener("click", () => go(1));
+
+        // teclado: ← → mueven el centro cuando el foco está en la sección
+        section.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowLeft") { go(-1); e.preventDefault(); }
+            if (e.key === "ArrowRight") { go(1); e.preventDefault(); }
+        });
+
+        // click en una card lateral → la trae al centro
+        track.addEventListener("click", (e) => {
+            const card = e.target.closest(".pf-card");
+            if (!card) return;
+            const i = cards().indexOf(card);
+            if (i !== state.center) { state.center = i; layout(); }
+        });
+
+        // drag lateral (pointer): cada ~90px de arrastre = un paso
+        let dragX = null, moved = 0;
+        track.addEventListener("pointerdown", (e) => { dragX = e.clientX; moved = 0; });
+        window.addEventListener("pointermove", (e) => {
+            if (dragX === null) return;
+            const dx = e.clientX - dragX;
+            if (Math.abs(dx) > 90) { go(dx < 0 ? 1 : -1); dragX = e.clientX; moved++; }
+        });
+        window.addEventListener("pointerup", () => { dragX = null; });
+    };
+
+    window.Portfolio = { init, state, render, layout, go, hueFilter };
     init();
 })();
