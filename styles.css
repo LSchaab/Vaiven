@@ -610,7 +610,7 @@ section h2 {
     transform-style: preserve-3d;
 }
 
-/* Card: absoluta y centrada; todo el movimiento por --progress/--y/--size. */
+/* Card: absoluta y centrada; todo el movimiento por --progress/--lane/--size. */
 .card {
     position: absolute; top: 50%; left: 50%;
     width: min(46vw, 560px);
@@ -669,6 +669,7 @@ section h2 {
 
 /* ---- Galería vertical (tablet/mobile/reduced-motion) ---- */
 .work--gallery .work__outer { display: none; }   /* apaga el coverflow */
+.zona-work.work--gallery { margin-top: 0; }   /* la galería no usa el overlap de entrada del coverflow */
 .work__gallery {
     padding: clamp(4rem, 10vh, 8rem) 6vw;
     min-height: 100lvh;

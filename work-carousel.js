@@ -19,7 +19,6 @@
         maxRotateY: 20,        // deg de giro en los extremos
         depthZ: 5,             // rem de alejamiento en Z (progress²·-depthZ)
         sizeRange: [0.6, 0.95],
-        yRange: [-1, 1],
         exitStart: 0.82,       // S a partir del cual las cards ya pasaron y corre la salida
     };
     window.WorkCarousel = { CONFIG, N };
@@ -195,8 +194,6 @@
     // la página (incluido el recorrido del cerebro, que mente.js maneja con scroll
     // nativo) y la volvía lentísima. El scroll nativo mantiene el resto del sitio
     // como estaba. Bajo reduced-motion no se monta nada (Task 5 muestra el fallback).
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)");
-
     const initScroll = () => {
         const outer = section.querySelector(".work__outer");
         // Alto de la pista: cuánto scroll hay para recorrer todas las cards.
