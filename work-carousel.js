@@ -169,13 +169,19 @@
             root.style.setProperty("--scroll-progress", S.toFixed(4));
             scene.style.setProperty("--state", clamp(S / 0.08, 0, 1).toFixed(4));
 
+            let bestI = -1, bestAbs = 2;
             cardData.forEach((c, i) => {
                 const p = clamp((centerOf(i) - S) / (W / 2), -1, 1);
                 if (p !== c.lastP) {
                     c.el.style.setProperty("--progress", p.toFixed(4));
+                    // La más centrada va adelante (mayor z): con cards grandes que se
+                    // solapan, así la de adelante es también la clickeable.
+                    c.el.style.zIndex = String(Math.round((1 - Math.abs(p)) * 1000));
                     c.lastP = p;
                 }
-                const inview = Math.abs(p) < 1;
+                const a = Math.abs(p);
+                if (a < bestAbs) { bestAbs = a; bestI = i; }
+                const inview = a < 1;
                 if (inview !== c.inview) {
                     c.inview = inview;
                     c.el.classList.toggle("is-inview", inview);
@@ -188,6 +194,13 @@
                         }
                     }
                 }
+            });
+            // Sólo la card más centrada captura clicks: las cards grandes se solapan
+            // y, si todas fueran clickeables, la de adelante taparía los clicks de la
+            // de atrás (y parte de una card "no sería clickeable").
+            cardData.forEach((c, i) => {
+                const want = (i === bestI && bestAbs < 1) ? "auto" : "none";
+                if (c.pe !== want) { c.el.style.pointerEvents = want; c.pe = want; }
             });
         };
 
