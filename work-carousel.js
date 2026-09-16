@@ -44,7 +44,10 @@
         el.className = "card";
         el.dataset.index = String(i);
         el.setAttribute("aria-label", `${work.title} — ${work.catLabel}`);
-        el.style.setProperty("--y", fromRange(CONFIG.yRange, seeded(i * 2)).toFixed(3));
+        // Carril: pares arriba (−1), impares abajo (+1). Al alternar, las ~2 cards
+        // que se solapan en el tránsito caen SIEMPRE en carriles distintos → no se
+        // pisan verticalmente. El offset real (vmin) lo pone el CSS con --lane-gap.
+        el.style.setProperty("--lane", i % 2 === 0 ? "-1" : "1");
         el.style.setProperty("--size", fromRange(CONFIG.sizeRange, seeded(i * 2 + 1)).toFixed(3));
 
         const media = document.createElement("span");

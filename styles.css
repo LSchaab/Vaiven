@@ -606,7 +606,8 @@ section h2 {
 /* Card: absoluta y centrada; todo el movimiento por --progress/--y/--size. */
 .card {
     position: absolute; top: 50%; left: 50%;
-    width: min(50vw, 640px);
+    width: min(46vw, 560px);
+    --lane-gap: clamp(14vmin, 20vmin, 24vmin);   /* separación entre carriles */
     aspect-ratio: 16 / 9;
     margin: 0; padding: 0; border: 0;
     border-radius: 10px;
@@ -622,7 +623,7 @@ section h2 {
         rotateY(calc(var(--progress, 1) * (var(--max-rot, 20) * -1deg)))
         translate3d(
             calc(var(--progress, 1) * (50vw + 100%) - 50%),
-            calc(var(--y, 0) * 50% - 50%),
+            calc(-50% + var(--lane, 0) * var(--lane-gap, 20vmin)),
             calc(var(--progress, 1) * var(--progress, 1) * (var(--depth, 5) * -1rem))
         )
         scale(var(--size, 0.8));
