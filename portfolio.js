@@ -110,6 +110,11 @@
     const mTag = modal.querySelector(".pf-modal-tag");
     const mTools = modal.querySelector(".pf-modal-tools");
     const mDesc = modal.querySelector(".pf-modal-desc");
+    const mMedia = modal.querySelector(".pf-modal-media");
+    const lb = modal.querySelector(".pf-lightbox");
+    const lbImg = lb.querySelector(".pf-lb-img");
+    let lbList = [];
+    let lbIndex = 0;
     let lastFocused = null;
 
     const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -140,6 +145,59 @@
         mTools.appendChild(ul);
     };
 
+    // Media del modal: masonry de imágenes (galería a proporción real) o video.
+    const renderMedia = (work) => {
+        mMedia.innerHTML = "";
+        const gallery = work.galeria || [];
+        if (work.media === "video" && work.video) {
+            const v = document.createElement("video");
+            v.className = "pf-video";
+            v.src = work.video;
+            v.controls = true;
+            v.playsInline = true;
+            mMedia.appendChild(v);
+        }
+        if (gallery.length) {
+            const grid = document.createElement("div");
+            grid.className = "pf-gallery";
+            gallery.forEach((src, i) => {
+                const img = document.createElement("img");
+                img.src = src;
+                img.alt = `${work.title} — imagen ${i + 1}`;
+                img.loading = "lazy";
+                img.decoding = "async";
+                img.addEventListener("click", () => openLightbox(gallery, i));
+                grid.appendChild(img);
+            });
+            mMedia.appendChild(grid);
+        }
+        if (!gallery.length && !(work.media === "video" && work.video)) {
+            const ph = document.createElement("p");
+            ph.className = "pf-media-soon";
+            ph.textContent = work.media === "video"
+                ? "Video próximamente."
+                : "Imágenes próximamente.";
+            mMedia.appendChild(ph);
+        }
+    };
+
+    const showLb = () => { lbImg.src = lbList[lbIndex]; lbImg.alt = `Imagen ${lbIndex + 1}`; };
+    const openLightbox = (list, i) => {
+        lbList = list; lbIndex = i;
+        showLb();
+        lb.hidden = false;
+        lb.setAttribute("aria-hidden", "false");
+        lb.querySelector(".pf-lb-close").focus();
+    };
+    const closeLightbox = () => {
+        lb.hidden = true;
+        lb.setAttribute("aria-hidden", "true");
+    };
+    const stepLb = (d) => {
+        lbIndex = (lbIndex + d + lbList.length) % lbList.length;
+        showLb();
+    };
+
     const open = (index) => {
         const work = WORKS[index];
         if (!work) return;
@@ -153,6 +211,8 @@
         const desc = (work.descripcion || "").trim();
         mDesc.textContent = desc;
         mDesc.hidden = !desc;
+        renderMedia(work);
+        closeLightbox();   // por si quedó abierto de un modal anterior
 
         modal.hidden = false;
         document.body.classList.add("pf-modal-open");
@@ -180,6 +240,11 @@
 
     // Teclado: Esc cierra; Tab queda atrapado dentro del modal (focus trap).
     modal.addEventListener("keydown", (e) => {
+        if (!lb.hidden) {
+            if (e.key === "Escape") { closeLightbox(); e.preventDefault(); return; }
+            if (e.key === "ArrowLeft") { stepLb(-1); e.preventDefault(); return; }
+            if (e.key === "ArrowRight") { stepLb(1); e.preventDefault(); return; }
+        }
         if (e.key === "Escape") { close(); return; }
         if (e.key !== "Tab") return;
         const items = Array.from(modal.querySelectorAll(FOCUSABLE))
@@ -190,5 +255,11 @@
         else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
     });
 
-    window.Portfolio = { WORKS, renderWall, hueFilter, open, close };
+    lb.querySelector(".pf-lb-prev").addEventListener("click", () => stepLb(-1));
+    lb.querySelector(".pf-lb-next").addEventListener("click", () => stepLb(1));
+    lb.addEventListener("click", (e) => {
+        if (e.target.closest("[data-lb-close]") || e.target === lb) closeLightbox();
+    });
+
+    window.Portfolio = { WORKS, renderWall, hueFilter, open, close, openLightbox, closeLightbox };
 })();

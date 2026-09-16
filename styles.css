@@ -755,3 +755,56 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 .pf-modal-desc { margin: 0; line-height: 1.5; opacity: 0.92; }
 .pf-modal-tools[hidden],
 .pf-modal-desc[hidden] { display: none; }
+
+/* Masonry: columnas fluidas; cada imagen a su proporción real. */
+.pf-gallery { columns: 3 200px; column-gap: 0.8rem; }
+.pf-gallery img {
+    width: 100%;
+    display: block;
+    margin: 0 0 0.8rem;
+    border-radius: 6px;
+    cursor: zoom-in;
+    break-inside: avoid;
+}
+.pf-video { width: 100%; border-radius: 8px; display: block; }
+.pf-media-soon {
+    margin: 0;
+    padding: 2rem;
+    text-align: center;
+    font-family: var(--font-alt);
+    opacity: 0.75;
+    border: 1px dashed rgba(255, 255, 255, 0.35);
+    border-radius: 8px;
+}
+
+/* Lightbox: overlay sobre el modal. */
+.pf-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: rgba(0, 0, 0, 0.9);
+    padding: clamp(1rem, 4vw, 3rem);
+}
+.pf-lightbox[hidden] { display: none; }
+.pf-lb-img {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 6px;
+}
+.pf-lb-nav, .pf-lb-close {
+    flex: none;
+    width: 48px; height: 48px;
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--blanco);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+.pf-lb-close { position: absolute; top: 1rem; right: 1rem; }
+.pf-lb-nav:hover, .pf-lb-close:hover { background: rgba(255,255,255,0.15); }
