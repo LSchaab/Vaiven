@@ -140,7 +140,36 @@
 
     window.WorkCarousel.render = render;
 
-    // Preview estático (REEMPLAZADO por el motor de scroll en Task 3): centra una
-    // card del medio para poder verificar el build y el CSS 3D sin scroll.
-    render(0.5);
+    // ---- Motor de scroll (Lenis + ScrollTrigger) ----
+    // Lenis suaviza el scroll; ScrollTrigger mapea el progreso de la pista a
+    // S∈[0,1]; un único ticker de GSAP corre el loop. Bajo reduced-motion no se
+    // monta nada (Task 5 muestra el fallback estático).
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+
+    const initScroll = () => {
+        const outer = section.querySelector(".work__outer");
+        // Alto de la pista: cuánto scroll hay para recorrer todas las cards.
+        outer.style.height = (N * CONFIG.screensPerCard * 100) + "vh";
+
+        gsap.registerPlugin(ScrollTrigger);
+        const lenis = new Lenis({ lerp: CONFIG.lerp });
+        lenis.on("scroll", ScrollTrigger.update);
+        gsap.ticker.add((t) => lenis.raf(t * 1000));
+        gsap.ticker.lagSmoothing(0);
+
+        ScrollTrigger.create({
+            trigger: section,
+            start: "top top",
+            end: "bottom bottom",
+            onUpdate: (self) => render(self.progress),
+            onRefresh: (self) => render(self.progress),
+        });
+        render(0);
+    };
+
+    if (reduce.matches) {
+        section.classList.add("work--static");   // Task 5 lo estiliza
+    } else {
+        initScroll();
+    }
 })();
