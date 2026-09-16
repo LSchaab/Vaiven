@@ -83,6 +83,26 @@ profundidad a ambos lados. Es 3D, se mueve de costado. CSS puro (`perspective` +
 que renderiza el array que le pases**. Cambiar de nivel = cambiar el array + animar el
 re-armado.
 
+### Marco de las cards — 16:9 a sangre (decisión 2026-09-16)
+**Todas las cards usan el mismo marco fijo `16:9` (apaisado), imagen a sangre con
+`object-fit: cover` — sin bandas, sin letterbox.** Marco uniforme = el coverflow 3D se lee
+como un sistema (orden); es lo que le da el look premium.
+
+Esto se apoya en que las **portadas son assets dedicados** (no la obra cruda): se
+**componen todas a 16:9** para que entren a sangre sin recorte destructivo.
+
+- **Motion y Campañas** son video → 16:9 nativo (las portadas ya están en 1920×1080).
+- **Diseño Gráfico (pósters, verticales)** y **3D (mixto)**: se diseña una **portada 16:9**
+  por trabajo (arte compuesto / recorte hero / título), no se vuelca el póster vertical
+  crudo. Es trabajo de diseño del equipo (Vicky), pendiente para esas categorías.
+- Convención de assets: `resources/portadas/<categoria>/<trabajo>.(webp|png)`, todas 16:9.
+- **Fallback** mientras falte una portada: la card muestra un fondo en el **brain-hue** de
+  la disciplina + el título (nunca una imagen recortada fea). Descartado el `contain` +
+  fondo borroneado que se barajó: con el marco 16:9 a sangre no hace falta.
+
+Descartado **4:5**: rompería las portadas de Motion/Campañas (todas 16:9), que son la mitad
+de las categorías.
+
 ### Nivel 1 — las categorías (reposo)
 5 tarjetas grandes, una por disciplina:
 
@@ -94,7 +114,7 @@ re-armado.
 | Desarrollo web | hue del beat 4 |
 | Campañas publicitarias | hue del beat 5 |
 
-Cada tarjeta: una imagen hero a sangre + el nombre de la disciplina, teñida en su
+Cada tarjeta: una portada 16:9 a sangre + el nombre de la disciplina, teñida en su
 brain-hue. Es la statement visual y **esconde el volumen** (ves 5, no 19).
 
 ### Nivel 2 — adentro de una categoría (drill-in)
@@ -114,21 +134,25 @@ trabajos.
 ## 5. Datos y assets
 
 Fuente de datos: un array de disciplinas, cada una con `{ label, hue, works[] }`. Cada
-work: `{ title, media, thumb, ... }`. (Estructura fina a definir en el plan; el copy y los
-autores siguen pendientes — ver CLAUDE.md, no inventar.)
+work: `{ title, portada, media, ... }` — `portada` es la imagen 16:9 de la card.
+(Estructura fina a definir en el plan; el copy y los autores siguen pendientes — ver
+CLAUDE.md, no inventar.)
 
-Estado real de assets (2026-09-15):
+**Portadas:** assets dedicados 16:9, en `resources/portadas/<categoria>/<trabajo>.(webp|png)`.
 
-| Categoría | Assets | Nivel 2 |
-|---|---|---|
-| Ilustración y Diseño Gráfico | 5 posters con imagen (`diseno_grafico/`) | trabajos reales |
-| Modelado 3D | 3 proyectos con imagen (`3d/`) | trabajos reales |
-| Motion Graphics | sin assets reales (video) | placeholder "VIDEO — próximamente" |
-| Campañas publicitarias | sin assets reales (video) | placeholder "VIDEO — próximamente" |
-| Desarrollo web | a confirmar | placeholder hasta tener assets |
+Estado real de assets (2026-09-16):
 
-Las **tarjetas de Nivel 1 funcionan siempre** (aunque la categoría no tenga trabajos
-reales aún): muestran la disciplina. El placeholder solo aparece en Nivel 2.
+| Categoría | Obra (fuente) | Portadas 16:9 | Nivel 2 |
+|---|---|---|---|
+| Ilustración y Diseño Gráfico | 5 pósters (`diseno_grafico/`) | ⏳ faltan (diseñar 16:9) | trabajos reales, portada pendiente |
+| Modelado 3D | 3 proyectos (`3d/`) | ⏳ faltan (diseñar 16:9) | trabajos reales, portada pendiente |
+| Motion Graphics | video | ✅ 5 en `resources/portadas/motion/` (1920×1080) | trabajos reales |
+| Campañas publicitarias | video | ✅ 1 en `resources/portadas/campanas/` (1920×1080) | resto pendiente |
+| Desarrollo web | a confirmar | ⏳ faltan | placeholder hasta tener assets |
+
+Las **tarjetas de Nivel 1 funcionan siempre** (aunque falte la portada de un trabajo):
+muestran la disciplina con el brain-hue. Donde falte una portada de trabajo en Nivel 2, la
+card cae al **fallback brain-hue + título** (§4), nunca a un recorte feo.
 
 ---
 
@@ -176,7 +200,8 @@ brain-hue por disciplina. Nada de hex hardcodeado — siempre tokens/variables.
 - Copy final de títulos, descripciones y autores de los trabajos (pendiente; no inventar).
 - Layout fino de las tarjetas y valores exactos del coverflow (ángulos, spacing, perspective) —
   se afinan en vivo durante la implementación.
-- Assets reales de Motion / Campañas / Web (siguen pendientes).
+- Diseño de las portadas 16:9 de Diseño Gráfico, 3D y Web (pendiente del equipo); assets
+  reales de trabajos de Web (pendientes).
 - Salas posteriores (Nosotros, Contacto) y sus transiciones.
 - Un motivo conector persistente entre salas más allá de lo ya definido (decisión futura
   del pantallazo).
