@@ -176,9 +176,10 @@ section h2 {
    sticky queda pineado toda la travesía. Ref: spec 2026-09-15. */
 .mente-journey {
     position: relative;
-    /* 150vh de apertura (puertas) + 500vh de absorción. Afinable; debe quedar
-       en sync con DOOR_VH/TOOLS_VH de mente.js. */
-    height: 750vh;
+    /* 150vh apertura (puertas) + 500vh absorción + 120vh salida (cerebro sale /
+       portfolio entra) + buffer. Afinable; en sync con DOOR_VH/TOOLS_VH/SALIDA_VH
+       de mente.js. */
+    height: 870vh;
     background: var(--negro);
 }
 
@@ -375,7 +376,51 @@ section h2 {
    lo mantiene centrado; el scale va en `transform`, no se pisan) */
 .cerebro {
     opacity: clamp(0, calc((var(--hero-progress) - 0.1) * 2.2), 1);
-    transform: scale(calc(0.6 + var(--hero-progress) * 0.75));
+    /* scale por scroll + salida a la izquierda (--cerebro-exit-x en vw, lo setea
+       mente.js en la fase salida; 0 en el resto). */
+    transform:
+        translateX(calc(var(--cerebro-exit-x, 0) * 1vw))
+        scale(calc(0.6 + var(--hero-progress) * 0.75));
+}
+/* fade final del cerebro al irse (después del 60% de la salida). Pisa la
+   `opacity` de la regla de arriba por cascada — intencional; el transform queda. */
+.cerebro {
+    opacity: calc(
+        clamp(0, calc((var(--hero-progress) - 0.1) * 2.2), 1) *
+        clamp(0, calc(1 - (var(--salida-progress, 0) - 0.6) * 2.5), 1)
+    );
+}
+
+/* Fase salida — capa puente hacia el portfolio: entra desde la derecha a
+   medida que avanza --salida-progress (lo setea mente.js). */
+.salida-intro {
+    position: absolute;
+    inset: 0;
+    z-index: 7;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.2rem;
+    /* empieza afuera a la derecha; entra a medida que avanza la salida */
+    transform: translateX(calc((1 - var(--salida-progress, 0)) * 60vw));
+    opacity: clamp(0, calc((var(--salida-progress, 0) - 0.25) * 2), 1);
+    pointer-events: none;
+}
+.salida-titulo {
+    margin: 0;
+    font-family: var(--font-alt);
+    font-weight: 800;
+    text-transform: lowercase;
+    font-size: clamp(2rem, 8vw, 5rem);
+    color: var(--blanco);
+}
+.salida-card {
+    width: min(46vw, 420px);
+    aspect-ratio: 16 / 9;
+    border-radius: 8px;
+    background: linear-gradient(135deg, var(--violeta-claro), var(--azul));
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5);
 }
 
 /* capa 6 — frase */

@@ -30,9 +30,12 @@
     if (reduce.matches) return;   // sin scrub; CSS deja umbral estático + fallback
 
     // ----- fases (afinables; en sync con .mente-journey height y #herramientas top) -----
-    const DOOR_VH  = 150;   // largo de scroll de la apertura de puertas
-    const TOOLS_VH = 500;   // largo de scroll de la absorción
-    const B = DOOR_VH / (DOOR_VH + TOOLS_VH);   // límite de fase en progreso global
+    const DOOR_VH   = 150;   // apertura de puertas
+    const TOOLS_VH  = 500;   // absorción
+    const SALIDA_VH = 120;   // salida del cerebro → entrada del portfolio
+    const TOTAL = DOOR_VH + TOOLS_VH + SALIDA_VH;
+    const B1 = DOOR_VH / TOTAL;                    // fin fase 1 (umbral)
+    const B2 = (DOOR_VH + TOOLS_VH) / TOTAL;       // fin fase 2 (absorción)
 
     const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
 
@@ -176,12 +179,25 @@
         renderLogos(herrP);
     };
 
+    // Fase 3 (salida): vibración decreciente al inicio + deslizamiento a la
+    // izquierda. Determinista y reversible (todo derivado de salidaP).
+    const renderSalida = (salidaP) => {
+        const shake = salidaP > 0 && salidaP < 0.15
+            ? Math.sin(salidaP * 70) * (1 - salidaP / 0.15) * 1.4   // vw
+            : 0;
+        const slide = smooth01((salidaP - 0.12) / 0.88) * -135;      // vw a la izquierda
+        brain.style.setProperty("--cerebro-exit-x", (shake + slide).toFixed(2));
+    };
+
     const render = (p) => {
-        const heroP = clamp(p / B, 0, 1);
-        const herrP = clamp((p - B) / (1 - B), 0, 1);
+        const heroP   = clamp(p / B1, 0, 1);
+        const herrP   = clamp((p - B1) / (B2 - B1), 0, 1);
+        const salidaP = clamp((p - B2) / (1 - B2), 0, 1);
         stage.style.setProperty("--hero-progress", heroP.toFixed(4));
         stage.style.setProperty("--herr-progress", herrP.toFixed(4));
+        stage.style.setProperty("--salida-progress", salidaP.toFixed(4));
         renderPhase2(herrP);
+        renderSalida(salidaP);
     };
 
     // ----- scroll (rAF) -----
