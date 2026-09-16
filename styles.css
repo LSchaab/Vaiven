@@ -383,9 +383,11 @@ section h2 {
 /* fade final del cerebro al irse (después del 60% de la salida). Pisa la
    `opacity` de la regla de arriba por cascada — intencional; el transform queda. */
 .cerebro {
+    /* El cerebro se desvanece TEMPRANO en la salida (0.05→0.45) para revelar el
+       portal que espera detrás; después el portal (más abajo) se expande solo. */
     opacity: calc(
         clamp(0, calc((var(--hero-progress) - 0.1) * 2.2), 1) *
-        clamp(0, calc(1 - (var(--salida-progress, 0) - 0.6) * 2.5), 1)
+        clamp(0, calc(1 - (var(--salida-progress, 0) - 0.05) * 2.5), 1)
     );
 }
 
@@ -396,16 +398,20 @@ section h2 {
     position: absolute;
     left: 50%; top: 50%;
     translate: -50% -50%;
-    z-index: 6;                 /* detrás del cerebro (que se desvanece encima) */
-    /* crece desde una cápsula chica hasta desbordar el viewport (corners afuera
-       → la pantalla queda toda violeta). */
-    width: calc(42vmin + var(--salida-progress, 0) * 260vmax);
-    height: calc(74vmin + var(--salida-progress, 0) * 260vmax);
+    z-index: 1;                 /* DETRÁS del cerebro (z-index 2): el cerebro se
+                                   desvanece encima y revela el portal atrás. */
+    /* Fase A (salida 0→~0.55): cápsula chica y quieta detrás del cerebro, que se
+       está desvaneciendo. Fase B (~0.55→1): la cápsula se expande hasta desbordar
+       el viewport (corners afuera → la pantalla queda toda violeta). */
+    --portal-grow: clamp(0, calc((var(--salida-progress, 0) - 0.55) / 0.45), 1);
+    width: calc(42vmin + var(--portal-grow) * 260vmax);
+    height: calc(74vmin + var(--portal-grow) * 260vmax);
     border-radius: 9999px;
     background:
         radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1.6px) 0 0 / 14px 14px,
         var(--violeta-claro);
-    /* aparece apenas arranca la salida; el crecimiento la vuelve el fondo. */
+    /* aparece apenas arranca la salida (queda oculta tras el cerebro hasta que
+       éste se desvanece). */
     opacity: clamp(0, calc(var(--salida-progress, 0) * 6), 1);
     display: flex;
     align-items: center;
@@ -414,17 +420,21 @@ section h2 {
     pointer-events: none;
 }
 .salida-portal-word {
+    margin: 0;
     font-family: var(--font-alt);
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.12em;
+    line-height: 1.05;
+    text-align: center;         /* horizontal, una palabra debajo de la otra */
     color: var(--blanco);
-    writing-mode: vertical-rl;
-    text-orientation: upright;
-    white-space: nowrap;
-    font-size: clamp(1.2rem, 4vmin, 2.4rem);
-    /* la palabra se desvanece a medida que el portal se expande. */
-    opacity: clamp(0, calc(1 - var(--salida-progress, 0) * 3), 1);
+    font-size: clamp(1.4rem, 6vmin, 3.4rem);
+    /* aparece a medida que el cerebro se va (0.1→0.35) y se desvanece cuando el
+       portal empieza a expandirse (0.55→0.72). */
+    opacity: calc(
+        clamp(0, calc((var(--salida-progress, 0) - 0.1) * 4), 1) *
+        clamp(0, calc(1 - (var(--salida-progress, 0) - 0.55) * 6), 1)
+    );
 }
 
 /* capa 6 — frase */
@@ -548,33 +558,54 @@ section h2 {
     opacity: 0.85;
 }
 
-/* Pared: grilla fluida con scroll vertical. */
+/* Carrusel 3D (coverflow): la pared es un escenario con perspectiva; las cards
+   se posicionan en 3D alrededor de un centro. portfolio.js setea las vars
+   --x/--rot/--z/--s/--op por card y lerpea el centro (scrub por hover, drag y
+   flechas). Tunables del feel: GAP/ANGLE/DEPTH en portfolio.js. */
 .pf-wall {
     list-style: none;
-    margin: clamp(1.5rem, 4vw, 3rem) auto 0;
-    padding: 0 clamp(1rem, 4vw, 3rem);
-    width: min(1200px, 100%);
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
-    gap: 1.2rem;
+    margin: clamp(2rem, 6vw, 4rem) auto 0;
+    padding: 0;
+    position: relative;
+    width: min(1100px, 96vw);
+    height: clamp(200px, 34vw, 340px);   /* alto del escenario del coverflow */
+    perspective: 1400px;
+    perspective-origin: 50% 50%;
+    touch-action: pan-y;                 /* deja el scroll vertical de la página */
+    outline: none;
 }
-.pf-card { position: relative; }
+/* Card posicionada en 3D (transform desde vars que setea el JS). */
+.pf-card {
+    position: absolute;
+    left: 50%; top: 50%;
+    width: min(56vw, 480px);
+    aspect-ratio: 16 / 9;
+    transform:
+        translate(-50%, -50%)
+        translateX(var(--x, 0))
+        translateZ(var(--z, 0))
+        rotateY(var(--rot, 0deg))
+        scale(var(--s, 1));
+    opacity: var(--op, 1);
+    will-change: transform, opacity;
+}
 
-/* Card = botón. Marco 16:9 a sangre. */
+/* Card = botón. Marco 16:9 a sangre (llena la card 3D). */
 .pf-card-btn {
     display: block;
-    width: 100%;
+    width: 100%; height: 100%;
     padding: 0;
     border: 0;
     position: relative;
-    aspect-ratio: 16 / 9;
     border-radius: 8px;
     overflow: hidden;
     background: var(--negro);
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
     cursor: pointer;
     color: var(--blanco);
+    transition: box-shadow 0.3s ease;
 }
+.pf-card--center .pf-card-btn { box-shadow: 0 26px 70px rgba(0, 0, 0, 0.6); }
 .pf-card-img {
     width: 100%; height: 100%;
     object-fit: cover;
@@ -586,16 +617,6 @@ section h2 {
         linear-gradient(135deg, rgba(255,255,255,0.12), rgba(0,0,0,0.35)),
         var(--negro);
     filter: sepia(1) saturate(4) hue-rotate(calc(var(--card-hue, 0) * 1deg));
-}
-.pf-cap {
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    padding: 0.6rem 0.8rem;
-    font-family: var(--font-alt);
-    font-weight: 700;
-    text-align: left;
-    color: var(--blanco);
-    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
 }
 
 /* Overlay de oscurecido en hover/focus. */
@@ -634,25 +655,6 @@ section h2 {
     opacity: 1;
     transform: translateY(0);
 }
-
-/* Deformación sutil: cada card tiene su propia perspectiva; el botón se inclina
-   hacia el mouse (JS setea --rx/--ry) con una sombra que lo levanta. */
-.pf-card { perspective: 800px; }
-.pf-card-btn {
-    transform: rotateX(var(--ry, 0deg)) rotateY(var(--rx, 0deg));
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    will-change: transform;
-}
-.pf-card-btn:hover { box-shadow: 0 22px 60px rgba(0, 0, 0, 0.55); }
-
-/* Entrada: revelar cada card al aparecer en viewport. Scoped a .pf-anim (que
-   agrega el JS) para que, sin JS o bajo reduced-motion, las cards se vean igual. */
-.pf-anim .pf-card {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-}
-.pf-anim .pf-card.is-in { opacity: 1; transform: none; }
 
 .pf-fallback { display: none; }   /* sólo visible bajo reduced-motion (Task 7) */
 
@@ -816,6 +818,25 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 @media (prefers-reduced-motion: reduce) {
     /* El portal no anima (mente.js hace return temprano); asegurar que no tape nada. */
     .salida-portal { display: none; }
+    /* Sin coverflow 3D: la pared vuelve a ser una grilla plana con scroll normal
+       (el JS salta el layout/nav del carrusel bajo reduced-motion). */
+    .pf-wall {
+        position: static;
+        height: auto;
+        perspective: none;
+        width: min(1200px, 100%);
+        padding: 0 clamp(1rem, 4vw, 3rem);
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+        gap: 1.2rem;
+    }
+    .pf-card {
+        position: static;
+        transform: none;
+        opacity: 1;
+        width: auto;
+    }
+    .pf-card-btn, .pf-card-btn::after, .pf-tag { transition: none; }
     /* Mostrar la lista de texto accesible bajo la pared. */
     .pf-fallback {
         display: block;
@@ -825,8 +846,4 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     }
     .pf-fallback ul { margin: 0; padding-left: 1.2rem; }
     .pf-fallback li { margin: 0.2rem 0; font-family: var(--font-alt); opacity: 0.9; }
-    /* Sin transiciones ni tilt en la pared (el JS ya no agrega .pf-anim ni el
-       tilt bajo reduced-motion; esto cubre el resto). Cards visibles por defecto. */
-    .pf-card-btn, .pf-card-btn::after, .pf-tag { transition: none; }
-    .pf-card { opacity: 1; transform: none; }
 }
