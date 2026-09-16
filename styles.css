@@ -410,15 +410,13 @@ section h2 {
     translate: -50% -50%;
     z-index: 1;                 /* DETRÁS del cerebro (z-index 2): el cerebro se
                                    desvanece encima y revela el portal atrás. */
-    /* Fase A (salida 0→0.5): cápsula CHICA y quieta detrás del cerebro, que se
-       desvanece (termina de irse ~0.45). Fase B (0.5→1): la cápsula se expande
-       hasta desbordar el viewport (corners afuera → pantalla toda violeta).
-       El "hueco" debe ser apenas mayor que el cerebro; nada de expandir antes. */
-    --portal-grow: clamp(0, calc((var(--salida-progress, 0) - 0.5) / 0.5), 1);
-    /* Base MÁS CHICA que el cerebro: mientras el cerebro está/se desvanece, el
-       hueco queda tapado detrás; recién se ve al expandirse. */
-    width: calc(20vmin + var(--portal-grow) * 300vmax);
-    height: calc(30vmin + var(--portal-grow) * 300vmax);
+    /* La máscara YA NO se abre acá: se abre dentro de #work (.work__inner). Acá el
+       portal queda como una SEMILLA violeta chica y quieta sobre el azul, detrás
+       del cerebro que se desvanece. #work retoma ese círculo y lo expande (iris)
+       revelando la frase + las cards. Misma medida que el radio inicial del iris
+       de #work (13vmin de radio → 26vmin de diámetro) para que empalme. */
+    width: 26vmin;
+    height: 26vmin;
     border-radius: 9999px;
     background:
         radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1.6px) 0 0 / 14px 14px,
@@ -577,6 +575,9 @@ section h2 {
     width: 100%;
     /* alto de la pista lo setea JS en Task 3 (N * screensPerCard * 100vh) */
     min-height: 100lvh;
+    /* Fondo azul = el mismo sobre el que termina la mente (hero-fondo). El iris de
+       .work__inner se abre sobre este azul, empalmando con la semilla del portal. */
+    background: var(--azul);
 }
 .work__inner {
     position: sticky;
@@ -586,6 +587,14 @@ section h2 {
     overflow: hidden;
     display: grid;
     place-items: center;
+    /* LA MÁSCARA: el portfolio (violeta + frase + cards) se revela por un iris
+       circular que se abre ACÁ (en #work), no en la sección anterior. Arranca en
+       13vmin de radio (= la semilla del portal en mente) y crece a 160% en el
+       primer ~5% del scroll. Afuera del iris se ve el azul de .work__outer. */
+    background: var(--violeta-claro);
+    clip-path: circle(
+        max(13vmin, min(160%, calc(var(--scroll-progress, 0) / 0.05 * 160%)))
+        at 50% 50%);
 }
 .work__title {
     position: absolute;
