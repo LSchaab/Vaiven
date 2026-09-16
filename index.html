@@ -20,11 +20,12 @@
     <!-- Portfolio: datos (array de disciplinas) + carrusel 3D de dos niveles.
          Ref: docs/superpowers/specs/2026-09-15-portfolio-carrusel-3d-design.md -->
     <script src="portfolio-data.js" defer></script>
-    <!-- Scroll suave (Lenis) + mapeo de scroll (GSAP ScrollTrigger) para #work.
-         Por CDN: el sitio no tiene build. Ref: spec 2026-09-16-work-carrusel. -->
+    <!-- Mapeo de scroll (GSAP ScrollTrigger) para el carrusel #work, sobre scroll
+         NATIVO. Por CDN: el sitio no tiene build. Lenis se quitó: su smooth-scroll
+         global volvía lentísimo todo el sitio (incluido el recorrido del cerebro).
+         Ref: spec 2026-09-16-work-carrusel. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js" defer></script>
     <script src="portfolio-modal.js" defer></script>
     <script src="work-carousel.js" defer></script>
 </head>

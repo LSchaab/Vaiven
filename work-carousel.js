@@ -15,13 +15,12 @@
 
     // ---- Config (afinable en vivo) ----
     const CONFIG = {
-        screensPerCard: 1.2,   // alto de la pista por card (pista ≈ N*este*100vh)
+        screensPerCard: 0.6,   // alto de la pista por card (pista ≈ N*este*100vh)
         transitWindow: 0.14,   // W: ventana en S del pase +1→-1 (solapamiento 1–2)
         maxRotateY: 20,        // deg de giro en los extremos
         depthZ: 5,             // rem de alejamiento en Z (progress²·-depthZ)
         sizeRange: [0.6, 0.95],
         yRange: [-1, 1],
-        lerp: 0.1,             // suavizado de Lenis (Task 3)
     };
     window.WorkCarousel = { CONFIG, N };
 
@@ -175,10 +174,12 @@
 
     window.WorkCarousel.render = render;
 
-    // ---- Motor de scroll (Lenis + ScrollTrigger) ----
-    // Lenis suaviza el scroll; ScrollTrigger mapea el progreso de la pista a
-    // S∈[0,1]; un único ticker de GSAP corre el loop. Bajo reduced-motion no se
-    // monta nada (Task 5 muestra el fallback estático).
+    // ---- Motor de scroll (ScrollTrigger sobre scroll NATIVO) ----
+    // ScrollTrigger mapea el progreso de la pista de #work a S∈[0,1] y llama
+    // render(S). NO usamos Lenis: era un smooth-scroll GLOBAL que lerpeaba toda
+    // la página (incluido el recorrido del cerebro, que mente.js maneja con scroll
+    // nativo) y la volvía lentísima. El scroll nativo mantiene el resto del sitio
+    // como estaba. Bajo reduced-motion no se monta nada (Task 5 muestra el fallback).
     const reduce = matchMedia("(prefers-reduced-motion: reduce)");
 
     const initScroll = () => {
@@ -187,11 +188,6 @@
         outer.style.height = (N * CONFIG.screensPerCard * 100) + "vh";
 
         gsap.registerPlugin(ScrollTrigger);
-        const lenis = new Lenis({ lerp: CONFIG.lerp });
-        lenis.on("scroll", ScrollTrigger.update);
-        gsap.ticker.add((t) => lenis.raf(t * 1000));
-        gsap.ticker.lagSmoothing(0);
-
         ScrollTrigger.create({
             trigger: section,
             start: "top top",
