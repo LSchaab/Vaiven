@@ -242,6 +242,14 @@ section h2 {
 }
 .hero-collage img { width: 100%; height: 100%; object-fit: cover; }
 
+/* Registrada para poder INTERPOLAR el crecimiento del cerebro (var en calc()):
+   sin @property un custom prop no transiciona. Chrome la soporta. */
+@property --cerebro-grow {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 0;
+}
+
 /* capa 3 — cerebro (oculto en cerrado; Task 4 lo hace crecer) */
 .cerebro {
     position: absolute; left: 50%; top: 50%;
@@ -329,7 +337,9 @@ section h2 {
 /* Transición de color del cerebro entre beats (el filter lo setea mente.js:
    grayscale en fase 1 → hue-rotate por beat en fase 2). Se agrega `filter`
    a la transición del cerebro sin duplicar la regla compartida de arriba. */
-.cerebro { transition: translate 0.18s ease-out, filter 0.5s ease; }
+/* Se transiciona --cerebro-grow (no `transform`: eso lagearía el scale por scroll
+   de fase 1). Cada absorción interpola el paso de tamaño en ~0.4s. */
+.cerebro { transition: translate 0.18s ease-out, filter 0.5s ease, --cerebro-grow 0.4s ease-out; }
 
 /* Pulso de absorción: glow breve por drop-shadow (no toca transform/scale,
    ocupados por la apertura y el parallax). */
@@ -378,7 +388,7 @@ section h2 {
     opacity: clamp(0, calc((var(--hero-progress) - 0.1) * 2.2), 1);
     /* scale por scroll. El fade de salida lo hace la regla de opacity de abajo;
        el portal (CSS, --salida-progress) se expande detrás del cerebro. */
-    transform: scale(calc(0.6 + var(--hero-progress) * 0.75));
+    transform: scale(calc(0.6 + var(--hero-progress) * 0.75 + var(--cerebro-grow, 0)));
 }
 /* fade final del cerebro al irse (después del 60% de la salida). Pisa la
    `opacity` de la regla de arriba por cascada — intencional; el transform queda. */

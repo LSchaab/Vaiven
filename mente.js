@@ -58,6 +58,11 @@
     // (brain.src = BRAIN_SRCS[beat]) cuando existan las versiones de color.
     const BEAT_HUE = [340, 200, 10, 140, 210];   // deg, un tono por beat (aprox. marca)
 
+    // Paso de escala que suma el cerebro por cada disciplina absorbida (5 pasos).
+    // Afinable en vivo; ~0.08 por beat ≈ +0.4 de scale al terminar la absorción,
+    // lo suficiente para que el cerebro tape la boca del portal de salida.
+    const GROW_PER_BEAT = 0.08;
+
     // Desde dónde entra la palabra de cada beat (vmin); se absorbe hacia (0,0).
     // Repartidas por la pantalla (las largas con x chico para no desbordar).
     const WORD_SPOTS = [
@@ -118,8 +123,13 @@
         currentColor = idx;
         // El color va por variable (--cerebro-tint) para que el pulso lo conserve
         // y no parpadee a B&N. Sin variable = B&N (fallback en CSS).
-        if (idx < 0) { brain.style.removeProperty("--cerebro-tint"); return; }
+        if (idx < 0) {
+            brain.style.removeProperty("--cerebro-tint");
+            brain.style.setProperty("--cerebro-grow", "0");   // B&N: sin crecer
+            return;
+        }
         brain.style.setProperty("--cerebro-tint", `sepia(1) saturate(4) hue-rotate(${BEAT_HUE[idx]}deg)`);
+        brain.style.setProperty("--cerebro-grow", (GROW_PER_BEAT * (idx + 1)).toFixed(3));
         brain.classList.remove("is-absorbing");
         void brain.offsetWidth;              // reinicia el pulso
         brain.classList.add("is-absorbing"); // pulso al absorber
@@ -164,7 +174,11 @@
         if (herrP <= 0) {
             // fase 1 / umbral: cerebro B&N, sin palabra.
             currentBeat = -1;
-            if (currentColor !== -2) { currentColor = -2; brain.style.removeProperty("--cerebro-tint"); }
+            if (currentColor !== -2) {
+                currentColor = -2;
+                brain.style.removeProperty("--cerebro-tint");
+                brain.style.setProperty("--cerebro-grow", "0");   // sin absorción → sin crecer
+            }
             wordEl.style.opacity = 0;
         } else {
             const beatFloat = herrP * BEATS;
