@@ -816,7 +816,6 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
         --size: 1 !important;                         /* sin scale (pisa el inline) */
     }
     .card__caption { display: none; }                 /* sin caption */
-    .scene__letter { font-size: clamp(3rem, 30vw, 9rem); }
 }
 
 /* ---- Reduced-motion: sin carrusel; grilla estática + fallback accesible ---- */
