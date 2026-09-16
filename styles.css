@@ -651,3 +651,78 @@ section h2 {
 .pf-anim .pf-card.is-in { opacity: 1; transform: none; }
 
 .pf-fallback { display: none; }   /* sólo visible bajo reduced-motion (Task 7) */
+
+/* ---- Modal de proyecto ---- */
+body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
+
+.pf-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(1rem, 4vw, 3rem);
+}
+.pf-modal[hidden] { display: none; }
+.pf-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(2px);
+}
+.pf-modal-dialog {
+    position: relative;
+    z-index: 1;
+    width: min(1000px, 100%);
+    max-height: 90vh;
+    overflow: auto;
+    background: var(--violeta-claro);
+    color: var(--blanco);
+    border-radius: 12px;
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+    padding: clamp(1.2rem, 3vw, 2.2rem);
+}
+.pf-modal-close {
+    position: absolute;
+    top: 0.8rem; right: 0.8rem;
+    width: 40px; height: 40px;
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 50%;
+    background: transparent;
+    color: var(--blanco);
+    font-size: 1rem;
+    cursor: pointer;
+}
+.pf-modal-close:hover,
+.pf-modal-close:focus-visible { background: rgba(255,255,255,0.15); }
+.pf-modal-head {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    padding-right: 3rem;          /* deja lugar a la X */
+    margin-bottom: 1.2rem;
+}
+.pf-modal-title {
+    margin: 0;
+    font-size: clamp(1.4rem, 4vw, 2.4rem);
+    font-weight: 800;
+}
+.pf-modal-tag {
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    font-family: var(--font-alt);
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--negro);
+    background: hsl(calc(var(--card-hue, 0) * 1deg) 70% 60%);
+}
+.pf-modal-body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.4rem;
+}
+@media (min-width: 720px) {
+    .pf-modal-body { grid-template-columns: 2fr 1fr; }
+}

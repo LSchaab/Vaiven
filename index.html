@@ -141,6 +141,26 @@
         <section id="contacto" class="zona-bn">
             <h2>contacto</h2>
         </section>
+
+        <!-- Modal de proyecto (lo puebla portfolio.js). role=dialog + focus trap. -->
+        <div class="pf-modal" id="pf-modal" hidden role="dialog" aria-modal="true"
+             aria-labelledby="pf-modal-title">
+            <div class="pf-modal-backdrop" data-close></div>
+            <div class="pf-modal-dialog" role="document">
+                <button class="pf-modal-close" type="button" aria-label="Cerrar" data-close>✕</button>
+                <header class="pf-modal-head">
+                    <h3 class="pf-modal-title" id="pf-modal-title"></h3>
+                    <span class="pf-modal-tag"></span>
+                </header>
+                <div class="pf-modal-body">
+                    <div class="pf-modal-media"></div>
+                    <aside class="pf-modal-meta">
+                        <div class="pf-modal-tools"></div>
+                        <p class="pf-modal-desc"></p>
+                    </aside>
+                </div>
+            </div>
+        </div>
     </main>
 </body>
 </html>
