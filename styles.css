@@ -433,8 +433,10 @@ section h2 {
     pointer-events: none;
 }
 .salida-portal-word {
-    /* horizontal, una palabra debajo de la otra (dos líneas .erratic) */
-    display: flex;
+    /* La frase se movió al stage pineado de #work (.work__intro) para que frase y
+       cards compartan contenedor y no se deslicen dos secciones. Acá se oculta:
+       el portal queda como iris violeta de entrada, sin texto. */
+    display: none;
     flex-direction: column;
     align-items: center;
     gap: 0.1em;
@@ -596,6 +598,8 @@ section h2 {
     font-weight: 800;
     text-transform: lowercase;
     pointer-events: none;
+    /* El título "portfolio" aparece junto con las cards, no durante la frase intro. */
+    opacity: clamp(0, calc((var(--scroll-progress, 0) - 0.08) / 0.10), 1);
 }
 .work__grid {
     position: absolute; inset: 0;
@@ -607,10 +611,10 @@ section h2 {
     z-index: 2;
     perspective: 40rem;
     transform-style: preserve-3d;
-    /* Fade-in de entrada: --state va 0→1 en el primer 8% del scroll (lo setea
-       work-carousel.js). Así la primera card CROSSFADEA en el centro apenas se
-       va "NOSOTROS RESOLVEMOS", en vez de aparecer de golpe o deslizarse. */
-    opacity: var(--state, 1);
+    /* Las cards CROSSFADEAN después de la frase intro: invisibles hasta S≈0.08,
+       full a S≈0.18. Así primero está "NOSOTROS RESOLVEMOS" (.work__intro) y en el
+       mismo lugar aparecen las cards. --scroll-progress lo setea work-carousel.js. */
+    opacity: clamp(0, calc((var(--scroll-progress, 0) - 0.08) / 0.10), 1);
 }
 
 /* Card: absoluta y centrada; todo el movimiento por --progress/--lane/--size. */
@@ -663,6 +667,29 @@ section h2 {
 }
 .card__title { font-weight: 700; }
 .card__count { font-size: 0.8rem; opacity: 0.8; letter-spacing: 0.04em; }
+
+/* Frase intro "NOSOTROS RESOLVEMOS" dentro del stage pineado de #work. Se
+   desvanece al scrollear (inverso de .work__scene) → crossfade frase→cards en el
+   mismo lugar, sin deslizar secciones. Centrada como estaba en el portal. */
+.work__intro {
+    position: absolute; inset: 0;
+    z-index: 3;
+    display: grid; place-items: center;
+    pointer-events: none;
+    /* Fade-in rápido (0→0.02) para no aparecer de golpe al pinnearse #work, y
+       fade-out (0.06→0.12) al scrollear hacia las cards. */
+    opacity: clamp(0, min(calc(var(--scroll-progress, 0) / 0.02),
+                          calc((0.12 - var(--scroll-progress, 0)) / 0.06)), 1);
+}
+.work__intro-word {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 0.1em;
+    text-transform: uppercase;
+    color: var(--blanco);
+    font-size: clamp(1.4rem, 6vmin, 3.4rem);
+    text-align: center;
+}
+.work__intro-word .erratic { font-size: 1em; }
 
 /* Parallax sutil: la escena y las partículas se mueven con --scroll-progress.
    Bajado a -6% (era -15%) para que las cards no se vayan hacia arriba y queden

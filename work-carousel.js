@@ -20,6 +20,7 @@
         depthZ: 5,             // rem de alejamiento en Z (progress²·-depthZ)
         sizeRange: [0.6, 0.95],
         exitStart: 0.82,       // S a partir del cual las cards ya pasaron y corre la salida
+        introEnd: 0.16,        // S donde la frase "NOSOTROS RESOLVEMOS" ya se fue y entra la 1ª card
     };
     window.WorkCarousel = { CONFIG, N };
 
@@ -153,7 +154,11 @@
     const W = CONFIG.transitWindow;
     // La card 0 queda centrada en S=0 (arriba de #work) y la última en S=1 → no
     // hay violeta vacío al entrar: ya ves una card apenas llegás a la sección.
-    const centerOf = (i) => (N > 1 ? (i / (N - 1)) * CONFIG.exitStart : 0.5 * CONFIG.exitStart);
+    // Las cards viven en [introEnd, exitStart]: antes de introEnd está la frase
+    // "NOSOTROS RESOLVEMOS" (intro, en el mismo stage pineado); después, la salida.
+    const centerOf = (i) => (N > 1
+        ? CONFIG.introEnd + (i / (N - 1)) * (CONFIG.exitStart - CONFIG.introEnd)
+        : (CONFIG.introEnd + CONFIG.exitStart) / 2);
 
     const render = (S) => {
         // Progreso de salida (0 hasta exitStart, →1 al final). Lo consume el CSS

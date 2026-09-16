@@ -141,6 +141,16 @@
                     <div class="work__scene">
                         <!-- cards: las inyecta work-carousel.js -->
                     </div>
+                    <!-- Intro "NOSOTROS RESOLVEMOS" DENTRO del stage pineado de #work:
+                         la frase y las cards comparten el mismo contenedor sticky, así
+                         la frase se desvanece en el lugar y la card aparece ahí mismo,
+                         sin deslizar dos secciones. Opacidad por --scroll-progress. -->
+                    <div class="work__intro" aria-hidden="true">
+                        <span class="work__intro-word">
+                            <span class="erratic" data-text="NOSOTROS">NOSOTROS</span>
+                            <span class="erratic" data-text="RESOLVEMOS">RESOLVEMOS</span>
+                        </span>
+                    </div>
                 </div>
             </div>
             <!-- Salida espejo (sólo coverflow): cápsula violeta que se contrae al
