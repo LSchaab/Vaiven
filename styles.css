@@ -594,4 +594,60 @@ section h2 {
     background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
 }
 
+/* Overlay de oscurecido en hover/focus. */
+.pf-card-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+}
+.pf-card-btn:hover::after,
+.pf-card-btn:focus-visible::after { opacity: 1; }
+
+/* Tag de categoría: aparece en hover/focus, teñida con el hue de la disciplina. */
+.pf-tag {
+    position: absolute;
+    top: 0.6rem; left: 0.6rem;
+    z-index: 1;                 /* sobre el overlay ::after */
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-family: var(--font-alt);
+    font-weight: 700;
+    font-size: 0.8rem;
+    line-height: 1;
+    color: var(--negro);
+    background: hsl(calc(var(--card-hue, 0) * 1deg) 70% 60%);
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+}
+.pf-card-btn:hover .pf-tag,
+.pf-card-btn:focus-visible .pf-tag {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Deformación sutil: cada card tiene su propia perspectiva; el botón se inclina
+   hacia el mouse (JS setea --rx/--ry) con una sombra que lo levanta. */
+.pf-card { perspective: 800px; }
+.pf-card-btn {
+    transform: rotateX(var(--ry, 0deg)) rotateY(var(--rx, 0deg));
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    will-change: transform;
+}
+.pf-card-btn:hover { box-shadow: 0 22px 60px rgba(0, 0, 0, 0.55); }
+
+/* Entrada: revelar cada card al aparecer en viewport. Scoped a .pf-anim (que
+   agrega el JS) para que, sin JS o bajo reduced-motion, las cards se vean igual. */
+.pf-anim .pf-card {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.pf-anim .pf-card.is-in { opacity: 1; transform: none; }
+
 .pf-fallback { display: none; }   /* sólo visible bajo reduced-motion (Task 7) */

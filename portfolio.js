@@ -66,5 +66,43 @@
 
     renderWall();
 
+    // ----- Deformación sutil: tilt al mouse + entrada al scrollear -----
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+    const noHover = matchMedia("(hover: none)");
+
+    // Tilt: la card se inclina hacia el mouse. Sólo con hover real y sin reduced-motion.
+    if (!reduce.matches && !noHover.matches) {
+        const TILT = 8; // grados máx
+        wall.addEventListener("pointermove", (e) => {
+            const btn = e.target.closest(".pf-card-btn");
+            if (!btn) return;
+            const r = btn.getBoundingClientRect();
+            const px = (e.clientX - r.left) / r.width - 0.5;
+            const py = (e.clientY - r.top) / r.height - 0.5;
+            btn.style.setProperty("--rx", (px * TILT).toFixed(2) + "deg");
+            btn.style.setProperty("--ry", (-py * TILT).toFixed(2) + "deg");
+        });
+        wall.addEventListener("pointerout", (e) => {
+            const btn = e.target.closest(".pf-card-btn");
+            if (!btn) return;
+            btn.style.setProperty("--rx", "0deg");
+            btn.style.setProperty("--ry", "0deg");
+        });
+    }
+
+    // Entrada: revelar cada card al entrar en viewport (stagger natural por scroll).
+    if (!reduce.matches) {
+        section.classList.add("pf-anim");
+        const io = new IntersectionObserver((entries) => {
+            entries.forEach((en) => {
+                if (en.isIntersecting) {
+                    en.target.classList.add("is-in");
+                    io.unobserve(en.target);
+                }
+            });
+        }, { threshold: 0.12 });
+        wall.querySelectorAll(".pf-card").forEach((c) => io.observe(c));
+    }
+
     window.Portfolio = { WORKS, renderWall, hueFilter };
 })();
