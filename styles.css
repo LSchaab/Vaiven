@@ -563,13 +563,12 @@ section h2 {
     background: var(--violeta-claro);
     color: var(--blanco);
     --scroll-progress: 0;
-    /* Continuidad con la transición del cerebro: #work sube y se solapa con el
-       tramo final del portal (violeta pleno + "NOSOTROS RESOLVEMOS"). Como el
-       portal y esta sección comparten --violeta-claro, el empalme es invisible;
-       la primera card entra encima del violeta apenas se va la frase, sin
-       pantalla muerta. El overlap es afinable en vivo. */
-    margin-top: calc(-1 * var(--work-overlap, 70vh));
-    z-index: 1;   /* las cards se dibujan sobre el portal durante el solape */
+    /* Handoff EN EL LUGAR (sin solapar secciones): el portal termina en violeta
+       pleno con la frase centrada; la frase se desvanece y acá mismo —mismo
+       --violeta-claro, mismo centro del viewport— aparece la primera card con el
+       fade de .work__scene (--state). NADA de margin negativo: eso hacía deslizar
+       dos secciones a la vez (el bug de "dos pantallas"). */
+    z-index: 1;   /* contexto de apilado para la cápsula de salida (.work__exit) */
 }
 .work__outer {
     position: relative;
@@ -608,13 +607,17 @@ section h2 {
     z-index: 2;
     perspective: 40rem;
     transform-style: preserve-3d;
+    /* Fade-in de entrada: --state va 0→1 en el primer 8% del scroll (lo setea
+       work-carousel.js). Así la primera card CROSSFADEA en el centro apenas se
+       va "NOSOTROS RESOLVEMOS", en vez de aparecer de golpe o deslizarse. */
+    opacity: var(--state, 1);
 }
 
 /* Card: absoluta y centrada; todo el movimiento por --progress/--lane/--size. */
 .card {
     position: absolute; top: 50%; left: 50%;
     width: min(46vw, 560px);
-    --lane-gap: clamp(14vmin, 20vmin, 24vmin);   /* separación entre carriles */
+    --lane-gap: clamp(9vmin, 13vmin, 15vmin);   /* separación entre carriles (más juntas = más al centro) */
     aspect-ratio: 16 / 9;
     margin: 0; padding: 0; border: 0;
     border-radius: 10px;
@@ -661,15 +664,16 @@ section h2 {
 .card__title { font-weight: 700; }
 .card__count { font-size: 0.8rem; opacity: 0.8; letter-spacing: 0.04em; }
 
-/* Parallax sutil: la escena y las partículas se mueven con --scroll-progress. */
-.work__scene { transform: translateY(calc(var(--scroll-progress, 0) * -15%)); }
+/* Parallax sutil: la escena y las partículas se mueven con --scroll-progress.
+   Bajado a -6% (era -15%) para que las cards no se vayan hacia arriba y queden
+   más centradas en la página. */
+.work__scene { transform: translateY(calc(var(--scroll-progress, 0) * -6%)); }
 .work__grid  { transform: translateY(calc(var(--scroll-progress, 0) * -5%)); }
 /* (Las letras dispersas del título se quitaron; el fondo son partículas a la
    deriva — mismo starfield del cerebro — dibujadas en .work__grid por JS.) */
 
 /* ---- Galería vertical (tablet/mobile/reduced-motion) ---- */
 .work--gallery .work__outer { display: none; }   /* apaga el coverflow */
-.zona-work.work--gallery { margin-top: 0; }   /* la galería no usa el overlap de entrada del coverflow */
 .work__gallery {
     padding: clamp(4rem, 10vh, 8rem) 6vw;
     min-height: 100lvh;
