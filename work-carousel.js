@@ -21,7 +21,10 @@
         maxRotateY: 20,        // deg de giro en los extremos
         depthZ: 5,             // rem de alejamiento en Z (progress²·-depthZ)
         sizeRange: [0.82, 1.02],   // escala por card (más grande = más cerca de cámara)
-        exitStart: 0.82,       // S a partir del cual corre la salida (portal se cierra → nosotros)
+        exitStart: 0.78,       // S a partir del cual corre la salida (el iris verde se cierra → nosotros).
+                               // Debe terminar de cerrar ANTES de que #nosotros entre por su
+                               // solape (margin-top:-100vh → entra en cardsP≈0.933 con 25 cards),
+                               // si no, la sección verde sube y "corta" el círculo aún abierto.
         introEnd: 0.16,        // S donde la frase ya se fue y entra la 1ª card
     };
     window.WorkCarousel = { CONFIG, N, coverflow: false, render: null };

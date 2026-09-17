@@ -191,6 +191,9 @@ section h2 {
     display: grid;
     place-items: center;     /* centra la frase (único hijo en flujo) */
     background: var(--negro); /* umbral B&N detrás de todo */
+    isolation: isolate;       /* crea stacking context: contiene z-índices internos
+                                 (work__exit z5, cards z1-z3, etc.) y queda DEBAJO
+                                 de #nosotros (z-index:2) en el contexto global */
     --hero-progress: 0;       /* fallbacks si aún no hay JS */
     --herr-progress: 0;
 }
@@ -751,49 +754,75 @@ body.coverflow .portfolio-stage {
     border-radius: 50%;
     /* el "agujero": círculo con un anillo verde gigante (box-shadow). Su tamaño va
        de tapar el viewport (hueco abierto → cards visibles) a 0 (hueco cerrado =
-       verde pleno). --work-exit 0→0.7 cierra; 0.7→1 se mantiene cerrado. */
-    --iris-hole: clamp(0px, calc(160vmax * (1 - var(--work-exit, 0) / 0.9)), 160vmax);
+       verde pleno). Cierra en --work-exit 0→0.5 y se MANTIENE verde pleno 0.5→1:
+       ese "hold" verde cubre toda la ventana en que #nosotros sube por su solape
+       (margin-top:-100vh), así el círculo nunca queda cortado por el borde de la
+       sección. Con exitStart=0.78 y 25 cards, verde pleno en cardsP≈0.89 —antes de
+       que #nosotros entre (≈0.933). */
+    --iris-hole: clamp(0px, calc(160vmax * (1 - var(--work-exit, 0) / 0.5)), 160vmax);
     width: var(--iris-hole);
     height: var(--iris-hole);
     background: transparent;
     box-shadow: 0 0 0 200vmax var(--verde);
     opacity: clamp(0, calc(var(--work-exit, 0) * 20), 1);
 }
-/* Sin overlap negativo: #nosotros aparece naturalmente cuando el stage se despina
-   (el seam verde-verde lo hace invisible). */
-#nosotros { margin-top: 0; }
+/* #nosotros (también verde) arranca justo debajo sin costura: mismo color de fondo. */
 @media (prefers-reduced-motion: reduce) {
     .work__exit { display: none; }
 }
 /* En galería no hay salida animada: el overlay no se muestra. */
 .work--gallery .work__exit { display: none; }
 
+/* ---- Nos-stage: espejo de Nosotros DENTRO del stage pineado ----
+   nosotros.js inyecta este div cuando coverflow está activo. Se revela
+   cuando el iris ya está verde pleno (--work-exit ≥ 0.5 → opacity 0→1 en 0.5→0.6),
+   de modo que el equipo ya aparece EN EL MISMO LUGAR que el portfolio
+   (sin "subir desde abajo"). Cuando el stage se despina, el #nosotros real
+   debajo toma el relevo: misma posición, mismo verde → transición invisible. */
+.nos-stage { display: none; }
+body.coverflow .nos-stage {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: var(--verde);
+    color: var(--blanco);
+    z-index: 6;           /* sobre work__exit (z5) */
+    pointer-events: none; /* real #nosotros es el interactivo */
+    opacity: clamp(0, calc((var(--work-exit, 0) - 0.5) * 10), 1);
+}
+
 /* ==========================================================================
    NOSOTROS — "los cerebros detrás del vaivén"
    Fila de 5 con línea de base en zig-zag (el "vaivén"). Cada miembro entra
    como un ojo que en hover/focus hace flip 3D y revela el retrato.
-   Ref: docs/superpowers/specs/2026-09-16-nosotros-cerebros-vaiven-design.md
+   nosotros.js añade .nos--visible cuando la sección entra al viewport →
+   título y miembros animan en cascada con @keyframes nos-entrada.
    ========================================================================== */
 .nosotros {
-    min-height: 100vh;           /* sección real, no una franja */
-    /* contenido arriba: aparece apenas la sección empieza a revelarse (sube a la
-       vista mientras el verde de salida se va), no recién al centro del scroll. */
-    display: flex; flex-direction: column; justify-content: flex-start;
-    text-align: left;
-    padding: clamp(3rem, 8vh, 6rem) clamp(1.5rem, 5vw, 4rem) clamp(4rem, 10vh, 7rem);
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    margin-top: -100vh;          /* solape con el fin del recorrido: aparece cuando el iris verde cierra */
     background: var(--verde);
     color: var(--blanco);
-    position: relative;
-    z-index: 0;
+    display: flex;
+    align-items: flex-start;     /* contenido en la parte alta, visible al llegar */
+}
+.nosotros__stage {
+    width: 100%;
+    /* padding-top: just above the fixed header (80px) */
+    padding: clamp(5.5rem, 8vh, 6.5rem) clamp(1.5rem, 5vw, 4rem) clamp(4rem, 8vh, 6rem);
 }
 .nosotros__titulo {
     margin: 0 0 clamp(2.5rem, 7vh, 5rem);
+    font-family: var(--font-alt);
     font-weight: 800;
     font-size: clamp(2rem, 6vw, 4.5rem);
     line-height: 0.95;
     letter-spacing: -0.02em;
-    opacity: 1;                  /* NO es stub: pisa el section h2{opacity:.4} */
-    text-transform: none;
+    opacity: 1;             /* override section h2 { opacity: 0.4 } stub rule */
+    text-transform: lowercase; /* override section h2 { text-transform: lowercase } stub rule —
+                                  explicit so the .nos-stage clone (outside <section>) matches */
 }
 .nosotros__titulo em { font-style: italic; color: var(--amarillo); }
 
@@ -805,15 +834,13 @@ body.coverflow .portfolio-stage {
 .nosotros__miembro {
     flex: 1; min-width: 0;
     display: flex; flex-direction: column; align-items: center; text-align: center;
-    perspective: 800px;          /* profundidad para el flip del hijo */
+    perspective: 800px;
 }
 /* zig-zag = el "vaivén": impares abajo, pares arriba */
 .nosotros__miembro:nth-child(odd)  { transform: translateY(clamp(20px, 5vh, 48px)); }
 .nosotros__miembro:nth-child(even) { transform: translateY(0); }
 
-/* --- flip ojo -> persona: gira el botón entero (perspective va en el padre
-   .nosotros__miembro). Cada cara tiene backface-visibility:hidden; la persona
-   arranca a 180° para quedar de frente cuando el botón gira. --- */
+/* --- flip ojo → persona (perspective en el padre .nosotros__miembro) --- */
 .nosotros__flip {
     all: unset;
     position: relative;
@@ -834,28 +861,44 @@ body.coverflow .portfolio-stage {
 .nosotros__cara--ojo img { width: 78%; height: 78%; object-fit: contain; }
 .nosotros__cara--persona { transform: rotateY(180deg); }
 
-.nosotros__nombre { margin: 0.9rem 0 0; font-weight: 700; font-size: clamp(0.95rem, 1.6vw, 1.25rem); }
+.nosotros__nombre {
+    margin: 0.9rem 0 0;
+    font-family: var(--font-alt);
+    font-weight: 700;
+    font-size: clamp(0.95rem, 1.6vw, 1.25rem);
+}
 .nosotros__rol {
-    margin: 0.2rem 0 0; font-size: clamp(0.62rem, 0.95vw, 0.78rem);
-    letter-spacing: 0.1em; text-transform: uppercase; color: var(--verde-agua-claro);
+    margin: 0.2rem 0 0;
+    font-family: var(--font-base);
+    font-size: clamp(0.62rem, 0.95vw, 0.78rem);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--verde-agua-claro);
 }
 .nosotros__frase {
-    margin: 0.6rem 0 0; font-style: italic; color: var(--amarillo);
-    font-size: clamp(0.72rem, 1.15vw, 0.9rem); max-width: 20ch;
+    margin: 0.6rem 0 0;
+    font-family: var(--font-base);
+    font-style: italic;
+    color: var(--amarillo);
+    font-size: clamp(0.72rem, 1.15vw, 0.9rem);
+    max-width: 20ch;
     opacity: 0; transform: translateY(6px);
     transition: opacity 0.4s 0.12s, transform 0.4s 0.12s;
 }
 .nosotros__miembro:hover .nosotros__frase,
 .nosotros__miembro:focus-within .nosotros__frase { opacity: 1; transform: none; }
 
-/* touch/mobile: la fila se apila; sin zig-zag ni depender de hover */
+/* mobile: fila apilada, sin zig-zag ni hover */
 @media (max-width: 640px) {
     .nosotros__fila { flex-direction: column; align-items: center; gap: 2rem; }
     .nosotros__miembro:nth-child(odd),
     .nosotros__miembro:nth-child(even) { transform: none; }
+    .nosotros__frase { opacity: 1; transform: none; }
 }
-/* reduced-motion: mostrar el retrato directo, sin flip ni frase-escondida */
+/* reduced-motion: mostrar todo de entrada, sin flip ni frase escondida */
 @media (prefers-reduced-motion: reduce) {
+    .nosotros__titulo,
+    .nosotros__miembro { opacity: 1; animation: none; }
     .nosotros__flip { transition: none; }
     .nosotros__cara--ojo { display: none; }
     .nosotros__cara--persona { transform: none; }

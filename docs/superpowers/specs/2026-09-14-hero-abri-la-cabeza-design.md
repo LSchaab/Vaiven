@@ -87,6 +87,7 @@ Todos ya en el repo (algunos untracked, hay que commitearlos): `cerebro.webp`, `
 - **Collage sin Motion/Campañas**: el teaser cubre gráfico + 3D; las 2 categorías de video no tienen assets (ya documentado). No bloquea.
 - **`erratic.js`**: el hero deja de usar `erratic` (la frase va plana). El sistema `erratic` sigue disponible para otras salas; no se toca.
 - **Suavidad del scroll**: si la nativa no convence, evaluar Lenis (decisión diferida a "verlo vivo", per acuerdo con Luly).
+- **Interacción en "nuestra" (futuro, pedido 2026-09-14)**: al hacer hover sobre la palabra "nuestra" (ya envuelta en `<strong class="frase-nuestra">`), el cursor toma un **efecto geométrico** (a definir el efecto exacto) y, al **click, abre el demoreel**. No implementado en esta pasada; el marcado ya está preparado para engancharlo.
 
 ## 8. Decisiones tomadas en el brainstorming (2026-09-14)
 

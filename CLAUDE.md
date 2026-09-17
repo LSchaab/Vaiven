@@ -91,7 +91,7 @@ coexisting with distortion, noise, and raw energy.
 |---|---|---|---|---|
 | Naranja | `--naranja` | `#FF5B23` | 255, 91, 35 | Primary |
 | Verde agua claro | `--verde-agua-claro` | `#ADE6ED` | 173, 230, 237 | Primary |
-| Azul | `--azul` | `#3A39FF` | 58, 57, 255 | Primary |
+| Azul | `--azul` | `#2222A0` | 34, 34, 160 | Primary |
 | Lila | `--lila` | `#B4B4ED` | 180, 180, 237 | Primary |
 | Amarillo | `--amarillo` | `#FFCC00` | 255, 204, 0 | Primary |
 | Verde | `--verde` | `#167A72` | 22, 122, 114 | Secondary |
@@ -127,7 +127,7 @@ above — defined in `styles.css :root`.
 > `[data-theme="light"]` block still exists in `styles.css` (mapped to tokens) for a possible
 > future second mode, but don't invest in it unless asked.
 >
-> **Note on blues:** there are two — **Azul `#3A39FF`** (electric blue, Primary) is the
+> **Note on blues:** there are two — **Azul `#2222A0`** (deep brand blue, Primary) is the
 > background of Hero, Portfolio & Nosotros, and the Contacto subtitle. **Azul oscuro
 > `#1A237E`** (Secondary) is the default `--bg-primary`.
 
@@ -172,7 +172,7 @@ above — defined in `styles.css :root`.
 - **Logo**: Top center, bold condensed wordmark "VAI VEN"
 - **Hero**: Full-bleed gradient background with large typographic headline + collage elements
 - **Sections**: Full-width, each with its own palette background — Hero / Portfolio /
-  Nosotros = Azul `#3A39FF`, Contacto = Lila `#B4B4ED`, Destacados = Violeta claro `#511F99`
+  Nosotros = Azul `#2222A0`, Contacto = Lila `#B4B4ED`, Destacados = Violeta claro `#511F99`
 - **Portfolio cards**: Overlapping / masonry-style with hover effects
 - **CTA buttons**: 8px border-radius (soft corners), high contrast
 - **Eye motif**: Recurring graphic element top-right — visual brand mark
@@ -283,6 +283,7 @@ Destacados don't have an assigned emotion yet.
 | 2026-04-27 | Visual direction: Cinético · Extremos · Intensidad · Movimiento · Tensión | Defined in moodboard |
 | 2026-04-27 | Full color palette locked (9 colors) | Defined in brand guidelines |
 | 2026-05-30 | Palette locked to `Mode 1.tokens.json` (Figma) — 11 tokens, single source of truth | Strict brand fidelity |
-| 2026-05-30 | Azul eléctrico `#3A39FF` = fondo de Hero / Portfolio / Nosotros; Azul oscuro `#1A237E` = subtítulo de Contacto + `--bg-primary` | Decisión de diseño de Luly |
+| 2026-05-30 | Azul `#2222A0` = fondo de Hero / Portfolio / Nosotros; Azul oscuro `#1A237E` = subtítulo de Contacto + `--bg-primary` | Decisión de diseño de Luly |
+| 2026-09-14 | Corregido el token `--azul` de `#3A39FF` a `#2222A0` (azul de marca real, más profundo). Afecta hero + toda referencia a `var(--azul)`. | Valor correcto confirmado por Luly |
 | 2026-04-27 | Font: Montserrat Alternates only | Single typeface — hierarchy via weight, size, case |
 | 2026-04-27 | Hosting: GitHub Pages | Simple, free, fits the stack |
