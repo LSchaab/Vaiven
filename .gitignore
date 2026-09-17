@@ -2,3 +2,6 @@
 # del sitio, así que git los ignora para no ensuciar el repo del equipo.
 .DS_Store
 **/.DS_Store
+
+# Visual brainstorming companion scratch files
+.superpowers/
