@@ -1,46 +1,51 @@
-// nosotros.js — patrón "mismo lugar" (igual que portfolio vs herramientas):
-// inyecta .nos-stage dentro de .mente-stage; la sección real #nosotros se oculta
-// hasta que el stage se despina (top < 0), cuando toma el relevo sin salto.
-// Solo en modo coverflow (desktop, sin reduced-motion).
+// nosotros.js — Nosotros es el FINAL del recorrido. En desktop (coverflow) su
+// contenido REAL se mueve DENTRO del stage pineado como capa de salida
+// (.nos-reveal): cuando el iris verde se cierra, el equipo aparece YA CENTRADO y
+// quieto (el stage sigue pineado), sin "subir desde abajo" ni scroll extra. Al
+// seguir scrolleando el stage se despina y el equipo se va hacia arriba dando paso
+// a #contacto. UNA sola copia — se MUEVE, no se clona. En galería/mobile queda
+// como sección normal (no se toca).
 (() => {
     "use strict";
     if (!window.WorkCarousel) return;
-    const menteStage  = document.querySelector(".mente-stage");
-    const nosSection  = document.querySelector("#nosotros");
-    const nosInner    = nosSection && nosSection.querySelector(".nosotros__stage");
-    if (!menteStage || !nosInner) return;
-
-    // 1. Inyectar clon de Nosotros dentro del stage pineado
-    const nosStage = document.createElement("div");
-    nosStage.className = "nos-stage";
-    nosStage.setAttribute("aria-hidden", "true");   // real #nosotros es la fuente accesible
-    nosStage.appendChild(nosInner.cloneNode(true));
-    menteStage.appendChild(nosStage);
-
-    // 2. Ocultar la sección real cuando el stage está pineado (evita doble visibilidad).
-    //    Comparamos scrollY con maxScroll directamente — sin rAF ni reflow — para que
-    //    la visibilidad se actualice en el mismo frame que el scroll, nunca un frame tarde.
     const journey = document.querySelector(".mente-journey");
-    let maxScroll = journey.offsetHeight - innerHeight;
-    const syncVisibility = () => {
-        nosSection.style.visibility = window.scrollY > maxScroll + 1 ? "" : "hidden";
-    };
-    nosSection.style.visibility = "hidden";
-    syncVisibility();   // estado inicial (maneja recarga con scroll ya pasado maxScroll)
-    window.addEventListener("scroll", syncVisibility, { passive: true });
-    window.addEventListener("resize", () => {
-        maxScroll = journey.offsetHeight - innerHeight;
-        syncVisibility();
-    }, { passive: true });
+    const stage   = journey && journey.querySelector(".mente-stage");
+    const section = document.querySelector("#nosotros");
+    const content = section && section.querySelector(".nosotros__stage");
+    if (!journey || !stage || !content) return;
 
-    // 3. Nav link "nosotros": en coverflow el ancla nativa llega a maxScroll (stage aún
-    //    pineado → syncVisibility lo mantiene hidden). Interceptamos y añadimos +4px para
-    //    que el stage se despine y syncVisibility lo revele.
-    const nosLink = document.querySelector('nav a[href="#nosotros"]');
-    if (nosLink) {
-        nosLink.addEventListener("click", (e) => {
-            e.preventDefault();
-            scrollTo({ top: maxScroll + 4, behavior: "smooth" });
-        });
+    if (window.WorkCarousel.coverflow) {
+        // Mover (no clonar) el contenido real al stage como capa de salida.
+        const layer = document.createElement("div");
+        layer.className = "nos-reveal";
+        layer.appendChild(content);          // MOVE — la sección real queda vacía
+        stage.appendChild(layer);            // (CSS la colapsa: body.coverflow #nosotros)
+
+        // pointer-events: sólo con la capa revelada (iris ya verde), si no taparía
+        // los clicks de las cards. La opacidad la maneja CSS con --work-exit; acá
+        // sólo leemos ese valor (inline style que setea work-carousel.js, sin forzar
+        // reflow) para abrir/cerrar los eventos en el mismo umbral (0.5).
+        let ticking = false;
+        const sync = () => {
+            const exit = parseFloat(document.documentElement.style.getPropertyValue("--work-exit")) || 0;
+            layer.classList.toggle("is-open", exit >= 0.5);
+            ticking = false;
+        };
+        addEventListener("scroll", () => {
+            if (!ticking) { ticking = true; requestAnimationFrame(sync); }
+        }, { passive: true });
+        sync();
+
+        // Nav "#nosotros": el equipo vive dentro del recorrido pineado (la sección
+        // real está colapsada) → llevamos el scroll al tramo donde el equipo está
+        // centrado y quieto (iris verde), con margen para seguir a #contacto.
+        const nosLink = document.querySelector('nav a[href="#nosotros"]');
+        if (nosLink) {
+            nosLink.addEventListener("click", (e) => {
+                e.preventDefault();
+                const maxScroll = journey.offsetHeight - innerHeight;
+                scrollTo({ top: maxScroll - innerHeight * 0.4, behavior: "smooth" });
+            });
+        }
     }
 })();

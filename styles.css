@@ -773,45 +773,54 @@ body.coverflow .portfolio-stage {
 /* En galería no hay salida animada: el overlay no se muestra. */
 .work--gallery .work__exit { display: none; }
 
-/* ---- Nos-stage: espejo de Nosotros DENTRO del stage pineado ----
-   nosotros.js inyecta este div cuando coverflow está activo. Se revela
-   cuando el iris ya está verde pleno (--work-exit ≥ 0.5 → opacity 0→1 en 0.5→0.6),
-   de modo que el equipo ya aparece EN EL MISMO LUGAR que el portfolio
-   (sin "subir desde abajo"). Cuando el stage se despina, el #nosotros real
-   debajo toma el relevo: misma posición, mismo verde → transición invisible. */
-.nos-stage { display: none; }
-body.coverflow .nos-stage {
-    display: block;
-    position: absolute;
-    inset: 0;
-    background: var(--verde);
-    color: var(--blanco);
-    z-index: 6;           /* sobre work__exit (z5) */
-    pointer-events: none; /* real #nosotros es el interactivo */
-    opacity: clamp(0, calc((var(--work-exit, 0) - 0.5) * 10), 1);
-}
-
 /* ==========================================================================
    NOSOTROS — "los cerebros detrás del vaivén"
    Fila de 5 con línea de base en zig-zag (el "vaivén"). Cada miembro entra
    como un ojo que en hover/focus hace flip 3D y revela el retrato.
-   nosotros.js añade .nos--visible cuando la sección entra al viewport →
-   título y miembros animan en cascada con @keyframes nos-entrada.
+
+   UNA sola copia del contenido. En DESKTOP (coverflow) nosotros.js lo MUEVE
+   dentro del stage pineado (capa .nos-reveal, ver más abajo), así aparece ya
+   centrado al cerrarse el iris. Estas reglas .nosotros/.nosotros__stage aplican
+   igual en ambos lados (la capa reutiliza .nosotros__stage). En GALERÍA/mobile
+   #nosotros es una sección normal que sigue a #work.
    ========================================================================== */
 .nosotros {
     position: relative;
-    z-index: 2;
     min-height: 100vh;
-    margin-top: -100vh;          /* solape con el fin del recorrido: aparece cuando el iris verde cierra */
     background: var(--verde);
     color: var(--blanco);
     display: flex;
-    align-items: flex-start;     /* contenido en la parte alta, visible al llegar */
+    align-items: center;         /* contenido centrado vertical (arregla el hueco de abajo) */
+    padding: 0;                  /* anula el padding base de `section` (6rem/3rem) */
 }
+/* Desktop (coverflow): nosotros.js MUEVE el contenido real (.nosotros__stage)
+   dentro del stage pineado como capa de salida (.nos-reveal), así que la sección
+   real queda vacía → la colapsamos. En galería/mobile queda como sección normal. */
+body.coverflow #nosotros { display: none; }
+
+/* Capa de salida: el equipo dentro del stage pineado. Como el stage está pineado,
+   aparece YA CENTRADO y quieto cuando el iris verde cierra (sin "subir desde
+   abajo"). Opacity atada a --work-exit (misma curva 0.5→0.6 que el iris verde
+   pleno). pointer-events sólo cuando está revelada (.is-open, lo pone nosotros.js)
+   para no robar clicks a las cards mientras está invisible. Al despinar el stage,
+   la capa se va hacia arriba dando paso a #contacto. */
+.nos-reveal {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--verde);
+    color: var(--blanco);
+    z-index: 6;                 /* sobre el iris de salida (.work__exit z5) */
+    pointer-events: none;
+    opacity: clamp(0, calc((var(--work-exit, 0) - 0.5) * 10), 1);
+}
+.nos-reveal.is-open { pointer-events: auto; }
 .nosotros__stage {
     width: 100%;
-    /* padding-top: just above the fixed header (80px) */
-    padding: clamp(5.5rem, 8vh, 6.5rem) clamp(1.5rem, 5vw, 4rem) clamp(4rem, 8vh, 6rem);
+    text-align: center;          /* el clon vive fuera de <section> y no hereda el center → fijarlo aquí para que coincidan */
+    padding: clamp(2rem, 6vh, 5rem) clamp(1.5rem, 5vw, 4rem);   /* vertical simétrico: el contenido va centrado, ya no hace falta despejar el header con padding-top grande */
 }
 .nosotros__titulo {
     margin: 0 0 clamp(2.5rem, 7vh, 5rem);
@@ -821,8 +830,7 @@ body.coverflow .nos-stage {
     line-height: 0.95;
     letter-spacing: -0.02em;
     opacity: 1;             /* override section h2 { opacity: 0.4 } stub rule */
-    text-transform: lowercase; /* override section h2 { text-transform: lowercase } stub rule —
-                                  explicit so the .nos-stage clone (outside <section>) matches */
+    text-transform: lowercase; /* override section h2 { text-transform: lowercase } stub rule */
 }
 .nosotros__titulo em { font-style: italic; color: var(--amarillo); }
 
