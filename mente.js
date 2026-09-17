@@ -294,4 +294,19 @@
     window.addEventListener("resize", () => {
         onResize(); layout(); sizeDust(); seedDust(); onScroll();
     });
+
+    // Nav "portfolio" (#work): en desktop el portfolio vive DENTRO del recorrido
+    // pineado y no tiene ancla propia — #work (la galería, alto 0) queda pegado a
+    // #nosotros, así que el ancla nativa te manda a Nosotros. Interceptamos el
+    // click y scrolleamos a la fase de cards. En mobile (galería) dejamos el ancla.
+    const workLink = document.querySelector('nav a[href="#work"]');
+    if (workLink) {
+        workLink.addEventListener("click", (e) => {
+            if (!coverflowOn()) return;   // mobile/galería: ancla normal a #work
+            e.preventDefault();
+            const introEnd = (window.WorkCarousel && window.WorkCarousel.CONFIG.introEnd) || 0.16;
+            const y = DOOR_PX + TOOLS_PX + PORTAL_PX + introEnd * CARDS_PX;
+            scrollTo({ top: y, behavior: "smooth" });
+        });
+    }
 })();

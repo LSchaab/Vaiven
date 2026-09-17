@@ -142,8 +142,61 @@
                 <button class="work__more" type="button" hidden>Ver más</button>
             </div>
         </section>
-        <section id="nosotros" class="zona-color">
-            <h2>nosotros</h2>
+        <!-- Nosotros — "los cerebros detrás del vaivén": fila de 5 integrantes.
+             Cada uno entra como un OJO que en hover/focus se da vuelta (flip 3D)
+             y revela el retrato; nombre/rol siempre visibles, frase en hover.
+             OJOS: hoy placeholder de marca (ojo_1/ojo_2). Cuando Luly suba las
+             fotos reales, cambiar cada src a resources/nosotros/ojo_<Nombre>.png.
+             Fondo verde (lo usa también el iris de cierre, ver .work__exit). -->
+        <section id="nosotros" class="nosotros" aria-label="Nosotros — el equipo">
+            <h2 class="nosotros__titulo">Los <em>cerebros</em><br>detrás del vaivén.</h2>
+            <ul class="nosotros__fila">
+                <li class="nosotros__miembro">
+                    <button class="nosotros__flip" type="button" aria-label="Ver a Matías">
+                        <span class="nosotros__cara nosotros__cara--ojo"><img src="resources/ojo_1.webp" alt="" decoding="async"></span>
+                        <span class="nosotros__cara nosotros__cara--persona"><img src="resources/nosotros/Matias.png" alt="Matías" decoding="async"></span>
+                    </button>
+                    <p class="nosotros__nombre">Matías</p>
+                    <p class="nosotros__rol">Texturizador 3D</p>
+                    <p class="nosotros__frase">"Te amo Messi"</p>
+                </li>
+                <li class="nosotros__miembro">
+                    <button class="nosotros__flip" type="button" aria-label="Ver a Lourdes">
+                        <span class="nosotros__cara nosotros__cara--ojo"><img src="resources/ojo_2.webp" alt="" decoding="async"></span>
+                        <span class="nosotros__cara nosotros__cara--persona"><img src="resources/nosotros/Luly.png" alt="Lourdes" decoding="async"></span>
+                    </button>
+                    <p class="nosotros__nombre">Lourdes</p>
+                    <p class="nosotros__rol">Programadora</p>
+                    <p class="nosotros__frase">"Me quiero jubilar"</p>
+                </li>
+                <li class="nosotros__miembro">
+                    <button class="nosotros__flip" type="button" aria-label="Ver a Victoria">
+                        <span class="nosotros__cara nosotros__cara--ojo"><img src="resources/ojo_1.webp" alt="" decoding="async"></span>
+                        <span class="nosotros__cara nosotros__cara--persona"><img src="resources/nosotros/Vicky.png" alt="Victoria" decoding="async"></span>
+                    </button>
+                    <p class="nosotros__nombre">Victoria</p>
+                    <p class="nosotros__rol">Diseñadora Gráfica</p>
+                    <p class="nosotros__frase">"Ya estoy grande pa' estos trotes"</p>
+                </li>
+                <li class="nosotros__miembro">
+                    <button class="nosotros__flip" type="button" aria-label="Ver a Agustina">
+                        <span class="nosotros__cara nosotros__cara--ojo"><img src="resources/ojo_2.webp" alt="" decoding="async"></span>
+                        <span class="nosotros__cara nosotros__cara--persona"><img src="resources/nosotros/Agus.png" alt="Agustina" decoding="async"></span>
+                    </button>
+                    <p class="nosotros__nombre">Agustina</p>
+                    <p class="nosotros__rol">Directora Creativa</p>
+                    <p class="nosotros__frase">"Una gota y a seguir"</p>
+                </li>
+                <li class="nosotros__miembro">
+                    <button class="nosotros__flip" type="button" aria-label="Ver a Bautista">
+                        <span class="nosotros__cara nosotros__cara--ojo"><img src="resources/ojo_1.webp" alt="" decoding="async"></span>
+                        <span class="nosotros__cara nosotros__cara--persona"><img src="resources/nosotros/Bautista.png" alt="Bautista" decoding="async"></span>
+                    </button>
+                    <p class="nosotros__nombre">Bautista</p>
+                    <p class="nosotros__rol">Modelador 3D</p>
+                    <p class="nosotros__frase">"Ke decirte"</p>
+                </li>
+            </ul>
         </section>
         <section id="contacto" class="zona-bn">
             <h2>contacto</h2>

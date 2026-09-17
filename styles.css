@@ -374,6 +374,9 @@ section h2 {
 .ojo,
 .mano-lupa {
     opacity: clamp(0, calc(1 - var(--hero-progress) * 3), 1);
+    /* decorativas: nunca capturan clicks. Sin esto, quedan invisibles (opacity 0)
+       pero por encima del portfolio (z3) y se comen los clicks de las cards. */
+    pointer-events: none;
 }
 
 /* collage: se insinúa tenue y se aleja + desvanece (protagonismo al cerebro) */
@@ -417,6 +420,7 @@ body.coverflow .portfolio-stage {
 .hero-frase {
     position: relative;
     z-index: 5;
+    pointer-events: none;   /* decorativa: no bloquea los clicks de las cards */
     margin: 0;
     text-align: center;
     color: var(--blanco);
@@ -520,6 +524,11 @@ body.coverflow .portfolio-stage {
        (todos los hijos de la escena son absolutos) y las cards quedan invisibles. */
     display: block;
     padding: 0;
+    /* En coverflow (desktop) el portfolio vive en el stage pineado y la galería
+       está oculta → #work NO debe ocupar 100vh (heredaba min-height del section
+       base y dejaba un bloque violeta muerto entre el recorrido y #nosotros).
+       En modo galería, .work__gallery aporta su propio min-height. */
+    min-height: 0;
     text-align: left;
     position: relative;
     background: var(--violeta-claro);
@@ -558,19 +567,20 @@ body.coverflow .portfolio-stage {
 .work__scene {
     position: absolute; inset: 0;
     z-index: 2;
-    perspective: 40rem;
-    transform-style: preserve-3d;
+    /* sin perspective/preserve-3d: el carrusel es 2D plano (click confiable) */
     /* Las cards CROSSFADEAN después de la frase intro: invisibles hasta S≈0.08,
        full a S≈0.18. Así primero está "NOSOTROS RESOLVEMOS" (.work__intro) y en el
        mismo lugar aparecen las cards. --scroll-progress lo setea work-carousel.js. */
     opacity: clamp(0, calc((var(--scroll-progress, 0) - 0.08) / 0.10), 1);
 }
 
-/* Card: absoluta y centrada; todo el movimiento por --progress/--lane/--size. */
+/* Card: carrusel 2D PLANO (sin transform 3D → el hit-testing es confiable y el
+   click funciona en toda la card). Se desliza al costado según --progress; la del
+   frente (progress≈0, --ap≈0) queda centrada, a tamaño y opacidad plenos. --ap es
+   |progress| (lo setea work-carousel.js). */
 .card {
     position: absolute; top: 50%; left: 50%;
-    width: min(56vw, 720px);
-    --lane-gap: clamp(9vmin, 13vmin, 15vmin);   /* separación entre carriles (más juntas = más al centro) */
+    width: min(70vw, 960px);
     aspect-ratio: 16 / 9;
     margin: 0; padding: 0; border: 0;
     border-radius: 10px;
@@ -578,20 +588,17 @@ body.coverflow .portfolio-stage {
     background: var(--negro);
     color: var(--blanco);
     cursor: pointer;
-    transform-style: preserve-3d;
-    will-change: transform;
-    content-visibility: hidden;      /* fuera de rango no se renderiza */
+    will-change: transform, opacity;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     transform:
-        rotateY(calc(var(--progress, 1) * (var(--max-rot, 20) * -1deg)))
-        translate3d(
-            calc(var(--progress, 1) * (50vw + 100%) - 50%),
-            calc(-50% + var(--lane, 0) * var(--lane-gap, 20vmin)),
-            calc(var(--progress, 1) * var(--progress, 1) * (var(--depth, 5) * -1rem))
-        )
-        scale(var(--size, 0.8));
+        translate(-50%, -50%)
+        translateX(calc(var(--progress, 1) * 52vw))   /* desliza al costado (menor = más juntas) */
+        scale(calc(1 - var(--ap, 1) * 0.14));          /* frente más grande */
+    opacity: calc(1 - var(--ap, 1) * 0.3);             /* costados más tenues */
 }
-.card.is-inview { content-visibility: visible; }
+/* fuera de rango (cards apiladas en los extremos): ocultas, para que no se vea
+   un pedazo del último/primer proyecto siempre asomando al costado. */
+.card:not(.is-inview) { opacity: 0; }
 .card__media { position: absolute; inset: 0; }
 .card__img, .card__video {
     width: 100%; height: 100%;
@@ -609,13 +616,21 @@ body.coverflow .portfolio-stage {
     z-index: 1;
     display: flex; justify-content: space-between; align-items: baseline;
     gap: 0.5rem;
-    padding: 0.7rem 0.9rem;
+    padding: 0.9rem 1.1rem;
     font-family: var(--font-alt);
     text-align: left;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.72), transparent);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    /* título + categoría: sólo al pasar el mouse por la card */
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
+.card:hover .card__caption { opacity: 1; transform: none; }
 .card__title { font-weight: 700; }
-.card__count { font-size: 0.8rem; opacity: 0.8; letter-spacing: 0.04em; }
+.card__tag {
+    font-size: 0.72rem; opacity: 0.85; letter-spacing: 0.1em;
+    text-transform: uppercase; white-space: nowrap;
+}
 
 /* Frase intro "NOSOTROS RESOLVEMOS" dentro del stage pineado de #work. Se
    desvanece al scrollear (inverso de .work__scene) → crossfade frase→cards en el
@@ -720,42 +735,132 @@ body.coverflow .portfolio-stage {
 }
 .work__more:hover { opacity: 0.9; }
 
-/* ---- Salida espejo (coverflow): la cápsula violeta llena el cuadro cuando las
-   cards ya pasaron (--work-exit 0→~0.4) y se contrae a un punto (0.4→1),
-   revelando #nosotros que sube detrás. Inverso del portal de entrada. ---- */
+/* ---- Salida "el iris se cierra" (coverflow): un agujero circular se contrae
+   sobre la última card y el verde entra desde los bordes hasta cerrar (verde
+   pleno). El overlay es ABSOLUTO dentro del stage pineado (que tiene
+   overflow:hidden) → cuando el stage se despina al final del recorrido, el verde
+   se va con él y queda #nosotros —también verde— sin costura ni violeta muerto.
+   Todo manejado por --work-exit (work-carousel.js). Eco EN REVERSA del iris de
+   entrada del portfolio. ---- */
 .work__exit {
-    position: fixed;
+    position: absolute;
     left: 50%; top: 50%;
     translate: -50% -50%;
-    z-index: 4;
+    z-index: 5;                 /* sobre cards (z2) e intro (z4) dentro del stage */
     pointer-events: none;
-    border-radius: 9999px;
-    background:
-        radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1.6px) 0 0 / 14px 14px,
-        var(--violeta-claro);
-    /* Fase A (0→0.4): crece de nada a tapar todo (las cards desaparecen tras el
-       violeta). Fase B (0.4→1): se contrae de vuelta a un punto. */
-    --exit-grow: clamp(0, calc(var(--work-exit, 0) / 0.4), 1);
-    --exit-shrink: clamp(0, calc((var(--work-exit, 0) - 0.4) / 0.6), 1);
-    --exit-size: calc(300vmax * var(--exit-grow) * (1 - var(--exit-shrink)));
-    width: var(--exit-size);
-    height: var(--exit-size);
-    opacity: clamp(0, calc(var(--work-exit, 0) * 8), 1);
+    border-radius: 50%;
+    /* el "agujero": círculo con un anillo verde gigante (box-shadow). Su tamaño va
+       de tapar el viewport (hueco abierto → cards visibles) a 0 (hueco cerrado =
+       verde pleno). --work-exit 0→0.7 cierra; 0.7→1 se mantiene cerrado. */
+    --iris-hole: clamp(0px, calc(160vmax * (1 - var(--work-exit, 0) / 0.9)), 160vmax);
+    width: var(--iris-hole);
+    height: var(--iris-hole);
+    background: transparent;
+    box-shadow: 0 0 0 200vmax var(--verde);
+    opacity: clamp(0, calc(var(--work-exit, 0) * 20), 1);
 }
-/* #nosotros sube para quedar detrás del overlay y revelarse cuando éste se
-   contrae (mismo truco de overlap que la entrada). */
-#nosotros {
-    position: relative;
-    z-index: 0;
-    margin-top: calc(-1 * var(--work-exit-overlap, 80vh));
-}
+/* Sin overlap negativo: #nosotros aparece naturalmente cuando el stage se despina
+   (el seam verde-verde lo hace invisible). */
+#nosotros { margin-top: 0; }
 @media (prefers-reduced-motion: reduce) {
     .work__exit { display: none; }
-    #nosotros { margin-top: 0; }
 }
 /* En galería no hay salida animada: el overlay no se muestra. */
 .work--gallery .work__exit { display: none; }
-.work--gallery ~ #nosotros, #work.work--gallery + #nosotros { margin-top: 0; }
+
+/* ==========================================================================
+   NOSOTROS — "los cerebros detrás del vaivén"
+   Fila de 5 con línea de base en zig-zag (el "vaivén"). Cada miembro entra
+   como un ojo que en hover/focus hace flip 3D y revela el retrato.
+   Ref: docs/superpowers/specs/2026-09-16-nosotros-cerebros-vaiven-design.md
+   ========================================================================== */
+.nosotros {
+    min-height: 100vh;           /* sección real, no una franja */
+    /* contenido arriba: aparece apenas la sección empieza a revelarse (sube a la
+       vista mientras el verde de salida se va), no recién al centro del scroll. */
+    display: flex; flex-direction: column; justify-content: flex-start;
+    text-align: left;
+    padding: clamp(3rem, 8vh, 6rem) clamp(1.5rem, 5vw, 4rem) clamp(4rem, 10vh, 7rem);
+    background: var(--verde);
+    color: var(--blanco);
+    position: relative;
+    z-index: 0;
+}
+.nosotros__titulo {
+    margin: 0 0 clamp(2.5rem, 7vh, 5rem);
+    font-weight: 800;
+    font-size: clamp(2rem, 6vw, 4.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    opacity: 1;                  /* NO es stub: pisa el section h2{opacity:.4} */
+    text-transform: none;
+}
+.nosotros__titulo em { font-style: italic; color: var(--amarillo); }
+
+.nosotros__fila {
+    list-style: none; margin: 0; padding: 0;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    gap: clamp(0.5rem, 2vw, 1.5rem);
+}
+.nosotros__miembro {
+    flex: 1; min-width: 0;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+    perspective: 800px;          /* profundidad para el flip del hijo */
+}
+/* zig-zag = el "vaivén": impares abajo, pares arriba */
+.nosotros__miembro:nth-child(odd)  { transform: translateY(clamp(20px, 5vh, 48px)); }
+.nosotros__miembro:nth-child(even) { transform: translateY(0); }
+
+/* --- flip ojo -> persona: gira el botón entero (perspective va en el padre
+   .nosotros__miembro). Cada cara tiene backface-visibility:hidden; la persona
+   arranca a 180° para quedar de frente cuando el botón gira. --- */
+.nosotros__flip {
+    all: unset;
+    position: relative;
+    width: clamp(78px, 11vw, 130px); aspect-ratio: 1;
+    cursor: pointer; display: block;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.6, 0.05, 0.2, 1);
+}
+.nosotros__flip:hover,
+.nosotros__flip:focus-visible { transform: rotateY(180deg); }
+.nosotros__cara {
+    position: absolute; inset: 0; border-radius: 50%; overflow: hidden;
+    backface-visibility: hidden;
+    box-shadow: 0 8px 26px rgba(0,0,0,0.4);
+}
+.nosotros__cara img { width: 100%; height: 100%; object-fit: cover; }
+.nosotros__cara--ojo { background: #0b0b3a; display: flex; align-items: center; justify-content: center; }
+.nosotros__cara--ojo img { width: 78%; height: 78%; object-fit: contain; }
+.nosotros__cara--persona { transform: rotateY(180deg); }
+
+.nosotros__nombre { margin: 0.9rem 0 0; font-weight: 700; font-size: clamp(0.95rem, 1.6vw, 1.25rem); }
+.nosotros__rol {
+    margin: 0.2rem 0 0; font-size: clamp(0.62rem, 0.95vw, 0.78rem);
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--verde-agua-claro);
+}
+.nosotros__frase {
+    margin: 0.6rem 0 0; font-style: italic; color: var(--amarillo);
+    font-size: clamp(0.72rem, 1.15vw, 0.9rem); max-width: 20ch;
+    opacity: 0; transform: translateY(6px);
+    transition: opacity 0.4s 0.12s, transform 0.4s 0.12s;
+}
+.nosotros__miembro:hover .nosotros__frase,
+.nosotros__miembro:focus-within .nosotros__frase { opacity: 1; transform: none; }
+
+/* touch/mobile: la fila se apila; sin zig-zag ni depender de hover */
+@media (max-width: 640px) {
+    .nosotros__fila { flex-direction: column; align-items: center; gap: 2rem; }
+    .nosotros__miembro:nth-child(odd),
+    .nosotros__miembro:nth-child(even) { transform: none; }
+}
+/* reduced-motion: mostrar el retrato directo, sin flip ni frase-escondida */
+@media (prefers-reduced-motion: reduce) {
+    .nosotros__flip { transition: none; }
+    .nosotros__cara--ojo { display: none; }
+    .nosotros__cara--persona { transform: none; }
+    .nosotros__frase { opacity: 1; transform: none; }
+}
 
 /* ---- Modal de proyecto ---- */
 body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */

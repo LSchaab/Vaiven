@@ -88,7 +88,7 @@
             cap.className = "card__caption";
             cap.innerHTML =
                 `<span class="card__title">${work.title}</span>` +
-                `<span class="card__count">#${String(i + 1).padStart(2, "0")}/${N}</span>`;
+                `<span class="card__tag">${work.catLabel}</span>`;
             el.appendChild(cap);
 
             el.addEventListener("click", () => {
@@ -174,6 +174,7 @@
                 const p = clamp((centerOf(i) - S) / (W / 2), -1, 1);
                 if (p !== c.lastP) {
                     c.el.style.setProperty("--progress", p.toFixed(4));
+                    c.el.style.setProperty("--ap", Math.abs(p).toFixed(4));  // |progress| para centrar el frente
                     // La más centrada va adelante (mayor z): con cards grandes que se
                     // solapan, así la de adelante es también la clickeable.
                     c.el.style.zIndex = String(Math.round((1 - Math.abs(p)) * 1000));
@@ -195,11 +196,12 @@
                     }
                 }
             });
-            // Sólo la card más centrada captura clicks: las cards grandes se solapan
-            // y, si todas fueran clickeables, la de adelante taparía los clicks de la
-            // de atrás (y parte de una card "no sería clickeable").
-            cardData.forEach((c, i) => {
-                const want = (i === bestI && bestAbs < 1) ? "auto" : "none";
+            // Todas las cards VISIBLES capturan clicks (no solo la del centro). La
+            // del frente tiene mayor z-index → en la zona de solape se abre la del
+            // frente; en la parte despejada de una card del costado, se abre esa.
+            // Las apiladas fuera de rango (no is-inview, opacity 0) no capturan.
+            cardData.forEach((c) => {
+                const want = c.inview ? "auto" : "none";
                 if (c.pe !== want) { c.el.style.pointerEvents = want; c.pe = want; }
             });
         };
