@@ -2010,4 +2010,9 @@ body.contacto-in-stage #contacto { display: none; }
 
     /* Contacto: email un poco más chico (a 1024px de ancho tocaba los bordes) */
     .contacto__mail { font-size: clamp(2rem, 7.5vw, 5rem); }
+
+    /* Modales demoreel / manifiesto: más chicos para que entre la cruz de cerrar
+       (va 2.8rem por encima del video). El ancho también lo limita el alto
+       disponible (16:9), dejando 4rem arriba y abajo. */
+    .demoreel-dialog { width: min(92vw, 1080px, calc((100vh - 8rem) * 16 / 9)); }
 }
