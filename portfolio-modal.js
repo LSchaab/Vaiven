@@ -1,9 +1,10 @@
 // portfolio-modal.js
-// Modal de detalle de un trabajo: título + tag + herramientas (logos) +
-// descripción + media (masonry de imágenes / video) + lightbox. Accesible:
-// focus trap, Esc, restauración de foco, scroll de fondo bloqueado.
+// Modal de detalle de un trabajo: header (kicker categoría + título en el color de
+// la categoría + herramientas/logos) + media (grilla de imágenes/video o player
+// inline) + lightbox con soporte de video. La portada/mockup entra como primer tile.
+// Accesible: focus trap, Esc, restauración de foco, scroll de fondo bloqueado.
 // Lo abre la escena (#work) con window.PortfolioModal.open(index).
-// Ref: docs/superpowers/specs/2026-09-16-portfolio-galeria-plana-modal-design.md
+// Ref: docs/superpowers/specs/2026-09-18-modal-proyecto-galeria-adaptable-design.md
 (() => {
     "use strict";
     const modal = document.querySelector("#pf-modal");
@@ -11,7 +12,8 @@
     const WORKS = window.WORKS;
 
     const mTitle = modal.querySelector(".pf-modal-title");
-    const mTag = modal.querySelector(".pf-modal-tag");
+    const mHead = modal.querySelector(".pf-modal-head");
+    const mKicker = modal.querySelector(".pf-modal-kicker");
     const mTools = modal.querySelector(".pf-modal-tools");
     const mMedia = modal.querySelector(".pf-modal-media");
     const lb = modal.querySelector(".pf-lightbox");
@@ -49,8 +51,14 @@
     // tiles (video = botón con poster + ▶). Solo-video sin galería → player inline.
     const renderMedia = (work) => {
         mMedia.innerHTML = "";
-        const images = (work.galeria || []).map((src) => ({ type: "image", src }));
-        const poster = work.portada || (work.galeria && work.galeria[0]) || "";
+        const galeria = work.galeria || [];
+        const images = [];
+        // La portada/mockup también entra a la galería, como primer tile (sin duplicar).
+        if (galeria.length && work.portada && !galeria.includes(work.portada)) {
+            images.push({ type: "image", src: work.portada });
+        }
+        galeria.forEach((src) => images.push({ type: "image", src }));
+        const poster = work.portada || galeria[0] || "";
         const videos = [];
         if (work.video)   videos.push({ type: "video", src: work.video,   poster });
         if (work.proceso) videos.push({ type: "video", src: work.proceso, poster });
@@ -145,8 +153,8 @@
         lastFocused = document.activeElement;
 
         mTitle.textContent = work.title;
-        mTag.textContent = work.catLabel;
-        mTag.style.setProperty("--card-hue", String(work.hue));
+        mKicker.textContent = work.catLabel;
+        mHead.style.setProperty("--card-hue", String(work.hue));
         renderTools(work);
         renderMedia(work);
         closeLightbox();

@@ -1281,10 +1281,11 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
 }
 .pf-modal-scroll {
+    --modal-pad: clamp(1.2rem, 3vw, 2.2rem);
     max-height: 88vh;
     overflow: auto;
     border-radius: 12px;
-    padding: clamp(1.2rem, 3vw, 2.2rem);
+    padding: var(--modal-pad);
 }
 .pf-modal-close {
     position: absolute;
@@ -1301,28 +1302,38 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 }
 .pf-modal-close:hover,
 .pf-modal-close:focus-visible { color: var(--naranja); outline: none; }
+/* Header: banda blanca a sangre (cancela el padding del scroll y se pega al borde
+   superior del diálogo). Kicker gris arriba, título en el color de la categoría. */
 .pf-modal-head {
+    margin: calc(-1 * var(--modal-pad)) calc(-1 * var(--modal-pad)) 1.4rem;
+    padding: 1rem var(--modal-pad) 0.9rem;
+    background: var(--blanco);
+    border-radius: 12px 12px 0 0;
+}
+.pf-modal-kicker {
+    margin: 0 0 0.15rem;
+    font-family: var(--font-alt);
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--negro);
+    opacity: 0.55;
+}
+.pf-modal-titlerow {
     display: flex;
     align-items: center;
-    gap: 0.8rem;
+    justify-content: space-between;
+    gap: 1rem;
     flex-wrap: wrap;
-    padding-right: 1rem;
-    margin-bottom: 1.2rem;
 }
 .pf-modal-tools { display: flex; }
 .pf-modal-title {
     margin: 0;
-    font-size: clamp(1.4rem, 4vw, 2.4rem);
+    font-size: clamp(1.5rem, 4vw, 2.4rem);
     font-weight: 800;
-}
-.pf-modal-tag {
-    padding: 0.25rem 0.7rem;
-    border-radius: 999px;
-    font-family: var(--font-alt);
-    font-weight: 700;
-    font-size: 0.85rem;
-    color: var(--negro);
-    background: hsl(calc(var(--card-hue, 0) * 1deg) 70% 60%);
+    line-height: 1.05;
+    color: hsl(calc(var(--card-hue, 0) * 1deg) 65% 45%);
 }
 .pf-modal-body { display: block; }
 
@@ -1335,14 +1346,14 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     gap: 0.6rem;
 }
 .pf-tool {
-    width: 44px; height: 44px;
+    width: 40px; height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.14);
+    background: var(--gris-claro);
 }
-.pf-tool img { width: 26px; height: 26px; object-fit: contain; }
+.pf-tool img { width: 24px; height: 24px; object-fit: contain; }
 .pf-modal-tools[hidden] { display: none; }
 
 /* Masonry: columnas fluidas; cada imagen a su proporción real. */
