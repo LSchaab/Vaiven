@@ -56,10 +56,14 @@
         CARDS_PX = cardsVH() * vh;
         QUIET_PX = QUIET_VH * vh;
         CIERRE_PX = CIERRE_VH * vh;
-        // Tail = QUIET (equipo quieto) + CIERRE (puertas cierran + Contacto aparece).
-        // Reemplaza la vieja cola de +100vh: el stage sigue pineado hasta el final.
+        // Tail: QUIET (equipo quieto) + CIERRE (puertas cierran + Contacto aparece),
+        // sólo en coverflow (en galería/mobile el recorrido termina en el portal).
+        // El +100vh de cola es imprescindible: computeScrolled() clampa a
+        // offsetHeight - innerHeight, así que la última pantalla del stage pineado es
+        // inalcanzable; ese +100vh es lo que permite que cierreP llegue a 1.0 al fondo.
+        const tailVH = coverflowOn() ? (QUIET_VH + CIERRE_VH) : 0;
         journey.style.height =
-            (DOOR_VH + TOOLS_VH + PORTAL_VH + cardsVH() + QUIET_VH + CIERRE_VH) + "vh";
+            (DOOR_VH + TOOLS_VH + PORTAL_VH + cardsVH() + tailVH + 100) + "vh";
     };
 
     const brain = stage.querySelector(".cerebro");
@@ -227,8 +231,9 @@
         stage.style.setProperty("--portal-open", portalP.toFixed(4));
         // Cierre: al final del recorrido, después de la pista de cards + una pausa
         // (QUIET) con el equipo quieto, las puertas del inicio vuelven a cerrarse.
+        // Sólo en coverflow: en galería/mobile no hay cierre (Contacto es sección normal).
         const cierreStart = DOOR_PX + TOOLS_PX + PORTAL_PX + CARDS_PX + QUIET_PX;
-        const cierreP = CIERRE_PX > 0
+        const cierreP = (coverflowOn() && CIERRE_PX > 0)
             ? clamp((scrolled - cierreStart) / CIERRE_PX, 0, 1)
             : 0;
         stage.style.setProperty("--cierre-progress", cierreP.toFixed(4));
