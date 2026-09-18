@@ -1275,35 +1275,42 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     position: relative;
     z-index: 1;
     width: min(1000px, 100%);
-    max-height: 90vh;
-    overflow: auto;
     background: var(--violeta-claro);
     color: var(--blanco);
     border-radius: 12px;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+}
+.pf-modal-scroll {
+    max-height: 88vh;
+    overflow: auto;
+    border-radius: 12px;
     padding: clamp(1.2rem, 3vw, 2.2rem);
 }
 .pf-modal-close {
     position: absolute;
-    top: 0.8rem; right: 0.8rem;
-    width: 40px; height: 40px;
-    border: 1px solid rgba(255,255,255,0.4);
-    border-radius: 50%;
-    background: transparent;
+    top: -2.8rem;
+    right: 0;
+    background: none;
+    border: none;
     color: var(--blanco);
-    font-size: 1rem;
+    font-size: 1.6rem;
+    line-height: 1;
     cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    transition: color 0.15s;
 }
 .pf-modal-close:hover,
-.pf-modal-close:focus-visible { background: rgba(255,255,255,0.15); }
+.pf-modal-close:focus-visible { color: var(--naranja); outline: none; }
 .pf-modal-head {
     display: flex;
     align-items: center;
     gap: 0.8rem;
     flex-wrap: wrap;
-    padding-right: 3rem;          /* deja lugar a la X */
+    padding-right: 1rem;
     margin-bottom: 1.2rem;
 }
+.pf-modal-tools { display: flex; }
+.pf-tools-list { margin: 0; }        /* sin el margen inferior de cuando era sidebar */
 .pf-modal-title {
     margin: 0;
     font-size: clamp(1.4rem, 4vw, 2.4rem);
@@ -1318,26 +1325,10 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     color: var(--negro);
     background: hsl(calc(var(--card-hue, 0) * 1deg) 70% 60%);
 }
-.pf-modal-body {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.4rem;
-}
-@media (min-width: 720px) {
-    .pf-modal-body { grid-template-columns: 2fr 1fr; }
-}
+.pf-modal-body { display: block; }
 
-.pf-modal-meta { font-family: var(--font-alt); }
-.pf-modal-subhead {
-    margin: 0 0 0.5rem;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    opacity: 0.8;
-}
 .pf-tools-list {
     list-style: none;
-    margin: 0 0 1.2rem;
     padding: 0;
     display: flex;
     flex-wrap: wrap;
@@ -1352,9 +1343,7 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     background: rgba(255, 255, 255, 0.14);
 }
 .pf-tool img { width: 26px; height: 26px; object-fit: contain; }
-.pf-modal-desc { margin: 0; line-height: 1.5; opacity: 0.92; }
-.pf-modal-tools[hidden],
-.pf-modal-desc[hidden] { display: none; }
+.pf-modal-tools[hidden] { display: none; }
 
 /* Masonry: columnas fluidas; cada imagen a su proporción real. */
 .pf-gallery { columns: 3 200px; column-gap: 0.8rem; }

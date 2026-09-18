@@ -13,7 +13,6 @@
     const mTitle = modal.querySelector(".pf-modal-title");
     const mTag = modal.querySelector(".pf-modal-tag");
     const mTools = modal.querySelector(".pf-modal-tools");
-    const mDesc = modal.querySelector(".pf-modal-desc");
     const mMedia = modal.querySelector(".pf-modal-media");
     const lb = modal.querySelector(".pf-lightbox");
     const lbImg = lb.querySelector(".pf-lb-img");
@@ -29,10 +28,6 @@
         const tools = work.tools || [];
         if (!tools.length) { mTools.hidden = true; return; }
         mTools.hidden = false;
-        const h = document.createElement("h4");
-        h.className = "pf-modal-subhead";
-        h.textContent = "Herramientas";
-        mTools.appendChild(h);
         const ul = document.createElement("ul");
         ul.className = "pf-tools-list";
         tools.forEach((key) => {
@@ -111,9 +106,6 @@
         mTag.textContent = work.catLabel;
         mTag.style.setProperty("--card-hue", String(work.hue));
         renderTools(work);
-        const desc = (work.descripcion || "").trim();
-        mDesc.textContent = desc;
-        mDesc.hidden = !desc;
         renderMedia(work);
         closeLightbox();
 
