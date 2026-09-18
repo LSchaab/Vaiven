@@ -19,6 +19,7 @@
                         "resources/portfolio/grafico/inari/01.webp",
                         "resources/portfolio/grafico/inari/02.webp",
                     ],
+                    proceso: "resources/portfolio/grafico/inari/proceso.mp4",
                     tools: ["photoshop", "illustrator"],
                 },
                 {
@@ -30,6 +31,7 @@
                         "resources/portfolio/grafico/lightyear/06.webp",
                         "resources/portfolio/grafico/lightyear/07.webp",
                     ],
+                    proceso: "resources/portfolio/grafico/lightyear/proceso.mp4",
                     tools: ["photoshop", "illustrator"],
                 },
                 {
@@ -40,6 +42,7 @@
                         "resources/portfolio/grafico/perfume/01.webp",
                         "resources/portfolio/grafico/perfume/02.webp",
                     ],
+                    proceso: "resources/portfolio/grafico/perfume/proceso.mp4",
                     tools: ["photoshop", "illustrator"],
                 },
                 {
@@ -49,6 +52,7 @@
                     galeria: [
                         "resources/portfolio/grafico/infinityWar/01.webp",
                     ],
+                    proceso: "resources/portfolio/grafico/infinityWar/proceso.mp4",
                     tools: ["photoshop", "illustrator"],
                 },
                 {
@@ -59,6 +63,7 @@
                         "resources/portfolio/grafico/interstellar/01.webp",
                         "resources/portfolio/grafico/interstellar/02.webp",
                     ],
+                    proceso: "resources/portfolio/grafico/interstellar/animado.mp4",
                     tools: ["photoshop", "illustrator"],
                 },
                 {
@@ -69,6 +74,7 @@
                         "resources/portfolio/grafico/harley/Harley_8.webp",
                         "resources/portfolio/grafico/harley/harley_mockup.webp",
                     ],
+                    proceso: "resources/portfolio/grafico/harley/proceso.mp4",
                     tools: ["photoshop", "illustrator"],
                 },
             ],
