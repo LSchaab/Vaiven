@@ -93,7 +93,8 @@
                 const img = document.createElement("img");
                 img.src = item.src;
                 img.alt = `${work.title} — imagen ${i + 1}`;
-                img.loading = "lazy";
+                // Las primeras (arriba del fold, 2 columnas) eager para evitar el flash al abrir.
+                img.loading = i < 4 ? "eager" : "lazy";
                 img.decoding = "async";
                 img.addEventListener("click", () => openLightbox(items, i));
                 grid.appendChild(img);
