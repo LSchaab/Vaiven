@@ -91,6 +91,8 @@
                         "resources/portfolio/grafico/mangeki/19.webp",
                         "resources/portfolio/grafico/mangeki/20.webp",
                         "resources/portfolio/grafico/mangeki/21.webp",
+                        "resources/portfolio/grafico/mangeki/21-2.webp",
+                        "resources/portfolio/grafico/mangeki/21-3.webp",
                         "resources/portfolio/grafico/mangeki/22.webp",
                     ],
                 },
@@ -105,7 +107,7 @@
             works: [
                 {
                     title: "Caja Reloj",
-                    portada: null,
+                    portada: "resources/portfolio/modelado3d/caja_reloj/01.webp",
                     media: "video",
                     video: "resources/portfolio/modelado3d/caja_reloj/video.mp4",
                     galeria: [
@@ -119,7 +121,7 @@
                     ],                },
                 {
                     title: "Calesita",
-                    portada: null,
+                    portada: "resources/portfolio/modelado3d/calesita/01.webp",
                     media: "video",
                     video: "resources/portfolio/modelado3d/calesita/video.mp4",
                     galeria: [
@@ -131,7 +133,7 @@
                     ],                },
                 {
                     title: "Máquina Arcade",
-                    portada: null,
+                    portada: "resources/portfolio/modelado3d/maquina_arcade/01.webp",
                     media: "video",
                     video: "resources/portfolio/modelado3d/maquina_arcade/video.mp4",
                     galeria: [
@@ -143,7 +145,7 @@
                     ],                },
                 {
                     title: "Máquina Expendedora",
-                    portada: null,
+                    portada: "resources/portfolio/modelado3d/maquina_exp/01.webp",
                     media: "video",
                     video: "resources/portfolio/modelado3d/maquina_exp/video.mp4",
                     galeria: [
@@ -182,11 +184,11 @@
             portada: null,
             tools: ["after-effects", "illustrator", "photoshop"],
             works: [
-                { title: "The Sandman",       portada: null, media: "video", video: "resources/portfolio/motion/Sandman.mp4" },
-                { title: "Fiesta Rave",        portada: null, media: "video", video: "resources/portfolio/motion/Fiesta%20Rave.mp4" },
-                { title: "Muestra Arte",       portada: null, media: "video", video: "resources/portfolio/motion/Muestra%20Arte.mp4" },
-                { title: "Tiger Woods",        portada: null, media: "video", video: "resources/portfolio/motion/tiger_woods.mp4" },
-                { title: "Beautiful Webinar",  portada: null, media: "video", video: "resources/portfolio/motion/beautiful_Webinar.mp4" },
+                { title: "The Sandman",       portada: "resources/portfolio/motion/sandman-poster.webp",          media: "video", video: "resources/portfolio/motion/Sandman.mp4" },
+                { title: "Fiesta Rave",        portada: "resources/portfolio/motion/fiesta_rave-poster.webp",      media: "video", video: "resources/portfolio/motion/Fiesta%20Rave.mp4" },
+                { title: "Muestra Arte",       portada: "resources/portfolio/motion/muestra_arte-poster.webp",     media: "video", video: "resources/portfolio/motion/Muestra%20Arte.mp4" },
+                { title: "Tiger Woods",        portada: "resources/portfolio/motion/tiger_woods-poster.webp",      media: "video", video: "resources/portfolio/motion/tiger_woods.mp4" },
+                { title: "Beautiful Webinar",  portada: "resources/portfolio/motion/beautiful_webinar-poster.webp", media: "video", video: "resources/portfolio/motion/beautiful_Webinar.mp4" },
             ],
         },
         {

@@ -1741,6 +1741,9 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     font-size: clamp(1.15rem, 2.6vw, 1.7rem);   /* subtítulo un poco más grande */
     max-width: 34ch;
     color: var(--lila);         /* acento mínimo lila para la bajada */
+    align-self: flex-end;       /* corrida hacia la derecha (Luly) */
+    text-align: right;
+    margin-right: clamp(0.5rem, 3vw, 2.5rem);
 }
 
 /* email protagonista: tamaño display; mira detrás de la 1ª "v" y flecha grunge
@@ -1754,7 +1757,7 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     text-decoration: none;
     font-family: var(--font-alt);
     font-weight: 700;
-    font-size: clamp(1.7rem, 7vw, 4.2rem);
+    font-size: clamp(2rem, 8.5vw, 5.4rem);   /* email protagonista, más grande */
     line-height: 1;
     letter-spacing: -0.02em;
 }
@@ -1777,13 +1780,14 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
             mask: url("resources/hero/mira.svg") center / contain no-repeat;
     pointer-events: none;
 }
-/* flecha grunge (webp) apoyada arriba, punta hacia abajo sobre el email */
+/* flecha grunge (webp) apoyada ABAJO del email, punta hacia arriba en diagonal
+   (la flecha ya apunta arriba-derecha en su orientación natural). */
 .contacto__mail-arrow {
     position: absolute; z-index: 2;
-    left: 40%; top: -0.78em;
+    left: 46%; top: auto; bottom: -3.2em;
     width: clamp(3.2rem, 13vw, 6.5rem);
     height: auto;
-    transform: rotate(122deg);
+    transform: rotate(-6deg);   /* leve enderezado; queda "de costado" */
     pointer-events: none;
 }
 
@@ -1806,11 +1810,10 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 .contacto__redes a:focus-visible { color: var(--lila); }
 .contacto__sep { opacity: 0.5; }
 
-/* email multicolor: segmentos en naranja/azul de la paleta. El azul de marca
-   (#2222A0) es muy oscuro sobre negro → lo aclaramos con color-mix para que sea
-   legible sin salir de la paleta (azul + blanco). */
+/* email multicolor: segmentos en naranja/azul de la paleta. Azul de marca
+   principal (--azul #2222A0) a full — decisión de Luly. */
 .contacto__mail .cm-o { color: var(--naranja); }
-.contacto__mail .cm-a { color: color-mix(in srgb, var(--azul), var(--blanco) 42%); }
+.contacto__mail .cm-a { color: var(--azul); }
 /* al hover el email entero vira a lila (override de los segmentos) */
 .contacto__mail:hover .cm-o, .contacto__mail:focus-visible .cm-o,
 .contacto__mail:hover .cm-a, .contacto__mail:focus-visible .cm-a { color: var(--lila); }
@@ -1822,6 +1825,22 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 .contacto { position: relative; }
 .contacto__inner { position: relative; z-index: 1; }
 .contacto-deco { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+
+/* textura grunge de contacto sobre las grillas. mix-blend screen: el negro de la
+   textura no tapa nada (grilla / puertas siguen a la vista) y sólo suman el polvo
+   y los hilos blancos. Vale para la sección normal (.contacto, mobile/reduced) y
+   para la capa de cierre en desktop (.contacto-reveal, sobre las puertas). */
+.contacto::before,
+.contacto-reveal::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: url("resources/textures/grunge_texture_contacto.webp") center / cover no-repeat;
+    mix-blend-mode: screen;
+    opacity: 0.9;
+}
 .cd { position: absolute; display: block; }
 .cd-cruces, .cd-flechas, .cd-lineas-izq, .cd-lineas-der, .cd-barras {
     -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
@@ -1870,6 +1889,40 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 .cd-dot-1 { left: 20%; top: 20%; background: var(--azul); }
 .cd-dot-2 { left: 34%; top: 44%; background: var(--naranja); }
 .cd-dot-3 { right: 24%; bottom: 22%; background: var(--naranja); }
+
+/* más recursos de marca (mismos SVG que las otras secciones): marco, suma (+),
+   miscelánea cuadrada y cuadraditos sólidos. mask-image + token de color. */
+.cd-marco, .cd-suma, .cd-misc {
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    -webkit-mask-position: center;  mask-position: center;
+    -webkit-mask-size: contain;     mask-size: contain;
+}
+/* marco (cuadro estructural) — izquierda-medio, naranja */
+.cd-marco {
+    left: 7%; top: 34%; width: min(9vw, 100px); height: min(9vw, 100px);
+    background: var(--naranja); opacity: 0.9;
+    -webkit-mask-image: url("resources/hero/marco.svg");
+            mask-image: url("resources/hero/marco.svg");
+}
+/* suma (+++) — derecha-abajo, azul */
+.cd-suma {
+    right: 9%; bottom: 30%; width: min(7vw, 82px); height: min(7vw, 82px);
+    background: var(--azul);
+    -webkit-mask-image: url("resources/hero/suma.svg");
+            mask-image: url("resources/hero/suma.svg");
+}
+/* miscelánea cuadrada — abajo-izquierda, naranja */
+.cd-misc {
+    left: 13%; bottom: 15%; width: min(8vw, 90px); height: min(8vw, 90px);
+    background: var(--naranja); opacity: 0.85;
+    -webkit-mask-image: url("resources/hero/miscelanea_cuadrado.svg");
+            mask-image: url("resources/hero/miscelanea_cuadrado.svg");
+}
+/* cuadraditos sólidos (más "cuadrados") azul/naranja/blanco */
+.cd-sq { width: 12px; height: 12px; }
+.cd-sq-1 { right: 17%; top: 30%; background: var(--naranja); }
+.cd-sq-2 { left: 27%; bottom: 32%; background: var(--azul); }
+.cd-sq-3 { right: 31%; top: 62%; background: var(--blanco); opacity: 0.7; }
 
 /* Capa de salida final: el contenido de Contacto sobre las puertas ya cerradas,
    dentro del stage pineado (igual que .nos-reveal para el equipo). Opacity atada

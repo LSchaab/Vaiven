@@ -66,7 +66,10 @@
                 img.className = "card__img";
                 img.src = work.portada;
                 img.alt = work.title;
-                img.loading = "lazy";
+                // Primeras cards eager (son las que se ven al abrirse el portal);
+                // el resto lazy. Prioriza que el portfolio "cargue primero".
+                img.loading = i < 4 ? "eager" : "lazy";
+                if (i < 4) img.fetchPriority = "high";
                 img.decoding = "async";
                 media.appendChild(img);
             } else {
@@ -237,7 +240,8 @@
                 const img = document.createElement("img");
                 img.src = work.portada;
                 img.alt = work.title;
-                img.loading = "lazy";
+                // Primeras celdas eager (visibles sin scroll); el resto lazy.
+                img.loading = i < 4 ? "eager" : "lazy";
                 img.decoding = "async";
                 media.appendChild(img);
             } else {
