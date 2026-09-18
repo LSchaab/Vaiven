@@ -1,43 +1,76 @@
-// Portfolio data — single source consumed by work-carousel.js (carrusel) and portfolio-modal.js (modal).
-// Categories are in the same order/hue as DISCIPLINES/BEAT_HUE in mente.js so the
-// portfolio re-uses the brain's per-discipline color. Keep the two in sync.
-// Copy note: work titles derived from filenames are PROVISIONAL placeholders;
-// authors are intentionally omitted (do not invent — see CLAUDE.md).
+// Portfolio data — single source consumed by work-carousel.js (carrusel) y portfolio-modal.js (modal).
+// Portada: imagen para la card. Si es null en works de video, la card muestra el video en loop.
+// Media "video" + video: field → card loopea el mp4 muted; modal lo muestra con controles.
+// Media "video" + galeria → modal muestra video primero, luego imágenes.
 (() => {
     "use strict";
-    // hue per discipline — mirror of BEAT_HUE in mente.js (deg).
-    // Work opcional (todo lo de detalle del modal puede faltar → se oculta):
-    //   tools: string[]  (keys de resources/logos/<key>.svg)
-    //   descripcion: string
-    //   galeria: string[] (rutas de imágenes a proporción real, para el masonry)
-    //   video: string     (ruta/URL; sólo si media === "video")
     window.PORTFOLIO = [
         {
             key: "grafico",
             label: "Ilustración y Diseño Gráfico",
             hue: 340,
-            portada: null, // 16:9 cover pending (design team) → brain-hue fallback
+            portada: "resources/portfolio/grafico/inari/inari_mockup.webp",
             works: [
                 {
-                    title: "Inari", portada: null, media: "image",
-                    // real process images (diseno_grafico/Poster_Inari/*)
+                    title: "Inari",
+                    portada: "resources/portfolio/grafico/inari/inari_mockup.webp",
+                    media: "image",
                     galeria: [
-                        "diseno_grafico/Poster_Inari/1_fonod.png",
-                        "diseno_grafico/Poster_Inari/2_fondo2.png",
-                        "diseno_grafico/Poster_Inari/3_zorro1.png",
-                        "diseno_grafico/Poster_Inari/5_geishas1.png",
-                        "diseno_grafico/Poster_Inari/6_tori1.png",
-                        "diseno_grafico/Poster_Inari/9_color1.png",
-                        "diseno_grafico/Poster_Inari/10_sombrasluces.png",
-                        "diseno_grafico/Poster_Inari/12_finaldetalles.png",
-                        "diseno_grafico/Poster_Inari/13_titulo.png",
+                        "resources/portfolio/grafico/inari/01.webp",
+                        "resources/portfolio/grafico/inari/02.webp",
                     ],
-                    tools: ["photoshop", "illustrator"], // provisional — confirmar con el equipo
+                    tools: ["photoshop", "illustrator"],
                 },
-                { title: "Lightyear",    portada: null, media: "image" },
-                { title: "Perfume",      portada: null, media: "image" },
-                { title: "Infinity War", portada: null, media: "image" },
-                { title: "Interstellar", portada: null, media: "image" },
+                {
+                    title: "Lightyear",
+                    portada: "resources/portfolio/grafico/lightyear/portada.webp",
+                    media: "image",
+                    galeria: [
+                        "resources/portfolio/grafico/lightyear/05.webp",
+                        "resources/portfolio/grafico/lightyear/06.webp",
+                        "resources/portfolio/grafico/lightyear/07.webp",
+                    ],
+                    tools: ["photoshop", "illustrator"],
+                },
+                {
+                    title: "Perfume",
+                    portada: "resources/portfolio/grafico/perfume/mopckup.webp",
+                    media: "image",
+                    galeria: [
+                        "resources/portfolio/grafico/perfume/01.webp",
+                        "resources/portfolio/grafico/perfume/02.webp",
+                    ],
+                    tools: ["photoshop", "illustrator"],
+                },
+                {
+                    title: "Infinity War",
+                    portada: "resources/portfolio/grafico/infinityWar/infinity_war_mockup.webp",
+                    media: "image",
+                    galeria: [
+                        "resources/portfolio/grafico/infinityWar/01.webp",
+                    ],
+                    tools: ["photoshop", "illustrator"],
+                },
+                {
+                    title: "Interstellar",
+                    portada: "resources/portfolio/grafico/interstellar/mockup.webp",
+                    media: "image",
+                    galeria: [
+                        "resources/portfolio/grafico/interstellar/01.webp",
+                        "resources/portfolio/grafico/interstellar/02.webp",
+                    ],
+                    tools: ["photoshop", "illustrator"],
+                },
+                {
+                    title: "Harley",
+                    portada: "resources/portfolio/grafico/harley/Harley_portada.webp",
+                    media: "image",
+                    galeria: [
+                        "resources/portfolio/grafico/harley/Harley_8.webp",
+                        "resources/portfolio/grafico/harley/harley_mockup.webp",
+                    ],
+                    tools: ["photoshop", "illustrator"],
+                },
             ],
         },
         {
@@ -47,25 +80,84 @@
             portada: null,
             works: [
                 {
-                    title: "Caja de fantasía", portada: null, media: "image",
+                    title: "Caja Reloj",
+                    portada: null,
+                    media: "video",
+                    video: "resources/portfolio/modelado3d/caja_reloj/video.mp4",
                     galeria: [
-                        "3d/caja_fantasia/RENDER1.png",
-                        "3d/caja_fantasia/RENDER2.png",
-                        "3d/caja_fantasia/RENDER3.png",
-                        "3d/caja_fantasia/RENDER4.png",
-                        "3d/caja_fantasia/malla_wirefame.png",
-                        "3d/caja_fantasia/render_wireframe.png",
+                        "resources/portfolio/modelado3d/caja_reloj/01.webp",
+                        "resources/portfolio/modelado3d/caja_reloj/02.webp",
+                        "resources/portfolio/modelado3d/caja_reloj/03.webp",
+                        "resources/portfolio/modelado3d/caja_reloj/04.webp",
+                        "resources/portfolio/modelado3d/caja_reloj/05.webp",
+                        "resources/portfolio/modelado3d/caja_reloj/06.webp",
+                        "resources/portfolio/modelado3d/caja_reloj/07.webp",
                     ],
-                    tools: ["blender", "substance-3d-painter"], // provisional
+                    tools: ["blender"],
                 },
-                { title: "Máquina expendedora", portada: null, media: "image" },
                 {
-                    title: "Personaje toon", portada: null, media: "image",
+                    title: "Calesita",
+                    portada: null,
+                    media: "video",
+                    video: "resources/portfolio/modelado3d/calesita/video.mp4",
                     galeria: [
-                        "3d/personaje_toon/pj_toon_mesh.jpeg",
-                        "3d/personaje_toon/pj_toon_sintextura.jpeg",
+                        "resources/portfolio/modelado3d/calesita/01.webp",
+                        "resources/portfolio/modelado3d/calesita/02.webp",
+                        "resources/portfolio/modelado3d/calesita/03.webp",
+                        "resources/portfolio/modelado3d/calesita/04.webp",
+                        "resources/portfolio/modelado3d/calesita/05.webp",
                     ],
-                    tools: ["blender"], // provisional
+                    tools: ["blender"],
+                },
+                {
+                    title: "Máquina Arcade",
+                    portada: null,
+                    media: "video",
+                    video: "resources/portfolio/modelado3d/maquina_arcade/video.mp4",
+                    galeria: [
+                        "resources/portfolio/modelado3d/maquina_arcade/01.webp",
+                        "resources/portfolio/modelado3d/maquina_arcade/02.webp",
+                        "resources/portfolio/modelado3d/maquina_arcade/03.webp",
+                        "resources/portfolio/modelado3d/maquina_arcade/04.webp",
+                        "resources/portfolio/modelado3d/maquina_arcade/05.webp",
+                    ],
+                    tools: ["blender"],
+                },
+                {
+                    title: "Máquina Expendedora",
+                    portada: null,
+                    media: "video",
+                    video: "resources/portfolio/modelado3d/maquina_exp/video.mp4",
+                    galeria: [
+                        "resources/portfolio/modelado3d/maquina_exp/01.webp",
+                        "resources/portfolio/modelado3d/maquina_exp/02.webp",
+                        "resources/portfolio/modelado3d/maquina_exp/03.webp",
+                        "resources/portfolio/modelado3d/maquina_exp/04.webp",
+                        "resources/portfolio/modelado3d/maquina_exp/05.webp",
+                        "resources/portfolio/modelado3d/maquina_exp/06.webp",
+                        "resources/portfolio/modelado3d/maquina_exp/07.webp",
+                        "resources/portfolio/modelado3d/maquina_exp/08.webp",
+                        "resources/portfolio/modelado3d/maquina_exp/09.webp",
+                        "resources/portfolio/modelado3d/maquina_exp/10.webp",
+                        "resources/portfolio/modelado3d/maquina_exp/11.webp",
+                        "resources/portfolio/modelado3d/maquina_exp/12.webp",
+                        "resources/portfolio/modelado3d/maquina_exp/13.webp",
+                        "resources/portfolio/modelado3d/maquina_exp/14.webp",
+                    ],
+                    tools: ["blender"],
+                },
+                {
+                    title: "Personaje Toon",
+                    portada: "resources/portfolio/modelado3d/personaje/portada.webp",
+                    media: "image",
+                    galeria: [
+                        "resources/portfolio/modelado3d/personaje/01.webp",
+                        "resources/portfolio/modelado3d/personaje/02.webp",
+                        "resources/portfolio/modelado3d/personaje/03.webp",
+                        "resources/portfolio/modelado3d/personaje/04.webp",
+                        "resources/portfolio/modelado3d/personaje/05.webp",
+                    ],
+                    tools: ["blender"],
                 },
             ],
         },
@@ -73,13 +165,13 @@
             key: "motion",
             label: "Motion Graphics",
             hue: 10,
-            portada: "resources/portadas/motion/sandman.png", // category cover
+            portada: null,
             works: [
-                { title: "The Sandman",      portada: "resources/portadas/motion/sandman.png",          media: "video" },
-                { title: "Club Ruido",       portada: "resources/portadas/motion/clubRuido.png",        media: "video" },
-                { title: "Ctrl Lost",        portada: "resources/portadas/motion/ctrlLostt.png",        media: "video" },
-                { title: "Tiger Woods",      portada: "resources/portadas/motion/tiger_woods.png",      media: "video" },
-                { title: "Beautiful",        portada: "resources/portadas/motion/beautiful_webinar.png", media: "video" },
+                { title: "The Sandman",       portada: null, media: "video", video: "resources/portfolio/motion/Sandman.mp4" },
+                { title: "Fiesta Rave",        portada: null, media: "video", video: "resources/portfolio/motion/Fiesta%20Rave.mp4" },
+                { title: "Muestra Arte",       portada: null, media: "video", video: "resources/portfolio/motion/Muestra%20Arte.mp4" },
+                { title: "Tiger Woods",        portada: null, media: "video", video: "resources/portfolio/motion/tiger_woods.mp4" },
+                { title: "Beautiful Webinar",  portada: null, media: "video", video: "resources/portfolio/motion/beautiful_Webinar.mp4" },
             ],
         },
         {
@@ -87,24 +179,32 @@
             label: "Desarrollo web",
             hue: 140,
             portada: null,
-            works: [], // assets pending
+            works: [],
         },
         {
             key: "campanas",
             label: "Campañas publicitarias",
             hue: 210,
-            portada: "resources/portadas/campanas/portadas.webp",
+            portada: "resources/portfolio/campanas/portada.webp",
             works: [
-                { title: "Proyecto Hocicos Contentos", portada: "resources/portadas/campanas/portadas.webp", media: "video" },
+                {
+                    title: "Hocicos Contentos",
+                    portada: "resources/portfolio/campanas/portada.webp",
+                    media: "video",
+                    video: "resources/portfolio/campanas/video.mp4",
+                },
             ],
         },
     ];
 
-    // Flattened list consumed by the carousel (#work) and the detail modal.
-    // Index into this array is the card index. Category fields embedded per work.
-    window.WORKS = window.PORTFOLIO.flatMap((cat) =>
-        cat.works.map((w) => ({
-            ...w, catKey: cat.key, catLabel: cat.label, hue: cat.hue,
-        }))
-    );
+    // Interleave round-robin: un trabajo de cada categoría por turno → mezcla sin agrupar.
+    const pools = window.PORTFOLIO
+        .filter((cat) => cat.works.length)
+        .map((cat) => cat.works.map((w) => ({ ...w, catKey: cat.key, catLabel: cat.label, hue: cat.hue })));
+    const mixed = [];
+    const maxLen = Math.max(...pools.map((p) => p.length));
+    for (let i = 0; i < maxLen; i++) {
+        for (const pool of pools) { if (i < pool.length) mixed.push(pool[i]); }
+    }
+    window.WORKS = mixed;
 })();
