@@ -1629,6 +1629,7 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 @media (max-width: 520px) { .pf-gallery { columns: 1; } }
 .pf-gallery img {
     width: 100%;
+    height: auto;   /* imprescindible: portfolio-modal.js pone width/height reales (reserva de lugar) y sin esto el alto en px estiraba la imagen */
     display: block;
     margin: 0 0 0.8rem;
     border-radius: 6px;
