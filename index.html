@@ -243,6 +243,8 @@
                  Vive dentro de .nosotros__stage para viajar con la capa .nos-reveal
                  en desktop; se posiciona sobre la sección/reveal (ancestro posicionado). -->
             <div class="nos-deco" aria-hidden="true">
+                <!-- textura de grano/grunge (overlay sutil sobre el verde) -->
+                <img class="nsd nsd-texture" src="resources/textures/nosotros_text.webp" alt="" decoding="async" loading="lazy">
                 <!-- artwork grunge (webp) -->
                 <img class="nsd nsd-corazon" src="resources/imagenes_grunge/corazon.webp" alt="" decoding="async" loading="lazy">
                 <img class="nsd nsd-fuego" src="resources/imagenes_grunge/fuego.webp" alt="" decoding="async" loading="lazy">
@@ -273,7 +275,9 @@
                      alt="Código de Spotify de la playlist de VAI VEN" decoding="async" loading="lazy">
             </a>
 
-            <h2 class="nosotros__titulo">Los <em>cerebros</em><br>detrás del <button type="button" class="nosotros__manifiesto" data-video="frULM6go0Tg" aria-haspopup="dialog">vaivén</button>.</h2>
+            <!-- título en tipografía erratica (erratic.js aplana el HTML, así que
+                 se aplica por segmento para conservar el <br>, el <em> y el botón). -->
+            <h2 class="nosotros__titulo"><span class="erratic">Los</span> <em class="erratic">cerebros</em><br><span class="erratic">detrás del</span> <button type="button" class="erratic nosotros__manifiesto" data-video="frULM6go0Tg" aria-haspopup="dialog">vaivén</button>.</h2>
             <ul class="nosotros__fila">
                 <li class="nosotros__miembro">
                     <button class="nosotros__flip" type="button" aria-label="Ver a Matías">

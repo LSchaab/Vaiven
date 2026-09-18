@@ -1128,7 +1128,7 @@ body.coverflow #nosotros { display: none; }
 .nosotros__flip {
     all: unset;
     position: relative;
-    width: clamp(78px, 11vw, 130px); aspect-ratio: 1;
+    width: clamp(100px, 13vw, 162px); aspect-ratio: 1;
     cursor: pointer; display: block;
     transform-style: preserve-3d;
     transition: transform 0.6s cubic-bezier(0.6, 0.05, 0.2, 1);
@@ -1152,20 +1152,20 @@ body.coverflow #nosotros { display: none; }
     box-shadow: none;
     background: transparent;
     display: block;        /* cancela el flex de --ojo para que las dos caras sean iguales */
-    inset: -40%;
+    inset: -22%;           /* menos overflow → el nombre puede ir más cerca del círculo */
 }
 .nosotros__cara--sticker img { width: 100%; height: 100%; object-fit: contain; }
 
 .nosotros__nombre {
-    margin: clamp(3rem, 6vw, 4.5rem) 0 0;
+    margin: clamp(1.5rem, 3.2vw, 2.4rem) 0 0;   /* más cerca del círculo */
     font-family: var(--font-alt);
     font-weight: 700;
-    font-size: clamp(0.95rem, 1.6vw, 1.25rem);
+    font-size: clamp(1.15rem, 2vw, 1.6rem);      /* más grande */
 }
 .nosotros__rol {
-    margin: 0.2rem 0 0;
+    margin: 0.25rem 0 0;
     font-family: var(--font-base);
-    font-size: clamp(0.62rem, 0.95vw, 0.78rem);
+    font-size: clamp(0.72rem, 1.1vw, 0.92rem);
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--verde-agua-claro);
@@ -1175,7 +1175,7 @@ body.coverflow #nosotros { display: none; }
     font-family: var(--font-base);
     font-style: italic;
     color: var(--amarillo);
-    font-size: clamp(0.72rem, 1.15vw, 0.9rem);
+    font-size: clamp(0.85rem, 1.35vw, 1.05rem);
     max-width: 20ch;
     opacity: 0; transform: translateY(6px);
     transition: opacity 0.4s 0.12s, transform 0.4s 0.12s;
@@ -1207,76 +1207,100 @@ body.coverflow #nosotros { display: none; }
    min-height:100vh). Como .nosotros__stage NO está posicionada, los absolutes
    anclan bien en ambos casos. z-index:0 (detrás del contenido, que va a z:1).
    ========================================================================== */
+/* grilla tenue + color base (igual patrón que Contacto) en ambos contenedores
+   (sección normal en mobile y capa .nos-reveal en desktop). */
+.nosotros, .nos-reveal {
+    background-color: var(--verde);
+    background-image:
+        repeating-linear-gradient(to right,  rgba(255,255,255,0.09) 0 1px, transparent 1px 44px),
+        repeating-linear-gradient(to bottom, rgba(255,255,255,0.09) 0 1px, transparent 1px 44px);
+}
 .nos-deco { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .nosotros__titulo, .nosotros__fila { position: relative; z-index: 1; }
 .nsd { position: absolute; display: block; }
 
-/* artwork grunge (webp) — no se recolorea, se ubica */
-.nsd-corazon { right: 7%; top: 5%; width: min(13vw, 168px); opacity: 0.92; }
-.nsd-fuego   { left: 3%; bottom: -2%; width: min(16vw, 220px); opacity: 0.85; }
-.nsd-mariposa { width: min(6vw, 74px); opacity: 0.9; }
-.nsd-mariposa-1 { right: 4%; top: 2%; transform: rotate(10deg); }
-.nsd-mariposa-2 { left: 3%; bottom: 27%; transform: rotate(-14deg); }
+/* textura de grano/grunge — overlay sutil sobre el verde+grilla */
+.nsd-texture {
+    inset: 0; width: 100%; height: 100%;
+    object-fit: cover;
+    opacity: 0.55; mix-blend-mode: soft-light;
+}
 
-/* line-art SVG tintado: mask-image (forma) + background (token) */
+/* artwork grunge (webp) — no se recolorea; opacidad baja (~25%) */
+.nsd-corazon { right: 6%; top: 4%; width: min(14vw, 180px); opacity: 0.25; }
+.nsd-fuego   { left: 2%; bottom: -2%; width: min(17vw, 230px); opacity: 0.25; }
+.nsd-mariposa { width: min(6.5vw, 82px); opacity: 0.25; }
+.nsd-mariposa-1 { right: 3%; top: 1%; transform: rotate(10deg); }
+.nsd-mariposa-2 { left: 3%; bottom: 26%; transform: rotate(-14deg); }
+
+/* line-art SVG tintado: mask-image (forma) + background (token).
+   Las cajas respetan el aspect ratio del viewBox de cada SVG. */
 .nsd-cruces, .nsd-barras, .nsd-barras-v, .nsd-mira,
 .nsd-flechas, .nsd-lineas-der, .nsd-misc {
     -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
     -webkit-mask-position: center;  mask-position: center;
     -webkit-mask-size: contain;     mask-size: contain;
 }
+/* cruces_abajo: 137×10 (fila horizontal de ×) */
 .nsd-cruces {
-    left: 9%; top: 12%; width: min(2.4vw, 28px); height: min(9vw, 110px);
-    background: var(--blanco); opacity: 0.8;
+    left: 7%; top: 12%; width: min(15vw, 160px); height: min(1.3vw, 15px);
+    background: var(--blanco); opacity: 0.85;
     -webkit-mask-image: url("resources/hero/cruces_abajo.svg");
             mask-image: url("resources/hero/cruces_abajo.svg");
 }
+/* barras_abajo: 148×21 (barras horizontales) — arriba-centro */
 .nsd-barras {
-    left: 45%; top: 5%; width: min(9vw, 120px); height: min(3.2vw, 40px);
+    left: 44%; top: 6%; width: min(12vw, 150px); height: min(1.9vw, 22px);
     background: var(--amarillo);
-    -webkit-mask-image: url("resources/hero/barras_derecha.svg");
-            mask-image: url("resources/hero/barras_derecha.svg");
-}
-.nsd-barras-v {
-    left: 3%; top: 24%; width: min(2.6vw, 32px); height: min(13vh, 130px);
-    background: var(--amarillo); opacity: 0.9;
     -webkit-mask-image: url("resources/hero/barras_abajo.svg");
             mask-image: url("resources/hero/barras_abajo.svg");
 }
+/* barras_derecha: 17×88 (barras verticales) — borde izquierdo */
+.nsd-barras-v {
+    left: 4%; top: 26%; width: min(1.8vw, 20px); height: min(10vw, 96px);
+    background: var(--amarillo); opacity: 0.95;
+    -webkit-mask-image: url("resources/hero/barras_derecha.svg");
+            mask-image: url("resources/hero/barras_derecha.svg");
+}
+/* mira: 61×60 (cuadrada) */
 .nsd-mira {
-    left: 21%; top: 30%; width: min(6vw, 76px); height: min(6vw, 76px);
-    background: var(--blanco); opacity: 0.5;
+    left: 19%; top: 30%; width: min(7.5vw, 96px); height: min(7.5vw, 96px);
+    background: var(--blanco); opacity: 0.6;
     -webkit-mask-image: url("resources/hero/mira.svg");
             mask-image: url("resources/hero/mira.svg");
 }
+/* flechas: 14×55 (columna vertical de flechas) */
 .nsd-flechas {
-    left: 24%; top: 45%; width: min(2.6vw, 32px); height: min(2.6vw, 32px);
+    left: 24%; top: 46%; width: min(2.2vw, 28px); height: min(8vw, 100px);
     background: var(--verde-agua-claro);
     -webkit-mask-image: url("resources/hero/flechas.svg");
             mask-image: url("resources/hero/flechas.svg");
 }
+/* lineas_der: 11×222 (líneas verticales largas) — borde derecho */
 .nsd-lineas-der {
-    right: 3%; top: 30%; width: min(4vw, 46px); height: min(34vh, 340px);
-    background: var(--blanco); opacity: 0.55;
+    right: 3%; top: 28%; width: min(1.6vw, 20px); height: min(38vh, 380px);
+    background: var(--blanco); opacity: 0.6;
     -webkit-mask-image: url("resources/hero/lineas_der.svg");
             mask-image: url("resources/hero/lineas_der.svg");
 }
+/* miscelanea_cuadrado: 63×39 — mostrarla entera, bien visible.
+   bottom bajo para no tapar la frase del último integrante (mobile apilado). */
 .nsd-misc {
-    right: 8%; bottom: 16%; width: min(8vw, 100px); height: min(8vw, 100px);
-    background: var(--verde-agua-claro); opacity: 0.8;
+    right: 8%; bottom: 4%; width: min(13vw, 150px); height: min(8.1vw, 94px);
+    background: var(--amarillo); opacity: 0.95;
     -webkit-mask-image: url("resources/hero/miscelanea_cuadrado.svg");
             mask-image: url("resources/hero/miscelanea_cuadrado.svg");
 }
 
 /* marco L en esquinas (amarillo arriba-izq, violeta abajo-der) */
-.nsd-marco-tl, .nsd-marco-br { width: min(4vw, 52px); height: min(4vw, 52px); }
+.nsd-marco-tl, .nsd-marco-br { width: min(5vw, 64px); height: min(5vw, 64px); }
 .nsd-marco-tl { left: 3%; top: 7%;
-    border-top: 2px solid var(--amarillo); border-left: 2px solid var(--amarillo); }
+    border-top: 3px solid var(--amarillo); border-left: 3px solid var(--amarillo); }
 .nsd-marco-br { right: 3%; bottom: 7%;
-    border-bottom: 2px solid var(--lila); border-right: 2px solid var(--lila); }
+    border-bottom: 3px solid var(--lila); border-right: 3px solid var(--lila); }
 
 /* cruz naranja (aspa ×) centro-bajo */
-.nsd-cruz { left: 41%; bottom: 12%; width: min(3.2vw, 40px); height: min(3.2vw, 40px); }
+.nsd-cruz { left: 40%; bottom: 12%; width: min(4vw, 52px); height: min(4vw, 52px); }
 .nsd-cruz::before, .nsd-cruz::after {
     content: ""; position: absolute; left: 50%; top: 50%;
     width: 100%; height: 22%; background: var(--naranja); border-radius: 2px;
@@ -1285,7 +1309,7 @@ body.coverflow #nosotros { display: none; }
 .nsd-cruz::after  { transform: translate(-50%, -50%) rotate(-45deg); }
 
 /* dots sueltos */
-.nsd-dot { width: 8px; height: 8px; }
+.nsd-dot { width: 11px; height: 11px; }
 .nsd-dot-1 { left: 62%; top: 20%; background: var(--amarillo); }
 .nsd-dot-2 { left: 34%; top: 62%; background: var(--verde-agua-claro); }
 .nsd-dot-3 { right: 28%; top: 72%; background: var(--lila); }
@@ -1299,7 +1323,7 @@ body.coverflow #nosotros { display: none; }
     right: 0;
     z-index: 3;                       /* sobre adornos y contenido */
     width: 52px; height: 52px;
-    background-color: var(--verde);
+    background-color: var(--amarillo);   /* pop sobre el fondo verde */
     border-radius: 8px 0 0 8px;
     overflow: hidden;
     pointer-events: auto;
