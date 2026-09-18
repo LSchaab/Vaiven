@@ -28,7 +28,8 @@
     let ticking = false;
     const sync = () => {
         const c = parseFloat(stage.style.getPropertyValue("--cierre-progress")) || 0;
-        layer.classList.toggle("is-open", c >= 0.85);
+        // ≥0.9: recién cuando el contenido ya es visible (fade 0.8→1) habilitamos clicks.
+        layer.classList.toggle("is-open", c >= 0.9);
         ticking = false;
     };
     addEventListener("scroll", () => {
