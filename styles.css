@@ -1356,6 +1356,34 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     break-inside: avoid;
 }
 .pf-video { width: 100%; border-radius: 8px; display: block; }
+
+/* Tile de video en la grilla: poster de fondo + ▶ al centro. */
+.pf-vtile {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    margin: 0 0 0.8rem;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.5) center / cover no-repeat;
+    cursor: pointer;
+    break-inside: avoid;
+}
+.pf-vtile-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4rem;
+    color: var(--blanco);
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+}
+.pf-vtile:hover .pf-vtile-play,
+.pf-vtile:focus-visible .pf-vtile-play { color: var(--naranja); }
+
 .pf-media-soon {
     margin: 0;
     padding: 2rem;
@@ -1385,6 +1413,12 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     object-fit: contain;
     border-radius: 6px;
 }
+.pf-lb-vid {
+    max-width: 90vw;
+    max-height: 85vh;
+    border-radius: 6px;
+}
+.pf-lb-vid[hidden] { display: none; }
 .pf-lb-nav, .pf-lb-close {
     flex: none;
     width: 48px; height: 48px;

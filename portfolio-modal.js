@@ -16,6 +16,7 @@
     const mMedia = modal.querySelector(".pf-modal-media");
     const lb = modal.querySelector(".pf-lightbox");
     const lbImg = lb.querySelector(".pf-lb-img");
+    const lbVid = lb.querySelector(".pf-lb-vid");
     let lbList = [];
     let lbIndex = 0;
     let lastFocused = null;
@@ -44,43 +45,82 @@
         mTools.appendChild(ul);
     };
 
-    // Media del modal: masonry de imágenes (galería a proporción real) o video.
+    // Media del modal: lista unificada (imágenes + videos). Con galería → grilla de
+    // tiles (video = botón con poster + ▶). Solo-video sin galería → player inline.
     const renderMedia = (work) => {
         mMedia.innerHTML = "";
-        const gallery = work.galeria || [];
-        if (work.media === "video" && work.video) {
+        const images = (work.galeria || []).map((src) => ({ type: "image", src }));
+        const poster = work.portada || (work.galeria && work.galeria[0]) || "";
+        const videos = [];
+        if (work.video)   videos.push({ type: "video", src: work.video,   poster });
+        if (work.proceso) videos.push({ type: "video", src: work.proceso, poster });
+        const items = [...images, ...videos];
+
+        // Solo-video (sin galería, un único video): reproductor grande inline.
+        if (!images.length && videos.length === 1) {
             const v = document.createElement("video");
             v.className = "pf-video";
-            v.src = work.video;
+            v.src = videos[0].src;
             v.controls = true;
             v.playsInline = true;
             mMedia.appendChild(v);
+            return;
         }
-        if (gallery.length) {
-            const grid = document.createElement("div");
-            grid.className = "pf-gallery";
-            gallery.forEach((src, i) => {
-                const img = document.createElement("img");
-                img.src = src;
-                img.alt = `${work.title} — imagen ${i + 1}`;
-                img.loading = "lazy";
-                img.decoding = "async";
-                img.addEventListener("click", () => openLightbox(gallery, i));
-                grid.appendChild(img);
-            });
-            mMedia.appendChild(grid);
-        }
-        if (!gallery.length && !(work.media === "video" && work.video)) {
+        // Sin ninguna media: placeholder.
+        if (!items.length) {
             const ph = document.createElement("p");
             ph.className = "pf-media-soon";
             ph.textContent = work.media === "video"
                 ? "Video próximamente."
                 : "Imágenes próximamente.";
             mMedia.appendChild(ph);
+            return;
         }
+        // Grilla de tiles.
+        const grid = document.createElement("div");
+        grid.className = "pf-gallery";
+        items.forEach((item, i) => {
+            if (item.type === "image") {
+                const img = document.createElement("img");
+                img.src = item.src;
+                img.alt = `${work.title} — imagen ${i + 1}`;
+                img.loading = "lazy";
+                img.decoding = "async";
+                img.addEventListener("click", () => openLightbox(items, i));
+                grid.appendChild(img);
+            } else {
+                const btn = document.createElement("button");
+                btn.type = "button";
+                btn.className = "pf-vtile";
+                btn.setAttribute("aria-label", `${work.title} — video`);
+                if (item.poster) btn.style.backgroundImage = `url("${item.poster}")`;
+                const play = document.createElement("span");
+                play.className = "pf-vtile-play";
+                play.setAttribute("aria-hidden", "true");
+                play.textContent = "▶";
+                btn.appendChild(play);
+                btn.addEventListener("click", () => openLightbox(items, i));
+                grid.appendChild(btn);
+            }
+        });
+        mMedia.appendChild(grid);
     };
 
-    const showLb = () => { lbImg.src = lbList[lbIndex]; lbImg.alt = `Imagen ${lbIndex + 1}`; };
+    const showLb = () => {
+        const item = lbList[lbIndex];
+        const isVideo = item.type === "video";
+        lbImg.hidden = isVideo;
+        lbVid.hidden = !isVideo;
+        if (isVideo) {
+            lbVid.src = item.src;
+            lbVid.currentTime = 0;
+            lbVid.play().catch(() => {});   // arranca; si el browser lo bloquea, queda con controles
+        } else {
+            lbVid.pause();
+            lbImg.src = item.src;
+            lbImg.alt = `Imagen ${lbIndex + 1}`;
+        }
+    };
     const openLightbox = (list, i) => {
         lbList = list; lbIndex = i;
         showLb();
@@ -89,10 +129,12 @@
         lb.querySelector(".pf-lb-close").focus();
     };
     const closeLightbox = () => {
+        lbVid.pause();
         lb.hidden = true;
         lb.setAttribute("aria-hidden", "true");
     };
     const stepLb = (d) => {
+        lbVid.pause();
         lbIndex = (lbIndex + d + lbList.length) % lbList.length;
         showLb();
     };
