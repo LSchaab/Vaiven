@@ -104,6 +104,10 @@
             el.addEventListener("click", () => {
                 if (window.PortfolioModal) window.PortfolioModal.open(i);
             });
+            // Mouse encima / foco de teclado → su galería pasa adelante en la precarga.
+            const warm = () => { if (window.PortfolioModal) window.PortfolioModal.preloadWork(i, true); };
+            el.addEventListener("pointerenter", warm);
+            el.addEventListener("focus", warm);
 
             scene.appendChild(el);
             return { el, video, inview: false, lastP: 2 };
@@ -171,6 +175,7 @@
             : (CONFIG.introEnd + CONFIG.exitStart) / 2);
 
         const root = document.documentElement;
+        let lastFront = -1;
         const render = (S) => {
             // Vars en :root para que las lean tanto las capas del stage
             // (.work__intro, .work__scene, .card) como #nosotros (fuera del stage).
@@ -214,11 +219,28 @@
                 const want = c.inview ? "auto" : "none";
                 if (c.pe !== want) { c.el.style.pointerEvents = want; c.pe = want; }
             });
+            // Precarga: galería de la card al frente + las 2 siguientes (sólo con la
+            // pista de cards ya en marcha, para no competir con el hero al cargar).
+            if (S > 0 && bestI !== lastFront && window.PortfolioModal) {
+                lastFront = bestI;
+                for (let k = 0; k < 3; k++) window.PortfolioModal.preloadWork(bestI + k, true);
+            }
         };
 
         window.WorkCarousel.render = render;
         window.WorkCarousel.coverflow = true;
         render(0);
+
+        // Precarga de fondo de TODAS las galerías (prioridad baja, de a 2) mientras
+        // recorren hero/herramientas. Arranca con la página ya cargada + un respiro,
+        // así no compite con las imágenes del hero ni con las primeras cards.
+        const startBackground = () => {
+            const go = () => { if (window.PortfolioModal) window.PortfolioModal.preloadAll(); };
+            if ("requestIdleCallback" in window) requestIdleCallback(go, { timeout: 4000 });
+            else setTimeout(go, 1500);
+        };
+        if (document.readyState === "complete") startBackground();
+        else addEventListener("load", startBackground, { once: true });
     };
 
     // Galería vertical estática (tablet/mobile/reduced-motion) en #work.

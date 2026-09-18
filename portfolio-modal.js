@@ -24,6 +24,74 @@
 
     const FOCUSABLE = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
 
+    // Imágenes que muestra el modal de un trabajo (mismo orden y mismas rutas que
+    // renderMedia → lo precargado es exactamente lo que después se pide).
+    const imageSrcsOf = (work) => {
+        const galeria = (work && work.galeria) || [];
+        const srcs = [];
+        // La portada/mockup también entra a la galería, como primer tile (sin duplicar).
+        if (galeria.length && work.portada && !galeria.includes(work.portada)) srcs.push(work.portada);
+        galeria.forEach((src) => srcs.push(src));
+        return srcs;
+    };
+
+    // ----- Precarga de galerías -----
+    // Cola con límite de descargas simultáneas: el fondo va de a 2 y con prioridad
+    // baja (no traba el resto del sitio); lo urgente (card al frente / hover / modal
+    // abierto) se adelanta en la cola y puede usar hasta 6. Los Image quedan
+    // referenciados en PRE → el modal los encuentra en caché y ya sabe su tamaño.
+    const PRE = new Map();       // src → Image (pedida o ya cargada)
+    const queue = [];            // [{ src, urgent }]
+    const queued = new Set();
+    let active = 0;
+    const limit = () => (queue.length && queue[0].urgent ? 6 : 2);
+    const pump = () => {
+        while (queue.length && active < limit()) {
+            const { src, urgent } = queue.shift();
+            queued.delete(src);
+            if (PRE.has(src)) continue;
+            const im = new Image();
+            im.decoding = "async";
+            im.fetchPriority = urgent ? "high" : "low";
+            const done = () => { active--; pump(); };
+            im.addEventListener("load", done, { once: true });
+            im.addEventListener("error", done, { once: true });
+            PRE.set(src, im);
+            active++;
+            im.src = src;
+        }
+    };
+    const enqueue = (srcs, urgent) => {
+        const todo = srcs.filter((s) => !PRE.has(s));
+        if (!todo.length) return;
+        if (urgent) {
+            // sacar de la cola las que ya estaban (en baja) y ponerlas adelante
+            const set = new Set(todo);
+            for (let i = queue.length - 1; i >= 0; i--) {
+                if (set.has(queue[i].src)) queue.splice(i, 1);
+            }
+            queue.unshift(...todo.map((src) => ({ src, urgent: true })));
+            todo.forEach((s) => queued.add(s));
+        } else {
+            todo.forEach((src) => {
+                if (queued.has(src)) return;
+                queued.add(src);
+                queue.push({ src, urgent: false });
+            });
+        }
+        pump();
+    };
+    const preloadWork = (index, urgent = false) => {
+        const work = WORKS[index];
+        if (work) enqueue(imageSrcsOf(work), urgent);
+    };
+    // Todas las galerías, en el orden de las cards. Respeta "ahorro de datos".
+    const preloadAll = () => {
+        const c = navigator.connection;
+        if (c && c.saveData) return;
+        WORKS.forEach((w) => enqueue(imageSrcsOf(w), false));
+    };
+
     // Herramientas → chips con logo (resources/logos/<key>.svg). Oculta si no hay.
     const renderTools = (work) => {
         mTools.innerHTML = "";
@@ -91,11 +159,29 @@
         items.forEach((item, i) => {
             if (item.type === "image") {
                 const img = document.createElement("img");
-                img.src = item.src;
+                // Si ya se precargó, sabemos su tamaño → reserva el lugar exacto
+                // (la grilla no salta al aparecer).
+                const pre = PRE.get(item.src);
+                if (pre && pre.naturalWidth) {
+                    img.width = pre.naturalWidth;
+                    img.height = pre.naturalHeight;
+                }
                 img.alt = `${work.title} — imagen ${i + 1}`;
-                // Las primeras (arriba del fold, 2 columnas) eager para evitar el flash al abrir.
-                img.loading = i < 4 ? "eager" : "lazy";
+                // Todas eager: con lazy, dentro del modal las de abajo tardaban en
+                // pedirse y el proyecto parecía vacío.
+                img.loading = "eager";
                 img.decoding = "async";
+                img.src = item.src;
+                if (!img.complete) {
+                    // Todavía bajando: bloque tenue del tamaño estimado + fade al llegar.
+                    img.classList.add("is-loading");
+                    const settle = () => {
+                        img.classList.remove("is-loading");
+                        img.classList.add("is-loaded");
+                    };
+                    img.addEventListener("load", settle, { once: true });
+                    img.addEventListener("error", settle, { once: true });
+                }
                 img.addEventListener("click", () => openLightbox(items, i));
                 grid.appendChild(img);
             } else {
@@ -187,6 +273,7 @@
             mTitle.textContent = work.title;
         }
         mKicker.textContent = work.catLabel;
+        preloadWork(index, true);   // lo que falte de este proyecto pasa adelante en la cola
         // hue de la categoría en la raíz → lo leen el título y el fondo del diálogo
         modal.style.setProperty("--card-hue", String(work.hue));
         renderTools(work);
@@ -230,5 +317,5 @@
         if (e.target.closest("[data-lb-close]") || e.target === lb) closeLightbox();
     });
 
-    window.PortfolioModal = { open, close, openLightbox, closeLightbox };
+    window.PortfolioModal = { open, close, openLightbox, closeLightbox, preloadWork, preloadAll };
 })();

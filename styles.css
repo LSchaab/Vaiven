@@ -1635,6 +1635,22 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     cursor: zoom-in;
     break-inside: avoid;
 }
+/* Mientras baja: bloque tenue con proporción estimada (el modal no se ve vacío).
+   Si ya estaba precargada, portfolio-modal.js le pone width/height reales y no
+   pasa por acá. Al llegar: fade corto. */
+.pf-gallery img.is-loading {
+    aspect-ratio: 16 / 10;
+    height: auto;
+    background: rgba(255, 255, 255, 0.12);
+    animation: pf-img-pulse 1.2s ease-in-out infinite alternate;
+}
+.pf-gallery img.is-loaded { animation: pf-img-in 0.35s ease-out; }
+@keyframes pf-img-pulse { from { opacity: 0.55; } to { opacity: 1; } }
+@keyframes pf-img-in    { from { opacity: 0; }    to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+    .pf-gallery img.is-loading,
+    .pf-gallery img.is-loaded { animation: none; }
+}
 .pf-video { width: 100%; border-radius: 8px; display: block; }
 
 /* Tile de video en la grilla: poster de fondo + ▶ al centro. */
