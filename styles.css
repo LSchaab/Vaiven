@@ -1357,8 +1357,10 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 .pf-tool img { width: 24px; height: 24px; object-fit: contain; }
 .pf-modal-tools[hidden] { display: none; }
 
-/* Masonry: columnas fluidas; cada imagen a su proporción real. */
-.pf-gallery { columns: 3 200px; column-gap: 0.8rem; }
+/* Masonry a 2 columnas: proporción real, sin recortar. Con 2 columnas las alturas
+   se emparejan más que con 3 y casi no quedan huecos. En pantallas chicas, 1 columna. */
+.pf-gallery { columns: 2; column-gap: 0.8rem; }
+@media (max-width: 520px) { .pf-gallery { columns: 1; } }
 .pf-gallery img {
     width: 100%;
     display: block;
