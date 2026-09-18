@@ -255,7 +255,7 @@
                     title: "Hocicos Contentos",
                     portada: "resources/portfolio/campanas/portada.webp",
                     media: "video",
-                    video: "resources/portfolio/campanas/video.mp4",
+                    video: "resources/portfolio/campanas/PHC-2026_1.mp4",
                 },
             ],
         },
