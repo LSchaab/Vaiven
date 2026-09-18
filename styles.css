@@ -1387,18 +1387,21 @@ body.coverflow #nosotros { display: none; }
     height: 100%; width: auto; max-width: none; display: block;
 }
 
-/* ---- Manifiesto: la palabra "vaivén" del título es el trigger del video ---- */
+/* ---- Manifiesto: la palabra "vaivén" del título es el trigger del video.
+   Se resalta como chip (fondo amarillo, texto verde) para que se lea clickeable. */
 .nosotros__manifiesto {
     all: unset;
     font: inherit; font-style: italic; cursor: pointer;
-    color: var(--amarillo);
-    text-decoration: underline;
-    text-underline-offset: 0.12em;
-    text-decoration-thickness: 2px;
-    transition: color 0.2s;
+    color: var(--verde);
+    background: var(--amarillo);
+    padding: 0 0.22em;
+    border-radius: 6px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    transition: background 0.2s, color 0.2s;
 }
 .nosotros__manifiesto:hover,
-.nosotros__manifiesto:focus-visible { color: var(--blanco); outline: none; }
+.nosotros__manifiesto:focus-visible { background: var(--blanco); color: var(--verde); outline: none; }
 
 @media (prefers-reduced-motion: reduce) {
     .nosotros-spotify { transition: none; }
@@ -1735,41 +1738,53 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 
 .contacto__bajada {
     margin: 0;
-    font-size: clamp(1rem, 2vw, 1.35rem);
-    max-width: 32ch;
+    font-size: clamp(1.15rem, 2.6vw, 1.7rem);   /* subtítulo un poco más grande */
+    max-width: 34ch;
     color: var(--lila);         /* acento mínimo lila para la bajada */
 }
 
-/* email protagonista: tamaño display, flecha-sticker apoyada al lado */
+/* email protagonista: tamaño display; mira detrás de la 1ª "v" y flecha grunge
+   apoyada arriba con la punta cayendo sobre el email (ambas absolutas). */
 .contacto__mail {
+    position: relative;
     display: inline-flex;
     align-items: center;
-    gap: clamp(0.4rem, 1.5vw, 1rem);
-    margin: clamp(0.5rem, 2vh, 1.5rem) 0;
+    margin: clamp(2rem, 6vh, 3.5rem) 0 clamp(0.5rem, 2vh, 1.5rem);
     color: var(--blanco);
     text-decoration: none;
     font-family: var(--font-alt);
     font-weight: 700;
-    font-size: clamp(1.6rem, 6.5vw, 4rem);
+    font-size: clamp(1.7rem, 7vw, 4.2rem);
     line-height: 1;
     letter-spacing: -0.02em;
-    transition: color 0.25s ease;
 }
 .contacto__mail-text {
+    position: relative; z-index: 1;   /* sobre la mira */
     border-bottom: 2px solid transparent;
     transition: border-color 0.25s ease;
 }
-.contacto__mail:hover,
-.contacto__mail:focus-visible { color: var(--lila); }
 .contacto__mail:hover .contacto__mail-text,
 .contacto__mail:focus-visible .contacto__mail-text { border-bottom-color: var(--lila); }
 
-.contacto__flecha {
-    flex: none;
-    width: clamp(1.6rem, 6.5vw, 4rem);
-    height: clamp(1.6rem, 6.5vw, 4rem);
-    color: var(--lila);         /* flecha-sticker en acento lila */
-    transform: rotate(-20deg);  /* apoyada tipo sticker, apuntando al email */
+/* mira detrás de la primera "v" del email */
+.contacto__mail-mira {
+    position: absolute; z-index: 0;
+    left: -0.2em; top: 50%;
+    transform: translateY(-50%);
+    width: 1.5em; height: 1.5em;
+    background: var(--blanco); opacity: 0.6;
+    -webkit-mask: url("resources/hero/mira.svg") center / contain no-repeat;
+            mask: url("resources/hero/mira.svg") center / contain no-repeat;
+    pointer-events: none;
+}
+/* flecha grunge (webp) apoyada arriba, punta hacia abajo sobre el email */
+.contacto__mail-arrow {
+    position: absolute; z-index: 2;
+    left: 40%; top: -0.78em;
+    width: clamp(3.2rem, 13vw, 6.5rem);
+    height: auto;
+    transform: rotate(122deg);
+    pointer-events: none;
 }
 
 /* redes secundarias: chiquitas, uppercase, con tracking, separadas por · */
@@ -1808,57 +1823,50 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 .contacto__inner { position: relative; z-index: 1; }
 .contacto-deco { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .cd { position: absolute; display: block; }
-.cd-cruces, .cd-flechas, .cd-mira, .cd-lineas-izq, .cd-lineas-der, .cd-barras {
+.cd-cruces, .cd-flechas, .cd-lineas-izq, .cd-lineas-der, .cd-barras {
     -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
     -webkit-mask-position: center;  mask-position: center;
     -webkit-mask-size: contain;     mask-size: contain;
 }
+/* cruces_abajo: 137×10 (fila horizontal de ×) */
 .cd-cruces {
-    left: 4%; top: 12%; width: min(2.6vw, 32px); height: min(13vw, 160px);
+    left: 4%; top: 12%; width: min(16vw, 175px); height: min(1.5vw, 17px);
     background: var(--naranja);
     -webkit-mask-image: url("resources/hero/cruces_abajo.svg");
             mask-image: url("resources/hero/cruces_abajo.svg");
 }
+/* flechas: 14×55 (columna vertical de flechas) */
 .cd-flechas {
-    right: 6%; top: 24%; width: min(3.6vw, 44px); height: min(10vw, 130px);
+    right: 5%; top: 22%; width: min(3.6vw, 44px); height: min(14vw, 155px);
     background: var(--azul);
     -webkit-mask-image: url("resources/hero/flechas.svg");
             mask-image: url("resources/hero/flechas.svg");
 }
-.cd-mira {
-    left: 13%; top: 52%; width: min(6vw, 74px); height: min(6vw, 74px);
-    background: var(--blanco); opacity: 0.5;
-    -webkit-mask-image: url("resources/hero/mira.svg");
-            mask-image: url("resources/hero/mira.svg");
-}
+/* lineas_izq: 11×222 (líneas verticales largas) — borde izquierdo */
 .cd-lineas-izq {
-    left: 2%; top: 46%; width: min(3.2vw, 40px); height: min(22vh, 210px);
-    background: var(--azul); opacity: 0.8;
+    left: 2%; top: 40%; width: min(2vw, 24px); height: min(28vh, 260px);
+    background: var(--azul); opacity: 0.85;
     -webkit-mask-image: url("resources/hero/lineas_izq.svg");
             mask-image: url("resources/hero/lineas_izq.svg");
 }
+/* lineas_der: 11×222 (líneas verticales largas) — borde derecho */
 .cd-lineas-der {
-    right: 3%; top: 6%; width: min(12vw, 150px); height: min(4vw, 46px);
-    background: var(--blanco); opacity: 0.55;
+    right: 3%; top: 16%; width: min(2vw, 24px); height: min(28vh, 260px);
+    background: var(--blanco); opacity: 0.6;
     -webkit-mask-image: url("resources/hero/lineas_der.svg");
             mask-image: url("resources/hero/lineas_der.svg");
 }
-/* barras abajo-centro: bandas alternadas azul/naranja recortadas por la forma */
+/* barras_abajo: 148×21 (barras horizontales) — abajo-centro, azul/naranja */
 .cd-barras {
     left: 50%; bottom: 6%; transform: translateX(-50%);
-    width: min(15vw, 190px); height: min(3.2vw, 36px);
+    width: min(18vw, 220px); height: min(3vw, 34px);
     background: repeating-linear-gradient(90deg,
-        var(--naranja) 0 12px, var(--azul) 12px 24px);
-    -webkit-mask-image: url("resources/hero/barras_derecha.svg");
-            mask-image: url("resources/hero/barras_derecha.svg");
-}
-/* flecha grunge (webp) apuntando al email — no se recolorea */
-.cd-flecha-grunge {
-    right: 16%; top: 50%; width: min(16vw, 180px);
-    transform: rotate(-8deg); opacity: 0.95;
+        var(--naranja) 0 14px, var(--azul) 14px 28px);
+    -webkit-mask-image: url("resources/hero/barras_abajo.svg");
+            mask-image: url("resources/hero/barras_abajo.svg");
 }
 /* dots (azul/naranja) */
-.cd-dot { width: 9px; height: 9px; }
+.cd-dot { width: 11px; height: 11px; }
 .cd-dot-1 { left: 20%; top: 20%; background: var(--azul); }
 .cd-dot-2 { left: 34%; top: 44%; background: var(--naranja); }
 .cd-dot-3 { right: 24%; bottom: 22%; background: var(--naranja); }
