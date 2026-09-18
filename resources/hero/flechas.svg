@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 14.69 54.98">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #fff;
+        stroke-miterlimit: 10;
+      }
+    </style>
+  </defs>
+  <g id="Capa_1-2" data-name="Capa 1">
+    <g>
+      <g>
+        <polyline class="cls-1" points=".35 40.8 14.19 40.8 14.19 54.63"/>
+        <line class="cls-1" x1=".35" y1="54.63" x2="14.19" y2="40.8"/>
+      </g>
+      <g>
+        <polyline class="cls-1" points=".35 20.65 14.19 20.65 14.19 34.48"/>
+        <line class="cls-1" x1=".35" y1="34.48" x2="14.19" y2="20.65"/>
+      </g>
+      <g>
+        <polyline class="cls-1" points=".35 .5 14.19 .5 14.19 14.33"/>
+        <line class="cls-1" x1=".35" y1="14.33" x2="14.19" y2=".5"/>
+      </g>
+    </g>
+  </g>
+</svg>

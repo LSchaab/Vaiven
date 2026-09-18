@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Capa_2" data-name="Capa 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 397.9 7.69">
+  <defs>
+    <style>
+      .cls-1 {
+        stroke: #f6f6f6;
+      }
+
+      .cls-1, .cls-2 {
+        fill: none;
+        stroke-miterlimit: 10;
+        stroke-width: .25px;
+      }
+
+      .cls-2 {
+        stroke: #fff;
+      }
+    </style>
+  </defs>
+  <g id="Capa_1-2" data-name="Capa 1">
+    <g>
+      <line class="cls-1" x1="390.33" y1="3.85" y2="3.85"/>
+      <rect class="cls-2" x="390.33" y=".12" width="7.44" height="7.44" transform="translate(788.11 7.69) rotate(-180)"/>
+    </g>
+  </g>
+</svg>

@@ -32,7 +32,7 @@
          (styles.css: scroll-behavior). Sin JS de navegación. -->
     <header>
         <a class="logo" href="#hero" aria-label="Vai Ven — inicio">
-            <img src="resources/logo_blanco_blur_2.webp" alt="Vai Ven" decoding="async">
+            <img src="resources/logo_vaiven.webp" alt="Vai Ven" decoding="async">
         </a>
         <nav aria-label="Principal">
             <ul>
@@ -79,12 +79,67 @@
                 <div class="puerta puerta-der" aria-hidden="true"></div>
 
                 <!-- capa 5: motivos (parallax; se desvanecen en fase 1) -->
+                <img class="circulo-ojo" src="resources/hero/circulo_ojo.svg" alt="" aria-hidden="true">
                 <img class="ojo ojo-izq" src="resources/ojo_1.webp" alt="" aria-hidden="true" decoding="async">
-                <img class="ojo ojo-der" src="resources/ojo_2.webp" alt="" aria-hidden="true" decoding="async">
-                <img class="mano-lupa" src="resources/lupa_BYN.png" alt="" aria-hidden="true" decoding="async">
+                <a class="mano-lupa" href="https://www.youtube.com/watch?v=Gf6uwSo3Tww&pp=ygUPdmFpdmVuIGRlbW9yZWVs" target="_blank" rel="noopener" aria-label="Ver demoreel en YouTube">
+                    <img src="resources/lupa_BYN.png" alt="" decoding="async">
+                </a>
+
+                <!-- Adorno de marca de la sala "herramientas": misceláneas que
+                     ACOMPAÑAN al cerebro (presentes apenas arranca la fase 2, NO
+                     se revelan con el scroll — decisión Luly 2026-09-17, opción A).
+                     Layout según referencia de Luly (Recurso 5). -->
+                <div class="herr-miscelaneas" aria-hidden="true">
+                    <!-- Encuadre: marco de viewport → 4 esquinas en L + ticks -->
+                    <img class="hm2 hm2-marco" src="resources/hero/marco.svg" alt="">
+                    <span class="hm2 hm2-esquina-naranja"></span>
+
+                    <!-- IZQUIERDA -->
+                    <img  class="hm2 hm2-mira-izq"   src="resources/hero/mira.svg" alt="">
+                    <span class="hm2 hm2-dot-izq"></span>
+                    <img  class="hm2 hm2-barras-izq" src="resources/hero/barras_derecha.svg" alt="">
+                    <img  class="hm2 hm2-suma-izq"   src="resources/hero/suma.svg" alt="">
+                    <span class="hm2 hm2-sq-izq"></span>
+
+                    <!-- DERECHA -->
+                    <img  class="hm2 hm2-mira-der"   src="resources/hero/mira.svg" alt="">
+                    <img  class="hm2 hm2-lineas-der" src="resources/hero/lineas_der.svg" alt="">
+                    <span class="hm2 hm2-lineas-sq-top"></span>
+                    <span class="hm2 hm2-lineas-sq-a"></span>
+                    <span class="hm2 hm2-lineas-sq-b"></span>
+                    <img  class="hm2 hm2-linea-sq"   src="resources/hero/linea_cuadrado.svg" alt="">
+                    <img  class="hm2 hm2-suma-der"   src="resources/hero/suma.svg" alt="">
+                    <img  class="hm2 hm2-flechas"    src="resources/hero/flechas.svg" alt="">
+                    <img  class="hm2 hm2-barras-der" src="resources/hero/barras_der_stroke.svg" alt="">
+                    <span class="hm2 hm2-sq-der"></span>
+
+                    <!-- CENTRO-ABAJO -->
+                    <img  class="hm2 hm2-cruces"     src="resources/hero/cruces_abajo.svg" alt="">
+                </div>
+
+                <!-- misceláneas decorativas del hero (grilla de elementos; se desvanecen en fase 1) -->
+                <div class="hero-miscelaneas" aria-hidden="true">
+                    <img class="hm hm-cuadrado"    src="resources/hero/miscelanea_cuadrado.svg" alt="">
+                    <img class="hm hm-lineas-izq"  src="resources/hero/lineas_izq.svg" alt="">
+                    <img class="hm hm-barras-arr"  src="resources/hero/barras_arriba.svg" alt="">
+                    <img class="hm hm-marco"       src="resources/hero/marco.svg" alt="">
+                    <img class="hm hm-cruz-cyan"   src="resources/hero/cruz_cyan.svg" alt="">
+                    <img class="hm hm-barras-der"  src="resources/hero/barras_derecha.svg" alt="">
+                    <img class="hm hm-suma"        src="resources/hero/suma.svg" alt="">
+                    <img class="hm hm-cruces-abj"  src="resources/hero/cruces_abajo.svg" alt="">
+                    <img class="hm hm-barras-abj"  src="resources/hero/barras_abajo.svg" alt="">
+                    <!-- extras: duplicados en colores de marca -->
+                    <img class="hm hm-cruz-2"  src="resources/hero/cruz_cyan.svg" alt="">
+                    <img class="hm hm-cruz-3"  src="resources/hero/cruz_cyan.svg" alt="">
+                    <img class="hm hm-cruz-4"  src="resources/hero/cruz_cyan.svg" alt="">
+                    <img class="hm hm-suma-2"  src="resources/hero/suma.svg" alt="">
+                    <img class="hm hm-suma-3"  src="resources/hero/suma.svg" alt="">
+                    <span class="hm hm-sq hm-sq-1"></span>
+                    <span class="hm hm-sq hm-sq-2"></span>
+                </div>
 
                 <!-- capa 6: frase (único texto real del hero) -->
-                <h1 class="hero-frase">Abrí la cabeza,<br>empezá por la<br><strong class="frase-nuestra">nuestra</strong>.</h1>
+                <h1 class="hero-frase">Abrí la cabeza,<br>empezá por la<br><strong class="frase-nuestra"><a class="frase-nuestra-link" href="https://www.youtube.com/watch?v=Gf6uwSo3Tww&pp=ygUPdmFpdmVuIGRlbW9yZWVs" target="_blank" rel="noopener">nuestra</a></strong>.</h1>
 
                 <!-- capas de fase 2 (herramientas): polvo, palabra, lluvia de logos -->
                 <canvas class="herr-dust" aria-hidden="true"></canvas>
@@ -157,8 +212,8 @@
             <ul class="nosotros__fila">
                 <li class="nosotros__miembro">
                     <button class="nosotros__flip" type="button" aria-label="Ver a Matías">
-                        <span class="nosotros__cara nosotros__cara--ojo"><img src="resources/ojo_1.webp" alt="" decoding="async"></span>
-                        <span class="nosotros__cara nosotros__cara--persona"><img src="resources/nosotros/Matias.png" alt="Matías" decoding="async"></span>
+                        <span class="nosotros__cara nosotros__cara--ojo nosotros__cara--sticker"><img src="resources/nosotros/ojos/ojo_matias.webp" alt="" decoding="async"></span>
+                        <span class="nosotros__cara nosotros__cara--persona nosotros__cara--sticker"><img src="resources/nosotros/matias.webp" alt="Matías" decoding="async"></span>
                     </button>
                     <p class="nosotros__nombre">Matías</p>
                     <p class="nosotros__rol">Texturizador 3D</p>
@@ -166,8 +221,8 @@
                 </li>
                 <li class="nosotros__miembro">
                     <button class="nosotros__flip" type="button" aria-label="Ver a Lourdes">
-                        <span class="nosotros__cara nosotros__cara--ojo"><img src="resources/ojo_2.webp" alt="" decoding="async"></span>
-                        <span class="nosotros__cara nosotros__cara--persona"><img src="resources/nosotros/Luly.png" alt="Lourdes" decoding="async"></span>
+                        <span class="nosotros__cara nosotros__cara--ojo nosotros__cara--sticker"><img src="resources/nosotros/ojos/ojo_lourdes.webp" alt="" decoding="async"></span>
+                        <span class="nosotros__cara nosotros__cara--persona nosotros__cara--sticker"><img src="resources/nosotros/lourdes.webp" alt="Lourdes" decoding="async"></span>
                     </button>
                     <p class="nosotros__nombre">Lourdes</p>
                     <p class="nosotros__rol">Programadora</p>
@@ -175,8 +230,8 @@
                 </li>
                 <li class="nosotros__miembro">
                     <button class="nosotros__flip" type="button" aria-label="Ver a Victoria">
-                        <span class="nosotros__cara nosotros__cara--ojo"><img src="resources/ojo_1.webp" alt="" decoding="async"></span>
-                        <span class="nosotros__cara nosotros__cara--persona"><img src="resources/nosotros/Vicky.png" alt="Victoria" decoding="async"></span>
+                        <span class="nosotros__cara nosotros__cara--ojo nosotros__cara--sticker"><img src="resources/nosotros/ojos/ojo_victoria.webp" alt="" decoding="async"></span>
+                        <span class="nosotros__cara nosotros__cara--persona nosotros__cara--sticker"><img src="resources/nosotros/victoria.webp" alt="Victoria" decoding="async"></span>
                     </button>
                     <p class="nosotros__nombre">Victoria</p>
                     <p class="nosotros__rol">Diseñadora Gráfica</p>
@@ -184,8 +239,8 @@
                 </li>
                 <li class="nosotros__miembro">
                     <button class="nosotros__flip" type="button" aria-label="Ver a Agustina">
-                        <span class="nosotros__cara nosotros__cara--ojo"><img src="resources/ojo_2.webp" alt="" decoding="async"></span>
-                        <span class="nosotros__cara nosotros__cara--persona"><img src="resources/nosotros/Agus.png" alt="Agustina" decoding="async"></span>
+                        <span class="nosotros__cara nosotros__cara--ojo nosotros__cara--sticker"><img src="resources/nosotros/ojos/ojo_agus.webp" alt="" decoding="async"></span>
+                        <span class="nosotros__cara nosotros__cara--persona nosotros__cara--sticker"><img src="resources/nosotros/agustina.webp" alt="Agustina" decoding="async"></span>
                     </button>
                     <p class="nosotros__nombre">Agustina</p>
                     <p class="nosotros__rol">Directora Creativa</p>
@@ -193,8 +248,8 @@
                 </li>
                 <li class="nosotros__miembro">
                     <button class="nosotros__flip" type="button" aria-label="Ver a Bautista">
-                        <span class="nosotros__cara nosotros__cara--ojo"><img src="resources/ojo_1.webp" alt="" decoding="async"></span>
-                        <span class="nosotros__cara nosotros__cara--persona"><img src="resources/nosotros/Bautista.png" alt="Bautista" decoding="async"></span>
+                        <span class="nosotros__cara nosotros__cara--ojo nosotros__cara--sticker"><img src="resources/nosotros/ojos/ojo_bautista.webp" alt="" decoding="async"></span>
+                        <span class="nosotros__cara nosotros__cara--persona nosotros__cara--sticker"><img src="resources/nosotros/bautista.webp" alt="Bautista" decoding="async"></span>
                     </button>
                     <p class="nosotros__nombre">Bautista</p>
                     <p class="nosotros__rol">Modelador 3D</p>
@@ -203,8 +258,32 @@
             </ul>
           </div>
         </section>
-        <section id="contacto" class="zona-bn">
-            <h2>contacto</h2>
+        <!-- Contacto: otro extremo en B&N (negro + grilla estática del hero). El email
+             es el protagonista; redes secundarias. La transición de "puertas cerrándose"
+             (spec 2026-09-17) NO está montada todavía — esto es la versión sección normal
+             (el fallback documentado), aislada de mente.js. -->
+        <section id="contacto" class="zona-bn contacto">
+            <div class="contacto__inner">
+                <h2 class="contacto__titulo">Vení, que la seguimos.</h2>
+                <p class="contacto__bajada">Traé la idea. Nosotros ponemos el movimiento.</p>
+
+                <a class="contacto__mail" href="mailto:vaivendv@gmail.com">
+                    <span class="contacto__mail-text">vaivendv@gmail.com</span>
+                    <!-- flecha-sticker decorativa; reemplazable por asset real cuando exista -->
+                    <svg class="contacto__flecha" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor"
+                              stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+
+                <p class="contacto__redes">
+                    <a href="https://www.instagram.com/vaiven.dm/" target="_blank"
+                       rel="noopener" aria-label="Instagram de VAI VEN">Instagram</a>
+                    <span class="contacto__sep" aria-hidden="true">·</span>
+                    <a href="https://x.com/vaiven_dm" target="_blank"
+                       rel="noopener" aria-label="X (Twitter) de VAI VEN">X</a>
+                </p>
+            </div>
         </section>
 
         <!-- Modal de proyecto (lo puebla portfolio-modal.js). role=dialog + focus trap. -->
@@ -233,5 +312,67 @@
                 </div>
         </div>
     </main>
+
+    <!-- Modal demoreel: abre al hacer click en "nuestra" o la lupa del hero -->
+    <div id="demoreel-modal" hidden role="dialog" aria-modal="true" aria-label="Demoreel VAI VEN">
+        <div class="demoreel-backdrop"></div>
+        <div class="demoreel-dialog">
+            <button class="demoreel-close" type="button" aria-label="Cerrar">✕</button>
+            <iframe id="demoreel-iframe" src="" title="Demoreel VAI VEN"
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script>
+    (() => {
+        const EMBED = "https://www.youtube-nocookie.com/embed/Gf6uwSo3Tww?autoplay=1&rel=0";
+        const modal    = document.getElementById("demoreel-modal");
+        const iframe   = document.getElementById("demoreel-iframe");
+        const backdrop = modal.querySelector(".demoreel-backdrop");
+        const closeBtn = modal.querySelector(".demoreel-close");
+        const stage    = document.querySelector(".mente-stage");
+        let lastFocused = null;
+
+        const triggers = Array.from(
+            document.querySelectorAll(".frase-nuestra-link, .mano-lupa")
+        );
+
+        const heroProgress = () =>
+            parseFloat(stage && stage.style.getPropertyValue("--hero-progress")) || 0;
+
+        // Sincroniza pointer-events con la visibilidad real del hero:
+        // cuando --hero-progress > 0.05, los triggers son invisibles →
+        // deben ser transparentes a clicks para no bloquear el portfolio.
+        const syncPointerEvents = () => {
+            const pe = heroProgress() > 0.05 ? "none" : "auto";
+            triggers.forEach(el => { el.style.pointerEvents = pe; });
+        };
+        syncPointerEvents();
+        if (stage) new MutationObserver(syncPointerEvents)
+            .observe(stage, { attributes: true, attributeFilter: ["style"] });
+
+        const open = (e) => {
+            if (e) e.preventDefault();
+            lastFocused = document.activeElement;
+            iframe.src = EMBED;
+            modal.hidden = false;
+            document.body.classList.add("demoreel-open");
+            closeBtn.focus();
+        };
+        const close = () => {
+            iframe.src = "";
+            modal.hidden = true;
+            document.body.classList.remove("demoreel-open");
+            if (lastFocused && lastFocused.focus) lastFocused.focus();
+        };
+
+        triggers.forEach(el => el.addEventListener("click", open));
+
+        backdrop.addEventListener("click", close);
+        closeBtn.addEventListener("click", close);
+        modal.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+    })();
+    </script>
 </body>
 </html>

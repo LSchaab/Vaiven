@@ -252,7 +252,7 @@
     };
     const seedDust = () => {
         const w = stage.clientWidth, h = stage.clientHeight;
-        const count = Math.round((w * h) / 14000);
+        const count = 0;   // partículas de fondo desactivadas (decisión Luly 2026-09-17)
         motes = Array.from({ length: count }, (_, i) => ({
             x: (i * 97.3) % w,
             y: (i * 61.7) % h,
@@ -277,7 +277,7 @@
         ctx.globalAlpha = 1;
         dustRAF = requestAnimationFrame(drawDust);
     };
-    const startDust = () => { if (!dustRAF) dustRAF = requestAnimationFrame(drawDust); };
+    const startDust = () => { if (!motes.length) return; if (!dustRAF) dustRAF = requestAnimationFrame(drawDust); };
     const stopDust = () => { cancelAnimationFrame(dustRAF); dustRAF = 0; };
 
     sizeDust();

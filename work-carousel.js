@@ -119,7 +119,7 @@
             };
             const seedStars = () => {
                 const { w, h } = dims();
-                const count = Math.round((w * h) / 14000);
+                const count = 0;   // partículas de fondo desactivadas (decisión Luly 2026-09-17)
                 motes = Array.from({ length: count }, (_, i) => ({
                     x: (i * 97.3) % w, y: (i * 61.7) % h,
                     r: 0.5 + (i % 5) * 0.35,
@@ -142,7 +142,7 @@
                 ctx.globalAlpha = 1;
             };
             const loop = () => { paintStars(true); starRAF = requestAnimationFrame(loop); };
-            const startStars = () => { if (!starRAF && !reduceStars.matches) starRAF = requestAnimationFrame(loop); };
+            const startStars = () => { if (!motes.length) return; if (!starRAF && !reduceStars.matches) starRAF = requestAnimationFrame(loop); };
             const stopStars = () => { cancelAnimationFrame(starRAF); starRAF = 0; };
             sizeStars(); seedStars(); paintStars(false);
             const journey = document.querySelector(".mente-journey");
