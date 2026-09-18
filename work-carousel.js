@@ -61,7 +61,11 @@
 
             const media = document.createElement("span");
             media.className = "card__media";
-            if (work.portada) {
+            // Works de VIDEO: la card loopea el video (la portada queda sólo como
+            // poster mientras carga). Si además se metía el <img>, tapaba al video
+            // (los dos van al 100% en flujo y el video quedaba abajo, oculto).
+            // La portada como imagen es para la galería mobile (mountGallery).
+            if (work.portada && !work.video) {
                 const img = document.createElement("img");
                 img.className = "card__img";
                 img.src = work.portada;
@@ -72,7 +76,7 @@
                 if (i < 4) img.fetchPriority = "high";
                 img.decoding = "async";
                 media.appendChild(img);
-            } else {
+            } else if (!work.video) {
                 el.classList.add("card--fallback");
                 el.style.setProperty("--card-hue", String(work.hue));
             }
@@ -287,7 +291,9 @@
     };
 
     // ---- Elegir modo: coverflow 3D (desktop, sin reduced-motion) o galería ----
-    const coverflowMQ = matchMedia("(min-width: 1025px)");
+    // ≥1000px: incluye monitores de 1024×768 (una de las PCs del jurado) → desktop.
+    // Tablets en vertical (768-834px) siguen yendo a la galería.
+    const coverflowMQ = matchMedia("(min-width: 1000px)");
     const reduceMQ = matchMedia("(prefers-reduced-motion: reduce)");
     const useCoverflow = () => coverflowMQ.matches && !reduceMQ.matches;
 

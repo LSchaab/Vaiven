@@ -26,6 +26,10 @@
 
     --font-base: "Montserrat", system-ui, sans-serif;
     --font-alt:  "Montserrat Alternates", system-ui, sans-serif;
+
+    /* Alto del header fijo (padding 1rem×2 + logo 4rem). Las capas del stage
+       pineado lo descuentan para centrarse en el área VISIBLE, no detrás del header. */
+    --header-h: 6rem;
 }
 
 /* --- Reset mínimo ---------------------------------------------------------- */
@@ -35,7 +39,7 @@ html {
     /* Scroll continuo + salto suave por ancla. scroll-padding compensa el
        header fijo para que el título de la sección no quede tapado. */
     scroll-behavior: smooth;
-    scroll-padding-top: 6rem;
+    scroll-padding-top: var(--header-h);
 }
 
 body {
@@ -99,6 +103,17 @@ nav a {
 nav a:hover,
 nav a:focus-visible,
 nav a.is-active { color: var(--azul); }
+
+/* Pantallas BAJAS de escritorio (monitores 1366×768, laptops 1536×864 al 125%):
+   el viewport útil de Chrome queda en ~640-730px de alto y un header de 96px se
+   come el 15%. Lo compactamos para devolverle alto al contenido. */
+@media (min-width: 769px) and (max-height: 760px) {
+    :root { --header-h: 3rem; }             /* 0.375rem×2 + logo 2.25rem */
+    header { padding-block: 0.375rem; }
+    .logo img { height: 2.25rem; }
+    nav ul { gap: 1.25rem; }
+    nav a { font-size: 0.8rem; }
+}
 
 /* --- Menú hamburguesa (sólo mobile) --------------------------------------- */
 .nav-toggle {
@@ -395,7 +410,9 @@ section h2 {
     position: absolute;
     left: 55%; top: 63%;
     width: min(16vw, 210px);
-    z-index: 7;
+    /* DETRÁS de la frase: mismo z que .hero-frase (5) pero antes en el DOM, así
+       la frase pinta encima. Sigue sobre las puertas (3) y las misceláneas (4). */
+    z-index: 5;
 }
 .mano-lupa img {
     width: 100%;
@@ -785,8 +802,11 @@ body.coverflow .portfolio-stage {
    frente (progress≈0, --ap≈0) queda centrada, a tamaño y opacidad plenos. --ap es
    |progress| (lo setea work-carousel.js). */
 .card {
-    position: absolute; top: 50%; left: 50%;
-    width: min(70vw, 960px);
+    /* centrada en el área visible (debajo del header), no en el viewport entero */
+    position: absolute; top: calc(50% + var(--header-h) / 2); left: 50%;
+    /* el ancho también lo limita el ALTO disponible (16:9): en pantallas anchas y
+       bajas (1366×641 útil) 70vw daba una card más alta que el hueco bajo el header */
+    width: min(70vw, 960px, calc((100vh - var(--header-h) - 4rem) * 16 / 9));
     aspect-ratio: 16 / 9;
     margin: 0; padding: 0; border: 0;
     border-radius: 10px;
@@ -801,6 +821,11 @@ body.coverflow .portfolio-stage {
         translateX(calc(var(--progress, 1) * 52vw))   /* desliza al costado (menor = más juntas) */
         scale(calc(1 - var(--ap, 1) * 0.14));          /* frente más grande */
     opacity: calc(1 - var(--ap, 1) * 0.3);             /* costados más tenues */
+}
+/* Pantallas bajas de escritorio: cards más chicas, con aire arriba y abajo
+   (va después de .card para ganarle por orden en la cascada). */
+@media (min-width: 769px) and (max-height: 760px) {
+    .card { width: min(58vw, 820px, calc((100vh - var(--header-h) - 7rem) * 16 / 9)); }
 }
 /* fuera de rango (cards apiladas en los extremos): ocultas, para que no se vea
    un pedazo del último/primer proyecto siempre asomando al costado. */
@@ -1000,13 +1025,19 @@ body.coverflow .work-deco {
     padding: clamp(4rem, 10vh, 8rem) 6vw;
     min-height: 100lvh;
 }
+/* Mismo título que desktop ("ESTO / ES LO NUESTRO", errática en 2 líneas) */
 .work__gallery-title {
     margin: 0 0 2rem;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 0.1em;
     text-align: center;
-    font-size: clamp(1.8rem, 7vw, 3rem);
+    font-size: clamp(1.8rem, 8vmin, 3rem);
     font-weight: 800;
-    text-transform: lowercase;
+    text-transform: uppercase;
+    color: var(--blanco);
+    opacity: 1;               /* anula el rótulo-stub de `section h2` (0.4) */
 }
+.work__gallery-title .erratic { font-size: 1em; }
 .work__cards {
     list-style: none;
     margin: 0 auto;
@@ -1139,6 +1170,7 @@ body.coverflow #nosotros { display: none; }
     background: var(--verde);
     color: var(--blanco);
     z-index: 6;                 /* sobre el iris de salida (.work__exit z5) */
+    padding-top: var(--header-h);   /* centra el equipo DEBAJO del header fijo */
     pointer-events: none;
     opacity: clamp(0, calc((var(--work-exit, 0) - 0.5) * 10), 1);
 }
@@ -1152,7 +1184,7 @@ body.coverflow #nosotros { display: none; }
     margin: 0 0 clamp(2.5rem, 7vh, 5rem);
     font-family: var(--font-alt);
     font-weight: 800;
-    font-size: clamp(2rem, 6vw, 4.5rem);
+    font-size: clamp(2rem, min(6vw, 10vh), 4.5rem);   /* vh: no desborda en pantallas bajas */
     line-height: 0.95;
     letter-spacing: -0.02em;
     opacity: 1;             /* override section h2 { opacity: 0.4 } stub rule */
@@ -1178,7 +1210,7 @@ body.coverflow #nosotros { display: none; }
 .nosotros__flip {
     all: unset;
     position: relative;
-    width: clamp(100px, 13vw, 162px); aspect-ratio: 1;
+    width: clamp(90px, min(13vw, 22vh), 162px); aspect-ratio: 1;
     cursor: pointer; display: block;
     transform-style: preserve-3d;
     transition: transform 0.6s cubic-bezier(0.6, 0.05, 0.2, 1);
@@ -1369,7 +1401,7 @@ body.coverflow #nosotros { display: none; }
    revela el código escaneable. El borde derecho queda pegado al margen. */
 .nosotros-spotify {
     position: absolute;
-    top: clamp(4.5rem, 11vh, 6rem);   /* despeja el header fijo */
+    top: calc(var(--header-h) + 1rem);   /* despeja el header fijo */
     right: 0;
     z-index: 3;                       /* sobre adornos y contenido */
     width: 52px; height: 52px;
@@ -1690,7 +1722,7 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 .pf-lb-close { position: absolute; top: 1rem; right: 1rem; }
 .pf-lb-nav:hover, .pf-lb-close:hover { background: rgba(255,255,255,0.15); }
 
-/* (El coverflow sólo se monta en ≥1025px; en pantallas chicas va la galería, así
+/* (El coverflow sólo se monta en ≥1000px; en pantallas chicas va la galería, así
    que ya no hacen falta reglas mobile para .card.) */
 
 /* ---- Reduced-motion: el cerebro no anima (mente.js hace return) y #work cae a
@@ -1838,7 +1870,7 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     pointer-events: none;
     background: url("resources/textures/grunge_texture_contacto.webp") center / cover no-repeat;
     mix-blend-mode: screen;   /* el negro no tapa; sólo suman polvo/hilos blancos */
-    opacity: 0.45;            /* textura sutil, no protagonista */
+    opacity: 0.3;             /* textura sutil, no protagonista */
 }
 .cd { position: absolute; display: block; }
 .cd-cruces, .cd-flechas, .cd-lineas-izq, .cd-lineas-der, .cd-barras {
@@ -1934,6 +1966,7 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     align-items: center;
     justify-content: center;
     z-index: 8;                 /* sobre las puertas de cierre (z7) */
+    padding-top: var(--header-h);   /* centra el bloque DEBAJO del header fijo */
     color: var(--blanco);       /* fuera de #contacto no hereda el blanco → fijarlo (body = --text-bn negro) */
     pointer-events: none;
     /* Aparece recién DESPUÉS de que las puertas están cerradas del todo (cierreP≥0.8):
@@ -1946,3 +1979,35 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
    que la sección real queda vacía → la colapsamos. Marcada por clase para no
    romper reduced-motion (donde #contacto sigue siendo sección normal). */
 body.contacto-in-stage #contacto { display: none; }
+
+/* ==========================================================================
+   Pantallas BAJAS de escritorio (≤760px de alto útil: monitores 1366×768,
+   laptops 1536×864 al 125%). Ajustes por sala; en monitores grandes y mobile
+   no cambia nada. (El header y las cards tienen su propio bloque más arriba.)
+   ========================================================================== */
+@media (min-width: 769px) and (max-height: 760px) {
+    /* Herramientas: cerebro más chico de base. Sigue creciendo igual (el scale
+       por scroll/absorción es relativo a este ancho), pero todo el recorrido
+       queda más contenido y no se mete debajo del header. */
+    .cerebro { width: calc(min(42vw, 460px) * 0.72); }   /* ~28% más chico a cualquier ancho */
+
+    /* Hero: ojo y círculo azul más chicos (mismo anclaje, siguen pisando "Abrí") */
+    .ojo { width: min(14vw, 180px); }
+    .circulo-ojo { width: min(10.5vw, 135px); }
+
+    /* Nosotros: line-art SVG más chico. `scale` (no transform) para no pisar
+       ningún transform existente; achica desde el centro de cada adorno. */
+    .nsd-cruces, .nsd-barras, .nsd-barras-v, .nsd-mira, .nsd-flechas,
+    .nsd-lineas-der, .nsd-misc, .nsd-marco-tl, .nsd-marco-br, .nsd-cruz {
+        scale: 0.7;
+    }
+
+    /* Adornos de Nosotros/Contacto: el área de adornos arranca DEBAJO del header
+       (sus top: % se medían desde el borde del viewport y los de arriba quedaban
+       tapados). Sólo las capas del stage pineado (desktop). */
+    .nos-reveal .nos-deco,
+    .contacto-reveal .contacto-deco { top: var(--header-h); }
+
+    /* Contacto: email un poco más chico (a 1024px de ancho tocaba los bordes) */
+    .contacto__mail { font-size: clamp(2rem, 7.5vw, 5rem); }
+}

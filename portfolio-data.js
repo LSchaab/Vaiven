@@ -1,5 +1,5 @@
 // Portfolio data — single source consumed by work-carousel.js (carrusel) y portfolio-modal.js (modal).
-// Portada: imagen para la card. Si es null en works de video, la card muestra el video en loop.
+// Portada: imagen para la card. En works de video, el carrusel desktop loopea el video (la portada es su poster) y la galería mobile muestra la portada.
 // Media "video" + video: field → card loopea el mp4 muted; modal lo muestra con controles.
 // Media "video" + galeria → modal muestra video primero, luego imágenes.
 (() => {
