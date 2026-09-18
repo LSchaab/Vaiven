@@ -1780,14 +1780,13 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
             mask: url("resources/hero/mira.svg") center / contain no-repeat;
     pointer-events: none;
 }
-/* flecha grunge (webp) apoyada ABAJO del email, punta hacia arriba en diagonal
-   (la flecha ya apunta arriba-derecha en su orientación natural). */
+/* flecha grunge (webp) ENCIMA del email, pisándolo, punta cayendo en diagonal */
 .contacto__mail-arrow {
     position: absolute; z-index: 2;
-    left: 46%; top: auto; bottom: -3.2em;
+    left: 38%; top: -0.55em; bottom: auto;
     width: clamp(3.2rem, 13vw, 6.5rem);
     height: auto;
-    transform: rotate(-6deg);   /* leve enderezado; queda "de costado" */
+    transform: rotate(155deg);   /* punta hacia abajo, de costado, sobre el email */
     pointer-events: none;
 }
 
@@ -1838,8 +1837,8 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     z-index: 0;
     pointer-events: none;
     background: url("resources/textures/grunge_texture_contacto.webp") center / cover no-repeat;
-    mix-blend-mode: screen;
-    opacity: 0.9;
+    mix-blend-mode: screen;   /* el negro no tapa; sólo suman polvo/hilos blancos */
+    opacity: 0.45;            /* textura sutil, no protagonista */
 }
 .cd { position: absolute; display: block; }
 .cd-cruces, .cd-flechas, .cd-lineas-izq, .cd-lineas-der, .cd-barras {
