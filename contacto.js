@@ -18,7 +18,11 @@
     // Mover (no clonar) el contenido real al stage como capa final.
     const layer = document.createElement("div");
     layer.className = "contacto-reveal";
-    layer.appendChild(content);          // MOVE — la sección real queda vacía
+    // Adornos primero (fondo, position:absolute inset:0 sobre la capa full-viewport),
+    // luego el contenido centrado. Ambos se MUEVEN, la sección real queda vacía.
+    const deco = section.querySelector(".contacto-deco");
+    if (deco) layer.appendChild(deco);
+    layer.appendChild(content);
     stage.appendChild(layer);
     document.body.classList.add("contacto-in-stage");   // CSS colapsa #contacto
 

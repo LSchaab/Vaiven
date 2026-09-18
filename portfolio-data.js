@@ -165,9 +165,42 @@
             key: "web",
             label: "Desarrollo web",
             hue: 140,
-            portada: null,
+            portada: "resources/portfolio/web/Dormie/00-mockup.webp",
             tools: ["visual-studio-code", "figma", "claude"],
-            works: [],
+            works: [
+                {
+                    title: "Dormie",
+                    slug: "dormie",
+                    url: "https://dormie-ecommerce.vercel.app/",
+                    portada: "resources/portfolio/web/Dormie/00-mockup.webp",
+                    media: "image",
+                    galeria: [
+                        "resources/portfolio/web/Dormie/01.webp",
+                        "resources/portfolio/web/Dormie/02.webp",
+                        "resources/portfolio/web/Dormie/03.webp",
+                        "resources/portfolio/web/Dormie/04.webp",
+                        "resources/portfolio/web/Dormie/05.webp",
+                        "resources/portfolio/web/Dormie/06.webp",
+                        "resources/portfolio/web/Dormie/07.webp",
+                        "resources/portfolio/web/Dormie/08.webp",
+                        "resources/portfolio/web/Dormie/09.webp",
+                    ],
+                },
+                {
+                    title: "VolKno",
+                    slug: "volkno",
+                    url: "https://volkno.lourdesschaab.com",
+                    portada: "resources/portfolio/web/VolKno/00-mockup.webp",
+                    media: "image",
+                    galeria: [
+                        "resources/portfolio/web/VolKno/01.webp",
+                        "resources/portfolio/web/VolKno/02.webp",
+                        "resources/portfolio/web/VolKno/03.webp",
+                        "resources/portfolio/web/VolKno/04.webp",
+                        "resources/portfolio/web/VolKno/05.webp",
+                    ],
+                },
+            ],
         },
         {
             key: "campanas",
@@ -186,6 +219,14 @@
         },
     ];
 
+    // Slug derivation: kebab-case from title, accent-stripped, unique across all works.
+    // Works with an explicit slug field keep it; others derive from title.
+    const toKebab = (str) => str
+        .normalize("NFD").replace(/[̀-ͯ]/g, "")   // strip diacritics
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")                        // non-alphanumeric → hyphen
+        .replace(/^-+|-+$/g, "");                           // trim leading/trailing hyphens
+
     // Interleave round-robin: un trabajo de cada categoría por turno → mezcla sin agrupar.
     const pools = window.PORTFOLIO
         .filter((cat) => cat.works.length)
@@ -195,11 +236,25 @@
             catLabel: cat.label,
             hue: cat.hue,
             tools: w.tools || cat.tools || [],   // tools por categoría; un work puede override
+            // url carried through if present (currently only Dormie/VolKno)
         })));
     const mixed = [];
     const maxLen = Math.max(...pools.map((p) => p.length));
     for (let i = 0; i < maxLen; i++) {
         for (const pool of pools) { if (i < pool.length) mixed.push(pool[i]); }
     }
+
+    // Assign stable unique slugs. Explicit slug wins; otherwise derive from title.
+    const usedSlugs = new Set();
+    mixed.forEach((w) => {
+        let base = w.slug ? w.slug : toKebab(w.title);
+        if (!base) base = "work";
+        let candidate = base;
+        let count = 2;
+        while (usedSlugs.has(candidate)) { candidate = `${base}-${count}`; count++; }
+        usedSlugs.add(candidate);
+        w.slug = candidate;
+    });
+
     window.WORKS = mixed;
 })();

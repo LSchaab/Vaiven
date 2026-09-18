@@ -238,7 +238,42 @@
              Fondo verde (lo usa también el iris de cierre, ver .work__exit). -->
         <section id="nosotros" class="nosotros" aria-label="Nosotros — el equipo">
           <div class="nosotros__stage">
-            <h2 class="nosotros__titulo">Los <em>cerebros</em><br>detrás del vaivén.</h2>
+            <!-- Adornos de marca dispersos (decorativos). Mismo patrón que .wd-*:
+                 line-art SVG tintado por token (mask-image) + artwork grunge (webp).
+                 Vive dentro de .nosotros__stage para viajar con la capa .nos-reveal
+                 en desktop; se posiciona sobre la sección/reveal (ancestro posicionado). -->
+            <div class="nos-deco" aria-hidden="true">
+                <!-- artwork grunge (webp) -->
+                <img class="nsd nsd-corazon" src="resources/imagenes_grunge/corazon.webp" alt="" decoding="async" loading="lazy">
+                <img class="nsd nsd-fuego" src="resources/imagenes_grunge/fuego.webp" alt="" decoding="async" loading="lazy">
+                <img class="nsd nsd-mariposa nsd-mariposa-1" src="resources/imagenes_grunge/mariposa.webp" alt="" decoding="async" loading="lazy">
+                <img class="nsd nsd-mariposa nsd-mariposa-2" src="resources/imagenes_grunge/mariposa.webp" alt="" decoding="async" loading="lazy">
+                <!-- line-art SVG tintado (mask-image + token) -->
+                <span class="nsd nsd-marco-tl"></span>
+                <span class="nsd nsd-marco-br"></span>
+                <span class="nsd nsd-cruces"></span>
+                <span class="nsd nsd-barras"></span>
+                <span class="nsd nsd-barras-v"></span>
+                <span class="nsd nsd-mira"></span>
+                <span class="nsd nsd-flechas"></span>
+                <span class="nsd nsd-lineas-der"></span>
+                <span class="nsd nsd-misc"></span>
+                <span class="nsd nsd-cruz"></span>
+                <span class="nsd nsd-dot nsd-dot-1"></span>
+                <span class="nsd nsd-dot nsd-dot-2"></span>
+                <span class="nsd nsd-dot nsd-dot-3"></span>
+            </div>
+
+            <!-- Spotify: pestaña verde arriba-derecha. En reposo muestra el logo;
+                 al hover/focus expande y revela el código escaneable. Click → playlist. -->
+            <a href="https://open.spotify.com/playlist/6MfBqWD94YirQi7OtnOFrC"
+               class="nosotros-spotify" aria-label="Escuchá nuestra playlist en Spotify"
+               target="_blank" rel="noopener">
+                <img src="resources/qr_spotify%201.svg" class="nosotros-spotify-img"
+                     alt="Código de Spotify de la playlist de VAI VEN" decoding="async" loading="lazy">
+            </a>
+
+            <h2 class="nosotros__titulo">Los <em>cerebros</em><br>detrás del <button type="button" class="nosotros__manifiesto" data-video="frULM6go0Tg" aria-haspopup="dialog">vaivén</button>.</h2>
             <ul class="nosotros__fila">
                 <li class="nosotros__miembro">
                     <button class="nosotros__flip" type="button" aria-label="Ver a Matías">
@@ -293,12 +328,28 @@
              (spec 2026-09-17) NO está montada todavía — esto es la versión sección normal
              (el fallback documentado), aislada de mente.js. -->
         <section id="contacto" class="zona-bn contacto">
+            <!-- Adornos de marca (decorativos). En Contacto los SVG con color van
+                 en AZUL y NARANJA de la paleta (mask-image + token). La flecha
+                 grunge (webp) apunta al email. -->
+            <div class="contacto-deco" aria-hidden="true">
+                <span class="cd cd-cruces"></span>
+                <span class="cd cd-flechas"></span>
+                <span class="cd cd-mira"></span>
+                <span class="cd cd-lineas-izq"></span>
+                <span class="cd cd-lineas-der"></span>
+                <span class="cd cd-barras"></span>
+                <img class="cd cd-flecha-grunge" src="resources/imagenes_grunge/flecha.webp" alt="" decoding="async" loading="lazy">
+                <span class="cd cd-dot cd-dot-1"></span>
+                <span class="cd cd-dot cd-dot-2"></span>
+                <span class="cd cd-dot cd-dot-3"></span>
+            </div>
             <div class="contacto__inner">
                 <h2 class="contacto__titulo">Vení, que la seguimos.</h2>
                 <p class="contacto__bajada">Traé la idea. Nosotros ponemos el movimiento.</p>
 
-                <a class="contacto__mail" href="mailto:vaivendv@gmail.com">
-                    <span class="contacto__mail-text">vaivendv@gmail.com</span>
+                <a class="contacto__mail" href="mailto:vaivendv@gmail.com" aria-label="Escribinos a vaivendv@gmail.com">
+                    <!-- email multicolor (naranja/azul de la paleta); sin espacios entre spans -->
+                    <span class="contacto__mail-text"><span class="cm-o">vaiven</span><span class="cm-a">dv</span><span class="cm-o">@</span><span class="cm-a">gmail</span><span class="cm-o">.com</span></span>
                     <!-- flecha-sticker decorativa; reemplazable por asset real cuando exista -->
                     <svg class="contacto__flecha" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                         <path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor"
@@ -344,6 +395,20 @@
             </div>
         </div>
     </main>
+
+    <!-- Modal manifiesto: abre al hacer click en "vaivén" (título de Nosotros).
+         Mismo patrón que el demoreel: inyecta el iframe al abrir, lo borra al
+         cerrar (eso detiene el video). data-video vive en el botón trigger.
+         TODO: reemplazar el ID de video placeholder por el real. -->
+    <div id="manifiesto-modal" hidden role="dialog" aria-modal="true" aria-label="Manifiesto VAI VEN">
+        <div class="demoreel-backdrop"></div>
+        <div class="demoreel-dialog">
+            <button class="demoreel-close" type="button" aria-label="Cerrar">✕</button>
+            <iframe id="manifiesto-iframe" src="" title="Manifiesto VAI VEN"
+                    allow="autoplay; encrypted-media; picture-in-picture"
+                    allowfullscreen></iframe>
+        </div>
+    </div>
 
     <!-- Modal demoreel: abre al hacer click en "nuestra" o la lupa del hero -->
     <div id="demoreel-modal" hidden role="dialog" aria-modal="true" aria-label="Demoreel VAI VEN">
@@ -401,6 +466,42 @@
 
         triggers.forEach(el => el.addEventListener("click", open));
 
+        backdrop.addEventListener("click", close);
+        closeBtn.addEventListener("click", close);
+        modal.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+    })();
+    </script>
+
+    <!-- Manifiesto: mismo comportamiento que el demoreel, con su propio trigger
+         (la palabra "vaivén" del título de Nosotros) y su ID de video. -->
+    <script>
+    (() => {
+        const modal   = document.getElementById("manifiesto-modal");
+        const iframe  = document.getElementById("manifiesto-iframe");
+        if (!modal || !iframe) return;
+        const backdrop = modal.querySelector(".demoreel-backdrop");
+        const closeBtn = modal.querySelector(".demoreel-close");
+        const triggers = Array.from(document.querySelectorAll(".nosotros__manifiesto"));
+        let lastFocused = null;
+
+        const open = (e) => {
+            if (e) e.preventDefault();
+            const id = e && e.currentTarget && e.currentTarget.dataset.video;
+            if (!id) return;
+            lastFocused = document.activeElement;
+            iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+            modal.hidden = false;
+            document.body.classList.add("demoreel-open");
+            closeBtn.focus();
+        };
+        const close = () => {
+            iframe.src = "";
+            modal.hidden = true;
+            document.body.classList.remove("demoreel-open");
+            if (lastFocused && lastFocused.focus) lastFocused.focus();
+        };
+
+        triggers.forEach(el => el.addEventListener("click", open));
         backdrop.addEventListener("click", close);
         closeBtn.addEventListener("click", close);
         modal.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });

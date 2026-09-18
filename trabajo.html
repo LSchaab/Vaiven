@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VAI VEN — Trabajo</title>
+    <!-- Brand tokens + base typography from styles.css (read-only reference) -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- Standalone page layout -->
+    <link rel="stylesheet" href="trabajo.css">
+    <!-- Google Fonts: Montserrat + Montserrat Alternates (matches main site) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,700;0,800;0,900;1,400&family=Montserrat+Alternates:wght@400;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="tj-page">
+
+        <!-- Top bar: wordmark + volver -->
+        <header class="tj-topbar">
+            <a class="tj-wordmark" href="index.html">VAI VEN</a>
+            <button class="tj-back" id="tj-back" type="button">← Volver</button>
+        </header>
+
+        <!-- Hero: kicker + title + tools -->
+        <div class="tj-hero">
+            <p class="tj-kicker" id="tj-kicker"></p>
+            <h1 class="tj-title" id="tj-title"></h1>
+            <div id="tj-tools"></div>
+        </div>
+
+        <!-- Content: rendered by trabajo.js -->
+        <div class="tj-content" id="tj-container">
+            <!-- Media gallery injected here -->
+            <div id="tj-media"></div>
+        </div>
+
+    </div>
+
+    <!-- Portfolio data — builds window.WORKS (synchronous, no defer) -->
+    <script src="portfolio-data.js"></script>
+    <!-- Page logic — deferred so DOM is ready -->
+    <script src="trabajo.js" defer></script>
+</body>
+</html>

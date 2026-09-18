@@ -169,7 +169,23 @@
         if (!work) return;
         lastFocused = document.activeElement;
 
-        mTitle.textContent = work.title;
+        if (work.url) {
+            // Render title as an external link with a ↗ icon.
+            // Escape the title to prevent injection.
+            const safeTitle = work.title.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            mTitle.innerHTML =
+                `<a class="pf-modal-title-link" href="${work.url}" target="_blank" rel="noopener noreferrer"` +
+                ` style="color:inherit;text-decoration:none;"` +
+                `>${safeTitle}` +
+                `<svg aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg"` +
+                ` viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"` +
+                ` stroke-linecap="round" stroke-linejoin="round"` +
+                ` style="display:inline-block;width:0.7em;height:0.7em;margin-left:0.3em;vertical-align:middle;opacity:0.8;">` +
+                `<line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>` +
+                `</a>`;
+        } else {
+            mTitle.textContent = work.title;
+        }
         mKicker.textContent = work.catLabel;
         // hue de la categoría en la raíz → lo leen el título y el fondo del diálogo
         modal.style.setProperty("--card-hue", String(work.hue));

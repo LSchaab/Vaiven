@@ -254,7 +254,8 @@
             btn.appendChild(cap);
 
             btn.addEventListener("click", () => {
-                if (window.PortfolioModal) window.PortfolioModal.open(i);
+                // Mobile/gallery: navigate to the standalone work page.
+                location.href = "trabajo.html?id=" + encodeURIComponent(work.slug);
             });
             li.appendChild(btn);
             return li;
