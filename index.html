@@ -26,6 +26,9 @@
     <!-- Nosotros: una sola sección, aparece al cerrarse el iris del portfolio
          (fade + solape en styles.css). nosotros.js sólo intercepta el nav. -->
     <script src="nosotros.js" defer></script>
+    <!-- Contacto: cierre del recorrido. Mueve su contenido al stage como capa final
+         (.contacto-reveal) que aparece con las puertas ya cerradas. -->
+    <script src="contacto.js" defer></script>
 </head>
 <body>
     <!-- Header fijo: logo + nav centro-arriba. Las anclas hacen scroll suave
@@ -154,10 +157,37 @@
                 <div class="portfolio-stage" aria-hidden="true">
                     <canvas class="work__grid"></canvas>
                     <div class="work__scene"><!-- cards: work-carousel.js --></div>
+                    <!-- Recursos gráficos de marca (violeta+amarillo): aparecen con la
+                         intro y se van con las cards (opacity atada a --portal-open /
+                         --scroll-progress en CSS, igual que .work__intro). Decorativos.
+                         SVG de resources/hero/ tintados por código (mask-image + token). -->
+                    <div class="work-deco" aria-hidden="true">
+                        <span class="wd wd-marco-tl"></span>
+                        <span class="wd wd-marco-tr"></span>
+                        <span class="wd wd-marco-bl"></span>
+                        <span class="wd wd-marco-br"></span>
+                        <span class="wd wd-barras"></span>
+                        <span class="wd wd-cruces"></span>
+                        <span class="wd wd-mira"></span>
+                        <span class="wd wd-flechas"></span>
+                        <span class="wd wd-ejes"></span>
+                        <span class="wd wd-cruz"></span>
+                        <span class="wd wd-hatch"></span>
+                        <span class="wd wd-legend">
+                            <span class="wd-legend__line"></span>
+                            <span class="wd-legend__sq wd-legend__sq--lila"></span>
+                            <span class="wd-legend__sq wd-legend__sq--amarillo"></span>
+                            <span class="wd-legend__sq wd-legend__sq--gris"></span>
+                        </span>
+                        <span class="wd wd-dot wd-dot-1"></span>
+                        <span class="wd wd-dot wd-dot-2"></span>
+                        <span class="wd wd-dot wd-dot-3"></span>
+                        <span class="wd wd-dot wd-dot-4"></span>
+                    </div>
                     <div class="work__intro">
                         <span class="work__intro-word">
-                            <span class="erratic" data-text="NOSOTROS">NOSOTROS</span>
-                            <span class="erratic" data-text="RESOLVEMOS">RESOLVEMOS</span>
+                            <span class="erratic" data-text="ESTO">ESTO</span>
+                            <span class="erratic" data-text="ES LO NUESTRO">ES LO NUESTRO</span>
                         </span>
                     </div>
                     <div class="work__exit"></div>

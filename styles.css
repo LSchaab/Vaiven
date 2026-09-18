@@ -314,6 +314,12 @@ section h2 {
                           #000 0%, transparent 70%);
 }
 
+/* Fase de cierre: las puertas pasan POR ENCIMA del equipo (.nos-reveal z6) para
+   taparlo, y se apaga el glow que sigue al cursor → queda la grilla estática,
+   idéntica al umbral negro del inicio. */
+.mente-stage.is-cerrando .puerta { z-index: 7; }
+.mente-stage.is-cerrando .puerta::after { opacity: 0; }
+
 /* capa 5 — motivos */
 .ojo {
     position: absolute;
@@ -414,8 +420,12 @@ section h2 {
    afinables. Sensación buscada: entrar (profundidad), no bajar. --- */
 
 /* puertas: se abren del centro hacia afuera */
-.puerta-izq { transform: translateX(calc(var(--hero-progress) * -100%)); }
-.puerta-der { transform: translateX(calc(var(--hero-progress) *  100%)); }
+/* Apertura del hero (--hero-progress 0→1 abre) y cierre final: las MISMAS puertas.
+   El cierre usa sólo el primer 80% de --cierre-progress (min(.../0.8, 1)) → las
+   puertas quedan CERRADAS DEL TODO en cierreP=0.8 y ahí se mantienen, dejando el
+   tramo 0.8→1 para que aparezca el contenido de Contacto (ver .contacto-reveal). */
+.puerta-izq { transform: translateX(calc((var(--hero-progress) - min(var(--cierre-progress, 0) / 0.8, 1)) * -100%)); }
+.puerta-der { transform: translateX(calc((var(--hero-progress) - min(var(--cierre-progress, 0) / 0.8, 1)) *  100%)); }
 
 /* frase: se desvanece y sube apenas en el primer tramo (queda "afuera") */
 .hero-frase {
@@ -799,10 +809,132 @@ body.coverflow .portfolio-stage {
     gap: 0.1em;
     text-transform: uppercase;
     color: var(--blanco);
-    font-size: clamp(2.2rem, 10vmin, 6rem);
+    /* bajado de 10vmin/6rem: "ES LO NUESTRO" es más larga que "RESOLVEMOS" y desbordaba */
+    font-size: clamp(1.8rem, 8vmin, 5rem);
     text-align: center;
 }
 .work__intro-word .erratic { font-size: 1em; }
+
+/* ===== Portfolio intro "ESTO ES LO NUESTRO": grilla + recursos (violeta+amarillo) =====
+   Ref: docs/superpowers/specs/2026-09-18-portfolio-intro-esto-es-lo-nuestro-design.md
+   Todo vive dentro de .portfolio-stage → sólo desktop/coverflow. Sólo tokens.
+   SVG de resources/hero/ tintados POR CÓDIGO: mask-image (forma) + background (token). */
+
+/* Grilla estática persistente y tenue detrás de las cards. Misma receta que
+   hero-fondo/.puerta pero SIN el glow que sigue al cursor. La revela el iris del
+   portal (clip-path de .portfolio-stage). */
+body.coverflow .portfolio-stage::before {
+    content: "";
+    position: absolute; inset: 0;
+    z-index: 0;                 /* sobre el violeta del stage, debajo de stars/cards */
+    --grid: 44px;
+    background:
+        repeating-linear-gradient(to right,  rgba(255,255,255,0.05) 0 1px, transparent 1px var(--grid)),
+        repeating-linear-gradient(to bottom, rgba(255,255,255,0.05) 0 1px, transparent 1px var(--grid));
+    pointer-events: none;
+}
+
+/* Capa de recursos gráficos. z1 = detrás de las cards (scene z2) → decoración de
+   fondo que PERSISTE mientras rueda el carrusel (y detrás del texto intro z4, así
+   la mira queda tras el título). Entra con --portal-open y NO se va con el scroll. */
+.work-deco { display: none; }
+body.coverflow .work-deco {
+    display: block;
+    position: absolute; inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    /* aparece con el portal (0.3→0.7) y se queda: sin fade por --scroll-progress */
+    opacity: clamp(0, calc((var(--portal-open, 0) - 0.3) / 0.4), 1);
+}
+.wd { position: absolute; display: block; pointer-events: none; }
+
+/* SVG tintados: mask-image (forma) + background (color exacto de token). */
+.wd-barras, .wd-cruces, .wd-mira, .wd-flechas, .wd-ejes {
+    -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+    -webkit-mask-position: center;  mask-position: center;
+    -webkit-mask-size: contain;     mask-size: contain;
+}
+.wd-barras {
+    left: 60%; top: 14%;
+    width: min(8vw, 104px); height: min(3.2vw, 42px);
+    background: var(--amarillo);
+    -webkit-mask-image: url("resources/hero/barras_derecha.svg");
+            mask-image: url("resources/hero/barras_derecha.svg");
+}
+.wd-cruces {
+    left: 15%; top: 26%;
+    width: min(2.4vw, 30px); height: min(9vw, 118px);
+    background: var(--blanco); opacity: 0.8;
+    -webkit-mask-image: url("resources/hero/cruces_abajo.svg");
+            mask-image: url("resources/hero/cruces_abajo.svg");
+}
+.wd-mira {
+    /* apoyada en la esquina superior derecha de la "O" de ESTO (pedido de Luly) */
+    left: 54%; top: 43%; transform: translate(-50%, -50%);
+    width: min(6vw, 80px); height: min(6vw, 80px);
+    background: var(--blanco); opacity: 0.5;
+    -webkit-mask-image: url("resources/hero/mira.svg");
+            mask-image: url("resources/hero/mira.svg");
+}
+.wd-flechas {
+    left: 62%; top: 66%;
+    width: min(2.4vw, 30px); height: min(2.4vw, 30px);
+    background: var(--lila);
+    -webkit-mask-image: url("resources/hero/flechas.svg");
+            mask-image: url("resources/hero/flechas.svg");
+}
+.wd-ejes {
+    right: 8%; top: 52%; transform: translateY(-50%);
+    width: min(18vw, 240px); height: min(34vh, 360px);
+    background: var(--blanco); opacity: 0.5;
+    -webkit-mask-image: url("resources/hero/linea_cuadrado.svg");
+            mask-image: url("resources/hero/linea_cuadrado.svg");
+}
+
+/* Marcos L en las 4 esquinas (amarillo). Las de arriba en top:13% para despejar
+   la nav (fija, opaca, ~9% de alto); las de abajo en bottom:10%. */
+.wd-marco-tl, .wd-marco-tr, .wd-marco-bl, .wd-marco-br { width: min(4vw, 54px); height: min(4vw, 54px); }
+.wd-marco-tl { left: 5%;  top: 13%;    border-top: 2px solid var(--amarillo);    border-left: 2px solid var(--amarillo); }
+.wd-marco-tr { right: 5%; top: 13%;    border-top: 2px solid var(--amarillo);    border-right: 2px solid var(--amarillo); }
+.wd-marco-bl { left: 5%;  bottom: 10%; border-bottom: 2px solid var(--amarillo); border-left: 2px solid var(--amarillo); }
+.wd-marco-br { right: 5%; bottom: 10%; border-bottom: 2px solid var(--amarillo); border-right: 2px solid var(--amarillo); }
+
+/* Cruz amarilla (aspa ×) inf-derecha */
+.wd-cruz { right: 26%; top: 74%; width: min(3.2vw, 42px); height: min(3.2vw, 42px); }
+.wd-cruz::before, .wd-cruz::after {
+    content: ""; position: absolute; left: 50%; top: 50%;
+    width: 100%; height: 22%;
+    background: var(--amarillo); border-radius: 2px;
+}
+.wd-cruz::before { transform: translate(-50%, -50%) rotate(45deg); }
+.wd-cruz::after  { transform: translate(-50%, -50%) rotate(-45deg); }
+
+/* Cuadrado rayado inf-izquierda */
+.wd-hatch {
+    left: 13%; top: 80%;
+    width: min(4vw, 52px); height: min(4vw, 52px);
+    outline: 1.5px solid var(--gris-claro);
+    background: repeating-linear-gradient(45deg, var(--lila) 0 2px, transparent 2px 7px);
+}
+
+/* Línea + cuadraditos (violeta claro · amarillo · gris) abajo centro */
+.wd-legend {
+    left: 44%; top: 89%;
+    display: flex; align-items: center; gap: 4px;
+    width: min(18vw, 220px);
+}
+.wd-legend__line { flex: 1; height: 2px; background: var(--lila); }
+.wd-legend__sq { width: 8px; height: 8px; flex: none; }
+.wd-legend__sq--lila     { background: var(--lila); }
+.wd-legend__sq--amarillo { background: var(--amarillo); }
+.wd-legend__sq--gris     { background: var(--gris-claro); }
+
+/* Cuadraditos/dots sueltos */
+.wd-dot { width: 8px; height: 8px; }
+.wd-dot-1 { left: 60%; top: 18%; background: var(--blanco); }
+.wd-dot-2 { left: 30%; top: 40%; background: var(--gris-claro); }
+.wd-dot-3 { right: 30%; top: 66%; background: var(--gris-claro); }
+.wd-dot-4 { right: 22%; bottom: 12%; background: var(--amarillo); }
 
 /* Parallax sutil: la escena y las partículas se mueven con --scroll-progress.
    Bajado a -6% (era -15%) para que las cards no se vayan hacia arriba y queden
@@ -1380,3 +1512,27 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 .contacto__redes a:hover,
 .contacto__redes a:focus-visible { color: var(--lila); }
 .contacto__sep { opacity: 0.5; }
+
+/* Capa de salida final: el contenido de Contacto sobre las puertas ya cerradas,
+   dentro del stage pineado (igual que .nos-reveal para el equipo). Opacity atada
+   a --cierre-progress: aparece cuando las puertas terminan de cerrarse. La grilla
+   de las puertas ES el fondo (una sola capa). */
+.contacto-reveal {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 8;                 /* sobre las puertas de cierre (z7) */
+    color: var(--blanco);       /* fuera de #contacto no hereda el blanco → fijarlo (body = --text-bn negro) */
+    pointer-events: none;
+    /* Aparece recién DESPUÉS de que las puertas están cerradas del todo (cierreP≥0.8):
+       fade sobre 0.8→1. Antes de 0.8 = invisible (las puertas todavía se cierran). */
+    opacity: clamp(0, calc((var(--cierre-progress, 0) - 0.8) * 5), 1);
+}
+.contacto-reveal.is-open { pointer-events: auto; }
+
+/* Desktop (coverflow): contacto.js MUEVE el contenido real a .contacto-reveal, así
+   que la sección real queda vacía → la colapsamos. Marcada por clase para no
+   romper reduced-motion (donde #contacto sigue siendo sección normal). */
+body.contacto-in-stage #contacto { display: none; }
