@@ -1383,6 +1383,16 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     cursor: pointer;
     break-inside: avoid;
 }
+/* Miniatura por primer frame del video cuando no hay portada. */
+.pf-vtile-vid {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+    pointer-events: none;
+}
 .pf-vtile-play {
     position: absolute;
     inset: 0;

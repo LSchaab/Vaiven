@@ -57,7 +57,9 @@
             images.push({ type: "image", src: work.portada });
         }
         galeria.forEach((src) => images.push({ type: "image", src }));
-        const poster = work.portada || galeria[0] || "";
+        // Miniatura del video: SOLO la portada. Si no hay (ej. 3D), el tile cae al
+        // primer frame del propio video (así nunca muestra algo que no está en él).
+        const poster = work.portada || "";
         const videos = [];
         if (work.video)   videos.push({ type: "video", src: work.video,   poster });
         if (work.proceso) videos.push({ type: "video", src: work.proceso, poster });
@@ -100,7 +102,22 @@
                 btn.type = "button";
                 btn.className = "pf-vtile";
                 btn.setAttribute("aria-label", `${work.title} — video`);
-                if (item.poster) btn.style.backgroundImage = `url("${item.poster}")`;
+                if (item.poster) {
+                    btn.style.backgroundImage = `url("${item.poster}")`;
+                } else {
+                    // Sin portada: mostramos el primer frame del video como miniatura.
+                    const vposter = document.createElement("video");
+                    vposter.className = "pf-vtile-vid";
+                    vposter.src = item.src;
+                    vposter.preload = "metadata";
+                    vposter.muted = true;
+                    vposter.playsInline = true;
+                    vposter.tabIndex = -1;
+                    vposter.addEventListener("loadedmetadata", () => {
+                        try { vposter.currentTime = 0.1; } catch (e) {}
+                    });
+                    btn.appendChild(vposter);
+                }
                 const play = document.createElement("span");
                 play.className = "pf-vtile-play";
                 play.setAttribute("aria-hidden", "true");
