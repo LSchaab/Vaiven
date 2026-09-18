@@ -19,10 +19,15 @@
             .replace(/"/g, "&quot;");
 
     // ---- Back button behaviour ----
+    // history.back() only when we actually came from our own site (preserves the
+    // portfolio scroll position). Otherwise (direct open, empty/foreign referrer,
+    // some mobile browsers) fall back to a guaranteed navigation to the grid.
     const backBtn = document.getElementById("tj-back");
     if (backBtn) {
         backBtn.addEventListener("click", () => {
-            if (history.length > 1) {
+            const cameFromSite =
+                document.referrer && document.referrer.indexOf(location.origin) === 0;
+            if (cameFromSite && history.length > 1) {
                 history.back();
             } else {
                 location.href = "index.html#work";

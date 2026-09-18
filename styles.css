@@ -100,6 +100,56 @@ nav a:hover,
 nav a:focus-visible,
 nav a.is-active { color: var(--azul); }
 
+/* --- Menú hamburguesa (sólo mobile) --------------------------------------- */
+.nav-toggle {
+    display: none;                /* oculto en desktop */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 44px; height: 44px;    /* target táctil cómodo */
+    padding: 0; border: none; background: none; cursor: pointer;
+}
+.nav-toggle-bar {
+    display: block;
+    width: 26px; height: 3px;
+    background: var(--negro);
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.2s ease;
+}
+/* abierto → X */
+header.nav-open .nav-toggle-bar:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+header.nav-open .nav-toggle-bar:nth-child(2) { opacity: 0; }
+header.nav-open .nav-toggle-bar:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+
+@media (max-width: 768px) {
+    .logo { justify-self: center; grid-column: 2; }   /* logo centrado */
+    .logo img { height: 3rem; }
+    .nav-toggle {
+        display: flex;
+        grid-column: 3; justify-self: end;            /* hamburguesa arriba-derecha */
+        pointer-events: auto;
+    }
+    /* nav = panel desplegable debajo del header */
+    nav {
+        grid-column: 1 / -1;
+        position: absolute;
+        top: 100%; left: 0; right: 0;
+        background: var(--blanco);
+        pointer-events: auto;
+        max-height: 0; overflow: hidden; visibility: hidden;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.15);
+        transition: max-height 0.3s ease, visibility 0s linear 0.3s;
+    }
+    header.nav-open nav {
+        max-height: 70vh; visibility: visible;
+        transition: max-height 0.3s ease, visibility 0s;
+    }
+    nav ul { flex-direction: column; gap: 0; padding: 0.4rem 0; width: 100%; }
+    nav li { width: 100%; }
+    nav a { display: block; padding: 0.9rem 1.6rem; font-size: 1rem; }
+}
+
 /* --- Secciones: scroll continuo, cada una a viewport completo -------------- */
 section {
     min-height: 100vh;
@@ -1323,8 +1373,9 @@ body.coverflow #nosotros { display: none; }
     right: 0;
     z-index: 3;                       /* sobre adornos y contenido */
     width: 52px; height: 52px;
-    background-color: var(--amarillo);   /* pop sobre el fondo verde */
-    border-radius: 8px 0 0 8px;
+    /* spotify.svg viene con fondo transparente + barras blancas y acentos
+       amarillos, pensado para flotar sobre el verde de la sección. */
+    background-color: transparent;
     overflow: hidden;
     pointer-events: auto;
     transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1351,6 +1402,30 @@ body.coverflow #nosotros { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
     .nosotros-spotify { transition: none; }
+}
+
+/* Mobile: la pestaña va abajo de todo, centrada y con el código completo a la
+   vista (en touch no hay hover para expandirla). Reservamos espacio abajo del
+   último integrante para que no se pisen. */
+@media (max-width: 640px) {
+    .nosotros__stage { padding-bottom: clamp(6rem, 16vh, 8rem); }
+    .nosotros-spotify {
+        top: auto; right: auto;
+        left: 50%;
+        bottom: clamp(1rem, 3vh, 2rem);
+        transform: translateX(-50%);
+        width: min(280px, 82vw);
+        height: auto;
+        aspect-ratio: 335 / 65;
+        border-radius: 8px;
+        transition: none;
+    }
+    .nosotros-spotify:hover,
+    .nosotros-spotify:focus-visible { width: min(280px, 82vw); }
+    .nosotros-spotify-img {
+        position: static;
+        width: 100%; height: auto;
+    }
 }
 
 /* ---- Modal demoreel / manifiesto (mismo estilo) ---- */

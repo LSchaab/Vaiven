@@ -37,7 +37,14 @@
         <a class="logo" href="#hero" aria-label="Vai Ven — inicio">
             <img src="resources/logo_vaiven.webp" alt="Vai Ven" decoding="async">
         </a>
-        <nav aria-label="Principal">
+        <!-- Menú hamburguesa (sólo mobile): logo centrado, botón arriba-derecha -->
+        <button class="nav-toggle" type="button" aria-label="Abrir menú"
+                aria-expanded="false" aria-controls="nav-menu">
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+            <span class="nav-toggle-bar"></span>
+        </button>
+        <nav id="nav-menu" aria-label="Principal">
             <ul>
                 <li><a href="#hero">home</a></li>
                 <li><a href="#herramientas">herramientas</a></li>
@@ -271,7 +278,7 @@
             <a href="https://open.spotify.com/playlist/6MfBqWD94YirQi7OtnOFrC"
                class="nosotros-spotify" aria-label="Escuchá nuestra playlist en Spotify"
                target="_blank" rel="noopener">
-                <img src="resources/qr_spotify%201.svg" class="nosotros-spotify-img"
+                <img src="resources/spotify.svg" class="nosotros-spotify-img"
                      alt="Código de Spotify de la playlist de VAI VEN" decoding="async" loading="lazy">
             </a>
 
@@ -473,6 +480,29 @@
         backdrop.addEventListener("click", close);
         closeBtn.addEventListener("click", close);
         modal.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+    })();
+    </script>
+
+    <!-- Menú hamburguesa (mobile): abre/cierra el panel; al tocar un link se
+         cierra y el ancla scrollea nativamente a la sección. -->
+    <script>
+    (() => {
+        const header = document.querySelector("header");
+        const toggle = document.querySelector(".nav-toggle");
+        const nav = document.getElementById("nav-menu");
+        if (!header || !toggle || !nav) return;
+        const setOpen = (open) => {
+            header.classList.toggle("nav-open", open);
+            toggle.setAttribute("aria-expanded", open ? "true" : "false");
+            toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+        };
+        toggle.addEventListener("click", () =>
+            setOpen(!header.classList.contains("nav-open")));
+        nav.querySelectorAll("a").forEach((a) =>
+            a.addEventListener("click", () => setOpen(false)));
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") setOpen(false);
+        });
     })();
     </script>
 
