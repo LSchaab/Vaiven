@@ -12,7 +12,6 @@
     const WORKS = window.WORKS;
 
     const mTitle = modal.querySelector(".pf-modal-title");
-    const mHead = modal.querySelector(".pf-modal-head");
     const mKicker = modal.querySelector(".pf-modal-kicker");
     const mTools = modal.querySelector(".pf-modal-tools");
     const mMedia = modal.querySelector(".pf-modal-media");
@@ -154,7 +153,8 @@
 
         mTitle.textContent = work.title;
         mKicker.textContent = work.catLabel;
-        mHead.style.setProperty("--card-hue", String(work.hue));
+        // hue de la categoría en la raíz → lo leen el título y el fondo del diálogo
+        modal.style.setProperty("--card-hue", String(work.hue));
         renderTools(work);
         renderMedia(work);
         closeLightbox();

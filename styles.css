@@ -1275,7 +1275,8 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     position: relative;
     z-index: 1;
     width: min(1000px, 100%);
-    background: var(--violeta-claro);
+    /* fondo teñido con el hue de la categoría (default violeta ~262) */
+    background: hsl(calc(var(--card-hue, 262) * 1deg) 55% 42%);
     color: var(--blanco);
     border-radius: 12px;
     box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
