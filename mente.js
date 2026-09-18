@@ -37,6 +37,8 @@
     const DOOR_VH   = 150;   // apertura de puertas
     const TOOLS_VH  = 500;   // absorción
     const PORTAL_VH = 180;   // el cerebro se encoge y el iris (portal) se abre desde él
+    const QUIET_VH  = 60;    // pausa: el equipo queda centrado y quieto (iris verde pleno)
+    const CIERRE_VH = 150;   // las puertas del inicio vuelven a cerrarse sobre el equipo → Contacto
     const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
 
     const coverflowOn = () => !!(window.WorkCarousel && window.WorkCarousel.coverflow);
@@ -45,15 +47,19 @@
         : 0);
 
     // Thresholds de scroll en px (se recalculan por resize) + alto del recorrido.
-    let DOOR_PX = 0, TOOLS_PX = 0, PORTAL_PX = 0, CARDS_PX = 0;
+    let DOOR_PX = 0, TOOLS_PX = 0, PORTAL_PX = 0, CARDS_PX = 0, QUIET_PX = 0, CIERRE_PX = 0;
     const layout = () => {
         const vh = innerHeight / 100;
         DOOR_PX = DOOR_VH * vh;
         TOOLS_PX = TOOLS_VH * vh;
         PORTAL_PX = PORTAL_VH * vh;
         CARDS_PX = cardsVH() * vh;
-        // +100vh de "cola" para que el stage siga pineado durante la última pantalla.
-        journey.style.height = (DOOR_VH + TOOLS_VH + PORTAL_VH + cardsVH() + 100) + "vh";
+        QUIET_PX = QUIET_VH * vh;
+        CIERRE_PX = CIERRE_VH * vh;
+        // Tail = QUIET (equipo quieto) + CIERRE (puertas cierran + Contacto aparece).
+        // Reemplaza la vieja cola de +100vh: el stage sigue pineado hasta el final.
+        journey.style.height =
+            (DOOR_VH + TOOLS_VH + PORTAL_VH + cardsVH() + QUIET_VH + CIERRE_VH) + "vh";
     };
 
     const brain = stage.querySelector(".cerebro");
@@ -219,6 +225,14 @@
         stage.style.setProperty("--hero-progress", heroP.toFixed(4));
         stage.style.setProperty("--herr-progress", herrP.toFixed(4));
         stage.style.setProperty("--portal-open", portalP.toFixed(4));
+        // Cierre: al final del recorrido, después de la pista de cards + una pausa
+        // (QUIET) con el equipo quieto, las puertas del inicio vuelven a cerrarse.
+        const cierreStart = DOOR_PX + TOOLS_PX + PORTAL_PX + CARDS_PX + QUIET_PX;
+        const cierreP = CIERRE_PX > 0
+            ? clamp((scrolled - cierreStart) / CIERRE_PX, 0, 1)
+            : 0;
+        stage.style.setProperty("--cierre-progress", cierreP.toFixed(4));
+        stage.classList.toggle("is-cerrando", cierreP > 0);
         renderPhase2(herrP);
         // Cards: sólo en coverflow. Progreso local de la pista → work-carousel.
         if (coverflowOn() && window.WorkCarousel.render) {
@@ -307,6 +321,18 @@
             const introEnd = (window.WorkCarousel && window.WorkCarousel.CONFIG.introEnd) || 0.16;
             const y = DOOR_PX + TOOLS_PX + PORTAL_PX + introEnd * CARDS_PX;
             scrollTo({ top: y, behavior: "smooth" });
+        });
+    }
+
+    // Nav "contacto": el contenido de Contacto vive al final del recorrido pineado
+    // (sobre las puertas ya cerradas). En coverflow llevamos el scroll al final; en
+    // mobile/galería dejamos el ancla nativa a #contacto (sección normal).
+    const contactoLink = document.querySelector('nav a[href="#contacto"]');
+    if (contactoLink) {
+        contactoLink.addEventListener("click", (e) => {
+            if (!coverflowOn()) return;
+            e.preventDefault();
+            scrollTo({ top: journey.offsetHeight - innerHeight, behavior: "smooth" });
         });
     }
 })();
