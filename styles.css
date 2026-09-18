@@ -2015,4 +2015,9 @@ body.contacto-in-stage #contacto { display: none; }
        (va 2.8rem por encima del video). El ancho también lo limita el alto
        disponible (16:9), dejando 4rem arriba y abajo. */
     .demoreel-dialog { width: min(92vw, 1080px, calc((100vh - 8rem) * 16 / 9)); }
+
+    /* Modal de proyecto del portfolio: misma idea. Con max-height 88vh la cruz
+       (2.8rem arriba del diálogo) quedaba fuera de pantalla; dejamos ~3.5rem
+       libres arriba y abajo. El contenido sigue scrolleando adentro. */
+    .pf-modal-scroll { max-height: calc(100vh - 7rem); }
 }
