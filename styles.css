@@ -1310,7 +1310,6 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     margin-bottom: 1.2rem;
 }
 .pf-modal-tools { display: flex; }
-.pf-tools-list { margin: 0; }        /* sin el margen inferior de cuando era sidebar */
 .pf-modal-title {
     margin: 0;
     font-size: clamp(1.4rem, 4vw, 2.4rem);
@@ -1330,6 +1329,7 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
 .pf-tools-list {
     list-style: none;
     padding: 0;
+    margin: 0;
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
