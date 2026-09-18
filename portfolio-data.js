@@ -231,7 +231,7 @@
                 {
                     title: "Mangeki",
                     slug: "mangeki-web",
-                    // TODO: URL real del sitio en vivo (Luly) — sin esto no muestra la flechita ↗
+                    url: "https://mangeki.lourdesschaab.com",
                     portada: "resources/portfolio/web/Mangeki/00-mockup.webp",
                     media: "image",
                     galeria: [
