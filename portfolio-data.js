@@ -10,6 +10,7 @@
             label: "Ilustración y Diseño Gráfico",
             hue: 340,
             portada: "resources/portfolio/grafico/inari/inari_mockup.webp",
+            tools: ["illustrator", "photoshop"],
             works: [
                 {
                     title: "Inari",
@@ -19,9 +20,7 @@
                         "resources/portfolio/grafico/inari/01.webp",
                         "resources/portfolio/grafico/inari/02.webp",
                     ],
-                    proceso: "resources/portfolio/grafico/inari/proceso.mp4",
-                    tools: ["photoshop", "illustrator"],
-                },
+                    proceso: "resources/portfolio/grafico/inari/proceso.mp4",                },
                 {
                     title: "Lightyear",
                     portada: "resources/portfolio/grafico/lightyear/portada.webp",
@@ -31,9 +30,7 @@
                         "resources/portfolio/grafico/lightyear/06.webp",
                         "resources/portfolio/grafico/lightyear/07.webp",
                     ],
-                    proceso: "resources/portfolio/grafico/lightyear/proceso.mp4",
-                    tools: ["photoshop", "illustrator"],
-                },
+                    proceso: "resources/portfolio/grafico/lightyear/proceso.mp4",                },
                 {
                     title: "Perfume",
                     portada: "resources/portfolio/grafico/perfume/mopckup.webp",
@@ -42,9 +39,7 @@
                         "resources/portfolio/grafico/perfume/01.webp",
                         "resources/portfolio/grafico/perfume/02.webp",
                     ],
-                    proceso: "resources/portfolio/grafico/perfume/proceso.mp4",
-                    tools: ["photoshop", "illustrator"],
-                },
+                    proceso: "resources/portfolio/grafico/perfume/proceso.mp4",                },
                 {
                     title: "Infinity War",
                     portada: "resources/portfolio/grafico/infinityWar/infinity_war_mockup.webp",
@@ -52,9 +47,7 @@
                     galeria: [
                         "resources/portfolio/grafico/infinityWar/01.webp",
                     ],
-                    proceso: "resources/portfolio/grafico/infinityWar/proceso.mp4",
-                    tools: ["photoshop", "illustrator"],
-                },
+                    proceso: "resources/portfolio/grafico/infinityWar/proceso.mp4",                },
                 {
                     title: "Interstellar",
                     portada: "resources/portfolio/grafico/interstellar/mockup.webp",
@@ -63,9 +56,7 @@
                         "resources/portfolio/grafico/interstellar/01.webp",
                         "resources/portfolio/grafico/interstellar/02.webp",
                     ],
-                    proceso: "resources/portfolio/grafico/interstellar/animado.mp4",
-                    tools: ["photoshop", "illustrator"],
-                },
+                    proceso: "resources/portfolio/grafico/interstellar/animado.mp4",                },
                 {
                     title: "Harley",
                     portada: "resources/portfolio/grafico/harley/Harley_portada.webp",
@@ -74,9 +65,7 @@
                         "resources/portfolio/grafico/harley/Harley_8.webp",
                         "resources/portfolio/grafico/harley/harley_mockup.webp",
                     ],
-                    proceso: "resources/portfolio/grafico/harley/proceso.mp4",
-                    tools: ["photoshop", "illustrator"],
-                },
+                    proceso: "resources/portfolio/grafico/harley/proceso.mp4",                },
             ],
         },
         {
@@ -84,6 +73,7 @@
             label: "Modelado 3D",
             hue: 200,
             portada: null,
+            tools: ["substance-3d-painter", "blender", "photoshop"],
             works: [
                 {
                     title: "Caja Reloj",
@@ -98,9 +88,7 @@
                         "resources/portfolio/modelado3d/caja_reloj/05.webp",
                         "resources/portfolio/modelado3d/caja_reloj/06.webp",
                         "resources/portfolio/modelado3d/caja_reloj/07.webp",
-                    ],
-                    tools: ["blender"],
-                },
+                    ],                },
                 {
                     title: "Calesita",
                     portada: null,
@@ -112,9 +100,7 @@
                         "resources/portfolio/modelado3d/calesita/03.webp",
                         "resources/portfolio/modelado3d/calesita/04.webp",
                         "resources/portfolio/modelado3d/calesita/05.webp",
-                    ],
-                    tools: ["blender"],
-                },
+                    ],                },
                 {
                     title: "Máquina Arcade",
                     portada: null,
@@ -126,9 +112,7 @@
                         "resources/portfolio/modelado3d/maquina_arcade/03.webp",
                         "resources/portfolio/modelado3d/maquina_arcade/04.webp",
                         "resources/portfolio/modelado3d/maquina_arcade/05.webp",
-                    ],
-                    tools: ["blender"],
-                },
+                    ],                },
                 {
                     title: "Máquina Expendedora",
                     portada: null,
@@ -149,9 +133,7 @@
                         "resources/portfolio/modelado3d/maquina_exp/12.webp",
                         "resources/portfolio/modelado3d/maquina_exp/13.webp",
                         "resources/portfolio/modelado3d/maquina_exp/14.webp",
-                    ],
-                    tools: ["blender"],
-                },
+                    ],                },
                 {
                     title: "Personaje Toon",
                     portada: "resources/portfolio/modelado3d/personaje/portada.webp",
@@ -162,9 +144,7 @@
                         "resources/portfolio/modelado3d/personaje/03.webp",
                         "resources/portfolio/modelado3d/personaje/04.webp",
                         "resources/portfolio/modelado3d/personaje/05.webp",
-                    ],
-                    tools: ["blender"],
-                },
+                    ],                },
             ],
         },
         {
@@ -172,6 +152,7 @@
             label: "Motion Graphics",
             hue: 10,
             portada: null,
+            tools: ["after-effects", "illustrator", "photoshop"],
             works: [
                 { title: "The Sandman",       portada: null, media: "video", video: "resources/portfolio/motion/Sandman.mp4" },
                 { title: "Fiesta Rave",        portada: null, media: "video", video: "resources/portfolio/motion/Fiesta%20Rave.mp4" },
@@ -185,6 +166,7 @@
             label: "Desarrollo web",
             hue: 140,
             portada: null,
+            tools: ["visual-studio-code", "figma", "claude"],
             works: [],
         },
         {
@@ -192,6 +174,7 @@
             label: "Campañas publicitarias",
             hue: 210,
             portada: "resources/portfolio/campanas/portada.webp",
+            tools: ["illustrator", "photoshop", "chatgpt", "capcut"],
             works: [
                 {
                     title: "Hocicos Contentos",
@@ -206,7 +189,13 @@
     // Interleave round-robin: un trabajo de cada categoría por turno → mezcla sin agrupar.
     const pools = window.PORTFOLIO
         .filter((cat) => cat.works.length)
-        .map((cat) => cat.works.map((w) => ({ ...w, catKey: cat.key, catLabel: cat.label, hue: cat.hue })));
+        .map((cat) => cat.works.map((w) => ({
+            ...w,
+            catKey: cat.key,
+            catLabel: cat.label,
+            hue: cat.hue,
+            tools: w.tools || cat.tools || [],   // tools por categoría; un work puede override
+        })));
     const mixed = [];
     const maxLen = Math.max(...pools.map((p) => p.length));
     for (let i = 0; i < maxLen; i++) {
