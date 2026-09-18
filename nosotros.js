@@ -43,8 +43,11 @@
         if (nosLink) {
             nosLink.addEventListener("click", (e) => {
                 e.preventDefault();
+                // El final es ahora Contacto (puertas cerradas). Nosotros vive en la
+                // pausa QUIET justo antes del cierre: retrocedemos CIERRE_VH(150) +
+                // ~½ QUIET_VH(60) ≈ 1.8 viewports desde el fondo → equipo centrado y quieto.
                 const maxScroll = journey.offsetHeight - innerHeight;
-                scrollTo({ top: maxScroll - innerHeight * 0.4, behavior: "smooth" });
+                scrollTo({ top: maxScroll - innerHeight * 1.8, behavior: "smooth" });
             });
         }
     }
