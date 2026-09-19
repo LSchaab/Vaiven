@@ -1757,7 +1757,7 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     text-decoration: none;
     font-family: var(--font-alt);
     font-weight: 700;
-    font-size: clamp(2rem, 8.5vw, 5.4rem);   /* email protagonista, más grande */
+    font-size: clamp(1.5rem, 8.5vw, 5.4rem);   /* email protagonista; min bajo para no desbordar en teléfonos angostos */
     line-height: 1;
     letter-spacing: -0.02em;
 }
@@ -1838,7 +1838,7 @@ body.pf-modal-open { overflow: hidden; }   /* bloquea el scroll de fondo */
     pointer-events: none;
     background: url("resources/textures/grunge_texture_contacto.webp") center / cover no-repeat;
     mix-blend-mode: screen;   /* el negro no tapa; sólo suman polvo/hilos blancos */
-    opacity: 0.45;            /* textura sutil, no protagonista */
+    opacity: 0.3;             /* textura muy sutil, apenas un grano de fondo */
 }
 .cd { position: absolute; display: block; }
 .cd-cruces, .cd-flechas, .cd-lineas-izq, .cd-lineas-der, .cd-barras {
